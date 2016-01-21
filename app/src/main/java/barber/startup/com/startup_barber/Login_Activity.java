@@ -27,6 +27,9 @@ public class Login_Activity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         setContentView(R.layout.activity_login);
 
         loginButton = (Button) findViewById(R.id.loginButtonId);
@@ -165,7 +168,6 @@ public class Login_Activity extends AppCompatActivity {
 
     public void showProgressBar() {
         progressDialog = ProgressDialog.show(this, "", "Loading! Please wait", true);
-
     }
 
     public void showProgressBar(String msg) {
@@ -175,7 +177,7 @@ public class Login_Activity extends AppCompatActivity {
     }
 
     public void dismissProgressBar() {
-        if (progressDialog.isShowing())
+        if (progressDialog !=null)
             progressDialog.dismiss();
     }
 }
