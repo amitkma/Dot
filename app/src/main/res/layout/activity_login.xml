@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context="barber.startup.com.startup.Login_Activity">
+    tools:context="barber.startup.com.startup_barber.Login_Activity">
 
 
     <include layout="@layout/content_login" />

@@ -7,7 +7,7 @@
     android:background="@drawable/login_background"
     android:paddingTop="@dimen/activity_horizontal_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="barber.startup.com.startup.Login_Activity"
+    tools:context="barber.startup.com.startup_barber.Login_Activity"
     tools:showIn="@layout/activity_login">
 
     <LinearLayout
