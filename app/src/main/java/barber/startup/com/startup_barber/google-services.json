@@ -1,0 +1,51 @@
+{
+  "project_info": {
+    "project_id": "startup-362e5",
+    "project_number": "1033991359933",
+    "name": "Startup"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033991359933:android:b6c9aeaf21aaab74",
+        "client_id": "android:barber.startup.com.startup_barber",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "barber.startup.com.startup_barber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033991359933-qpb910kmmhmkcilbbgr3o2tom1c87clf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "barber.startup.com.startup_barber",
+            "certificate_hash": "A256C8058CEDBAB16CF24A0614A098504B38D64B"
+          }
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

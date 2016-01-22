@@ -83,15 +83,16 @@
         android:orientation="vertical">
 
 
+
+
         <Button
-            android:id="@+id/loginButtonId"
+
+            android:id="@+id/signupButtonId"
             style="@style/login_button"
+
             android:layout_width="match_parent"
 
-            android:layout_weight="1"
-            android:text="Login" />
-
-
+            android:text="Signup" />
 
     </LinearLayout>
 

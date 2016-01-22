@@ -19,6 +19,7 @@ public class Initialization extends Application {
         Parse.initialize(this, ParseKeys.PARSE_APPLICATION_ID, ParseKeys.PARSE_CLIENT_KEY);
         ParseInstallation.getCurrentInstallation().saveInBackground();
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         ParseFacebookUtils.initialize(getApplicationContext());
     }
 }
