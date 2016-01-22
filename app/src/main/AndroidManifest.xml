@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.READ_SMS"/>
 
+
     <application
         android:name=".Initialization"
         android:allowBackup="true"
@@ -28,8 +29,8 @@
         <activity android:name="com.facebook.FacebookActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".Login_Activity"
             android:label="@string/app_name"
@@ -44,7 +45,7 @@
         <activity
             android:name=".Choose_Login"
             android:label="@string/title_activity_sms__verification"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme.NoActionBar">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -56,17 +57,14 @@
         <activity
             android:name=".Signup_Activity"
             android:label="@string/title_activity_sms__verification"
-<<<<<<< Updated upstream
-            android:theme="@style/AppTheme" />
+
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".VerificationActivity"
             android:label="@string/title_activity_verification"
             android:theme="@style/AppTheme"></activity>
-=======
-            android:theme="@style/AppTheme">
 
-            </activity>
->>>>>>> Stashed changes
+
     </application>
 
 </manifest>

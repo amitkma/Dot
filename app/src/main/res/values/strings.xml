@@ -13,7 +13,7 @@
 
     <string name="phone_number_string">Phone Number</string>
     <string name="title_activity_sms__verification">SMS Verification</string>
-<<<<<<< Updated upstream
+
     <string name="title_activity_verification">VerificationActivity</string>
     <string name="sending_sms">We\'re sending an sms to</string>
     <string name="flashcalling">We\'re requesting a flash call to</string>
@@ -21,7 +21,6 @@
     <string name="verified">Verification successful</string>
     <string name="failed">Verification failed</string>
     <string name="entercode">Please enter the code you received</string>
-=======
     <string name="facebook_app_id">999874136737265</string>
->>>>>>> Stashed changes
+
 </resources>

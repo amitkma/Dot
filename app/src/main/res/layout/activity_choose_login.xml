@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/login_background"
-  >
+    android:background="@drawable/login_background">
 
     <TextView
         android:id="@+id/textView2"
@@ -14,11 +12,10 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="80dp"
         android:fontFamily="sans-serif-condensed"
-        android:text="TREND"
+        android:text="SALON"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#fff"
-        android:textSize="50sp"
-    />
+        android:textSize="50sp" />
 
     <TextView
         android:id="@+id/MarqueeText"
@@ -58,8 +55,9 @@
 
         <com.facebook.login.widget.LoginButton
             android:id="@+id/login_button"
+
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
 
             />
 
@@ -67,10 +65,10 @@
             android:id="@+id/sign_in_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            />
+            android:layout_centerInParent="true" />
+
         <TextView
-android:id="@+id/register"
+            android:id="@+id/register"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
@@ -82,7 +80,7 @@ android:id="@+id/register"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="REGISTER"
-            android:textColor="#8fff"
+            android:textColor="#fff"
             android:textSize="14sp" />
 
 
@@ -92,10 +90,11 @@ android:id="@+id/register"
         android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_below="@+id/ll"
+
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:layout_marginTop="60dp"
 
         android:background="#20ffffff"
 
@@ -103,7 +102,7 @@ android:id="@+id/register"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:text="LOGIN"
-        android:textColor="#9fff"
+        android:textColor="#fff"
         android:textSize="14sp" />
 
 </RelativeLayout>
