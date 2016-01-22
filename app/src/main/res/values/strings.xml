@@ -10,5 +10,14 @@
     <string name="openDrawer">open</string>
     <string name="closeDrawer">close</string>
     <string name="empty">Cannot be empty</string>
+
+    <string name="phone_number_string">Phone Number</string>
     <string name="title_activity_sms__verification">SMS Verification</string>
+    <string name="title_activity_verification">VerificationActivity</string>
+    <string name="sending_sms">We\'re sending an sms to</string>
+    <string name="flashcalling">We\'re requesting a flash call to</string>
+    <string name="inprogress">Verification in\nprogress</string>
+    <string name="verified">Verification successful</string>
+    <string name="failed">Verification failed</string>
+    <string name="entercode">Please enter the code you received</string>
 </resources>

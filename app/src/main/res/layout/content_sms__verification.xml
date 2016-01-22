@@ -9,11 +9,37 @@
     tools:context="barber.startup.com.startup_barber.SMS_Verification"
     tools:showIn="@layout/activity_sms__verification">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
+   <EditText
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:id="@+id/PhoneNumber"
+       android:inputType="phone"
+       android:layout_marginLeft="16dp"
+       android:layout_marginRight="16dp"
+       android:hint="@string/phone_number_string">
+       <requestFocus/>
+   </EditText>
+    <Button
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Verify by SMS"
+        android:onClick="onButtonClicked"
+        android:enabled="false"
+        android:layout_below="@+id/PhoneNumber"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/verify_sms_button_id"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Verify by Flash call"
+        android:onClick="onButtonClicked"
+        android:enabled="false"
+        android:layout_below="@+id/verify_sms_button_id"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/verify_call_button_id"
+        />
+
 </RelativeLayout>
