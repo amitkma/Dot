@@ -30,6 +30,8 @@ dependencies {
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.android.support:cardview-v7:23.1.0'
     compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
+    compile 'com.squareup.picasso:picasso:2.5.2'
     compile files('/home/ayush/AndroidStudioProjects/Startup_barber/libs/sinch-android-verification-1.1.2.jar')
 }

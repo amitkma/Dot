@@ -9,7 +9,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -24,6 +28,10 @@ import com.parse.LogInCallback;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class Choose_Login extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
@@ -39,6 +47,7 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
     private GoogleApiClient mGoogleApiClient;
     private TextView register;
     private Button button_fb_login;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,26 +117,19 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void startsignupactivity() {
 
-        startActivity(new Intent(this, Signup_Activity.class));
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-    }
 
     private void link_with_parse() {
-        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, permissions, new LogInCallback() {
+        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "user_photos", "public_profile"), new LogInCallback() {
             @Override
             public void done(ParseUser user, com.parse.ParseException e) {
                 if (user == null) {
                     Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
-                    start_main_activity();
-                    Toast.makeText(getApplicationContext(), "Signed up successfully through Facebook !", Toast.LENGTH_SHORT);
+                    getfb_details(user);
+                    //start_main_activity();
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
                 } else {
-                    Toast.makeText(getApplicationContext(), "Signed up successfully through Facebook !", Toast.LENGTH_SHORT);
-
                     start_main_activity();
                     Log.d("MyApp", "User logged in through Facebook!");
 
@@ -137,9 +139,54 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    private void getfb_details(final ParseUser user) {
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "picture.type(small).width(100).height(100),name");
+        new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me",
+                parameters,
+                HttpMethod.GET,
+                new GraphRequest.Callback() {
+                    public void onCompleted(GraphResponse response) {
+                        try {
+
+                            String name = response.getJSONObject().getString("name");
+                            user.setUsername(name);
+
+
+                            JSONObject picture = response.getJSONObject().getJSONObject("picture");
+
+                            JSONObject data = picture.getJSONObject("data");
+
+                            String pictureUrl = data.getString("url");
+
+                            user.put("picUri", pictureUrl);
+                            Log.d("uri", pictureUrl);
+                            start_main_activity();
+                            user.saveInBackground();
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        ).executeAsync();
+
+    }
+
     private void start_main_activity() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
+    }
+
+    private void startsignupactivity() {
+
+        startActivity(new Intent(this, Signup_Activity.class));
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+
     }
 
     private void startloginactivity() {

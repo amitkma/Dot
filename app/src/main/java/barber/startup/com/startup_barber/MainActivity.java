@@ -9,8 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.facebook.Profile;
-import com.facebook.login.LoginManager;
 import com.parse.ParseUser;
 
 public class MainActivity extends BaseActivity {
@@ -38,12 +36,6 @@ public class MainActivity extends BaseActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
 
-                //Checking if the item is in checked state or not, if not make it in checked state
-              /*  if (menuItem.isChecked())
-                    menuItem.setChecked(false);
-                else
-                    menuItem.setChecked(true);*/
-
 
                 switch (menuItem.getItemId()) {
 
@@ -66,7 +58,7 @@ public class MainActivity extends BaseActivity {
                                 public void run() {
                                     logout();
                                 }
-                            }, 220);
+                            }, 250);
                         }
                         return true;
 
@@ -79,7 +71,6 @@ public class MainActivity extends BaseActivity {
                             }
                         }, 500);
                         return true;
-
 
                     default:
 
@@ -95,15 +86,9 @@ public class MainActivity extends BaseActivity {
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
             ParseUser.logOutInBackground();
-        } else {
-            Profile profile = Profile.getCurrentProfile();
-            if (profile != null) {
-                LoginManager.getInstance().logOut();
-            }
         }
 
-
-        startActivity(new Intent(this, Choose_Login.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY));
+        startActivity(new Intent(this, Choose_Login.class));
         finish();
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
