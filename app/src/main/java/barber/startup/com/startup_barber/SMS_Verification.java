@@ -35,6 +35,9 @@ public class SMS_Verification extends AppCompatActivity implements ActivityCompa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
         setContentView(R.layout.activity_sms__verification);
 
         mPhoneNumberField = (EditText)findViewById(R.id.PhoneNumber);

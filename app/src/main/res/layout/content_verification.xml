@@ -5,27 +5,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="0dp"
-    android:fitsSystemWindows="true"
+
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="barber.startup.com.startup_barber.VerificationActivity"
     tools:showIn="@layout/activity_verification">
     <LinearLayout
+        android:id="@+id/textWrapper"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_alignParentBottom="true"
+        android:orientation="vertical"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp" android:id="@+id/textWrapper">
+        android:paddingRight="20dp">
 
         <TextView
+            android:id="@+id/numberText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
+            android:layout_gravity="center"
             android:layout_marginBottom="10dp"
+            android:layout_marginTop="0dp"
             android:text="+46123456789"
             android:textAllCaps="true"
-            android:id="@+id/numberText"
-            android:layout_gravity="center"
             android:textColor="@color/primary_text"
             android:textSize="18sp"/>
 
@@ -34,42 +35,44 @@
 
             <LinearLayout android:id="@+id/inputContainer" android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" android:layout_centerHorizontal="true"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical"
                 android:visibility="gone">
                 <TextView
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:textColor="@color/primary_text"
-                    android:textSize="18sp"
-                    android:textAllCaps="true"
                     android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
                     android:gravity="center"
-                    android:text="@string/entercode"/>
+                    android:text="@string/entercode"
+                    android:textAllCaps="true"
+                    android:textColor="@color/primary_text"
+                    android:textSize="18sp" />
                 <EditText android:id="@+id/inputCode" android:layout_width="100dp" android:layout_height="40dp"
-                    android:layout_gravity="center" android:inputType="number"
-                    android:layout_marginBottom="10dp"/>
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:inputType="number" />
                 <Button
                     android:id="@+id/codeInputButton"
                     android:layout_width="wrap_content"
                     android:layout_height="60dp"
-                    android:layout_marginBottom="10dp"
                     android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
                     android:minHeight="56dp"
-                    android:textColor="#ffffff"
-                    android:textAllCaps="true"
-                    android:textSize="20sp"
+                    android:onClick="onSubmitClicked"
                     android:text="Submit"
-                    android:onClick="onSubmitClicked"/>
+                    android:textAllCaps="true"
+                    android:textColor="#ffffff"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/progressIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
                 android:indeterminate="false"
                 android:indeterminateDuration="3000"
-                android:layout_gravity="center"
-                android:layout_centerInParent="true"
                 android:visibility="invisible"/>
 
             <ImageView
@@ -84,25 +87,25 @@
         <TextView android:id="@+id/progressText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:paddingBottom="20dp"
             android:text="@string/inprogress"
             android:textAllCaps="true"
-            android:gravity="center_horizontal"
             android:textColor="@color/primary_text"
-            android:textSize="22sp"
-            android:paddingBottom="20dp"/>
+            android:textSize="22sp" />
 
     </LinearLayout>
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/textWrapper"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
         android:text="@string/sending_sms"
         android:textAllCaps="true"
-        android:id="@+id/textView"
         android:textColor="@color/primary_text"
-        android:textSize="18sp"
-        android:gravity="center"
-        android:layout_above="@+id/textWrapper"
-        android:layout_centerHorizontal="true" />
+        android:textSize="18sp" />
 
 </RelativeLayout>

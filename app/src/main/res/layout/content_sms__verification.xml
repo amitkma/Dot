@@ -4,42 +4,96 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:background="@color/com_facebook_button_background_color_pressed"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="barber.startup.com.startup_barber.SMS_Verification"
     tools:showIn="@layout/activity_sms__verification">
 
-   <EditText
-       android:layout_width="match_parent"
-       android:layout_height="wrap_content"
-       android:id="@+id/PhoneNumber"
-       android:inputType="phone"
-       android:layout_marginLeft="16dp"
-       android:layout_marginRight="16dp"
-       android:hint="@string/phone_number_string">
-       <requestFocus/>
-   </EditText>
-    <Button
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Verify by SMS"
-        android:onClick="onButtonClicked"
-        android:enabled="false"
-        android:layout_below="@+id/PhoneNumber"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:id="@+id/verify_sms_button_id"
-        />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Verify by Flash call"
-        android:onClick="onButtonClicked"
-        android:enabled="false"
-        android:layout_below="@+id/verify_sms_button_id"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:id="@+id/verify_call_button_id"
-        />
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="60dp"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:text="Your Phone number needs to be verified before you can continue"
+        android:textColor="#fff"
+        android:textSize="24sp" />
 
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="56dp"
+        android:layout_marginRight="56dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:paddingLeft="4dp"
+            android:paddingRight="2dp"
+            android:text="+91"
+            android:textColor="#fff"
+            android:textSize="18sp" />
+
+   <EditText
+       android:id="@+id/PhoneNumber"
+       android:layout_width="0dp"
+       android:layout_height="wrap_content"
+       android:layout_centerInParent="true"
+       android:layout_weight="1"
+       android:hint="@string/phone_number_string"
+       android:inputType="phone"
+       android:paddingLeft="4dp"
+
+       android:textColorHint="#8fff">
+
+       <requestFocus/>
+
+   </EditText>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:layout_marginLeft="52dp"
+        android:layout_marginRight="52dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/verify_sms_button_id"
+        android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:background="@color/com_facebook_button_background_color"
+        android:enabled="false"
+            android:onClick="onButtonClicked"
+
+            android:text="Verify by SMS"
+            android:textColor="#fff"
+        />
+    <Button
+        android:id="@+id/verify_call_button_id"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="12dp"
+        android:background="@color/com_facebook_button_background_color"
+        android:enabled="false"
+        android:onClick="onButtonClicked"
+        android:text="Verify by Flash call"
+
+
+        android:textColor="#fff"
+        />
+    </LinearLayout>
 </RelativeLayout>

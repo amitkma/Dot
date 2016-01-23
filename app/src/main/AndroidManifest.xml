@@ -40,7 +40,7 @@
         <activity
             android:name=".SMS_Verification"
             android:label="@string/title_activity_sms__verification"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
             android:name=".Choose_Login"
@@ -62,7 +62,7 @@
         <activity
             android:name=".VerificationActivity"
             android:label="@string/title_activity_verification"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
 
     </application>
