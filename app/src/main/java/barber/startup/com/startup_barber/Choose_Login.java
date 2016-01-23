@@ -5,13 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -26,7 +24,6 @@ import com.parse.LogInCallback;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class Choose_Login extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
@@ -41,6 +38,7 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
     private CallbackManager callbackManager;
     private GoogleApiClient mGoogleApiClient;
     private TextView register;
+    private Button button_fb_login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +46,12 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+
+        if (ParseUser.getCurrentUser() != null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
         setContentView(R.layout.activity_choose_login);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -68,18 +72,15 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
 
         signInButton.setOnClickListener(this);
 
-     /*   if (ParseUser.getCurrentUser() != null) {
+        //else if (Profile.getCurrentProfile() != null)
             //startActivity(new Intent(this, CurrentTrendsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY));
-        } else if (Profile.getCurrentProfile() != null)
-            //startActivity(new Intent(this, CurrentTrendsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY));
-*/
 
 
+        button_fb_login = (Button) findViewById(R.id.button_fb_login);
         login = (TextView) findViewById(R.id.login);
         register = (TextView) findViewById(R.id.register);
         marquee_login = (TextView) findViewById(R.id.MarqueeText);
         trend = (TextView) findViewById(R.id.textView2);
-        fb_loginButton = (LoginButton) findViewById(R.id.login_button);
         marquee_login.setSelected(true);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,31 +96,16 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
                 startsignupactivity();
             }
         });
-        callbackManager = CallbackManager.Factory.create();
-        permissions = Arrays.asList("email");
 
-        // App code
-
-        fb_loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        button_fb_login.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
-
-
+            public void onClick(View v) {
                 link_with_parse();
-
-            }
-
-            @Override
-            public void onCancel() {
-                // App code
-            }
-
-            @Override
-            public void onError(FacebookException exception) {
-                // App code
-                Log.e("Facebook", exception.toString());
             }
         });
+        // App code
+
+
     }
 
     private void startsignupactivity() {
@@ -136,11 +122,13 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
                 if (user == null) {
                     Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
-                    start_current_trends_activity();
+                    start_main_activity();
                     Toast.makeText(getApplicationContext(), "Signed up successfully through Facebook !", Toast.LENGTH_SHORT);
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
                 } else {
-                    start_current_trends_activity();
+                    Toast.makeText(getApplicationContext(), "Signed up successfully through Facebook !", Toast.LENGTH_SHORT);
+
+                    start_main_activity();
                     Log.d("MyApp", "User logged in through Facebook!");
 
                 }
@@ -149,15 +137,15 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
         });
     }
 
-    private void start_current_trends_activity() {
-      // startActivity(new Intent(this, CurrentTrendsActivity.class));
-       finish();
+    private void start_main_activity() {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
     }
 
     private void startloginactivity() {
-      //  Intent i = new Intent(this, Login_Activity.class);
+        //  Intent i = new Intent(this, Login_Activity.class);
 
-           startActivity(new Intent(this, Login_Activity.class));
+        startActivity(new Intent(this, Login_Activity.class));
         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
 
@@ -167,7 +155,12 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+
+        Log.d("Code", String.valueOf(requestCode));
+        //callbackManager.onActivityResult(requestCode, resultCode, data);
+
+
         if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
             handleSignInResult(result);
@@ -202,15 +195,17 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
     private void finsihing() {
         finish();
     }
+
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+
     @Override
     public void onStart() {
         super.onStart();
 
-       OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
         if (opr.isDone()) {
             // If the user's cached credentials are valid, the OptionalPendingResult will be "done"
             // and the GoogleSignInResult will be available instantly.

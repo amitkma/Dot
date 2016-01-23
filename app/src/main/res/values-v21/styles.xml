@@ -10,4 +10,12 @@
 
     </style>
 
+    <style name="AppTheme.NoActionBar.MainActivity">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+
+    </style>
+
 </resources>

@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
-import com.parse.SignUpCallback;
 
 public class Login_Activity extends AppCompatActivity {
     private Button loginButton;
@@ -65,7 +64,8 @@ public class Login_Activity extends AppCompatActivity {
                 if (e == null) {
                     Toast.makeText(getApplicationContext(), "successfully logged in", Toast.LENGTH_SHORT).show();
                     dismissProgressBar();
-                    //  Intent intent = new Intent(MainActivity.this, CurrentTrendsActivity.class);
+                    Intent intent = new Intent(Login_Activity.this, MainActivity.class);
+                    startActivity(intent);
                     finish();
                     //startActivity(intent);
                 } else {
