@@ -80,6 +80,8 @@
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_centerInParent="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/checkmark"
                 android:visibility="invisible"
                 />
         </RelativeLayout>

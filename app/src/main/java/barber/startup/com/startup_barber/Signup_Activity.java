@@ -9,9 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
-import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -37,8 +35,6 @@ public class Signup_Activity extends AppCompatActivity {
         userPasswordField = (EditText) findViewById(R.id.userPassword);
 
 
-
-
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,15 +52,15 @@ public class Signup_Activity extends AppCompatActivity {
     }
 
 
-
-
-
     private void signupParse() {
         showProgressBar("Signing up! Please wait");
 
-        ParseUser parseUser = new ParseUser();
+        final ParseUser parseUser = new ParseUser();
         parseUser.setUsername(usernameField.getText().toString().trim());
         parseUser.setPassword(userPasswordField.getText().toString().trim());
+        // parseUser.put("number", 0);
+        //parseUser.put("verified", false);
+
 
         parseUser.signUpInBackground(new SignUpCallback() {
             @Override
@@ -72,10 +68,8 @@ public class Signup_Activity extends AppCompatActivity {
 
 
                 if (e == null) {
+
                     dismissProgressBar();
-
-                    Toast.makeText(getApplicationContext(), "successfully created Parse user", Toast.LENGTH_SHORT).show();
-
                     Intent intent = new Intent(Signup_Activity.this, SMS_Verification.class);
                     startActivity(intent);
                     finish();
@@ -133,7 +127,7 @@ public class Signup_Activity extends AppCompatActivity {
     }
 
     public void dismissProgressBar() {
-        if (progressDialog !=null)
+        if (progressDialog != null)
             progressDialog.dismiss();
     }
 }

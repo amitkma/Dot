@@ -1,54 +1,55 @@
 package barber.startup.com.startup_barber;
 
 import android.Manifest;
+import android.animation.Animator;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatCallback;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseACL;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.sinch.verification.CodeInterceptionException;
 import com.sinch.verification.Config;
 import com.sinch.verification.SinchVerification;
 import com.sinch.verification.Verification;
 import com.sinch.verification.VerificationListener;
 
-public class VerificationActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
+public class VerificationActivity extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     private static final String TAG = Verification.class.getSimpleName();
     private final String APPLICATION_KEY = "2fa00d71-9c21-471a-ba3e-1400d0201aef";
 
     private Verification mVerification;
+    private String phoneNumber;
+    private ParseUser user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        user = ParseUser.getCurrentUser();
         setContentView(R.layout.activity_verification);
         showProgress();
         initiateVerification();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
+
     void createVerification(String phoneNumber, String method, boolean skipPermissionCheck) {
         Config config = SinchVerification.config().applicationKey(APPLICATION_KEY).context(getApplicationContext())
                 .build();
@@ -98,7 +99,7 @@ public class VerificationActivity extends AppCompatActivity implements ActivityC
     void initiateVerification(boolean skipPermissionCheck) {
         Intent intent = getIntent();
         if (intent != null) {
-            String phoneNumber = intent.getStringExtra(SMS_Verification.INTENT_PHONENUMBER);
+            phoneNumber = intent.getStringExtra(SMS_Verification.INTENT_PHONENUMBER);
             String method = intent.getStringExtra(SMS_Verification.INTENT_METHOD);
             TextView phoneText = (TextView) findViewById(R.id.numberText);
             phoneText.setText(phoneNumber);
@@ -149,9 +150,65 @@ public class VerificationActivity extends AppCompatActivity implements ActivityC
     }
 
     void showCompleted() {
-        ImageView checkMark = (ImageView) findViewById(R.id.checkmarkImage);
-        checkMark.setVisibility(View.VISIBLE);
+
+
+        enterReveal();
+
+
+        ParseACL acl = new ParseACL();
+        acl.setWriteAccess(ParseUser.getCurrentUser(), true);
+        ParseUser.getCurrentUser().setACL(acl);
+        ParseUser user = ParseUser.getCurrentUser();
+        Log.d("auth", String.valueOf(user.isAuthenticated()));
+        user.put("verified", true);
+        user.put("number", phoneNumber);
+        user.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) e.printStackTrace();
+                startmainactiviy();
+            }
+        });
+
+
     }
+
+    void enterReveal() {
+        ImageView checkMark = (ImageView) findViewById(R.id.checkmarkImage);
+
+        int cx = checkMark.getMeasuredWidth() / 2;
+        int cy = checkMark.getMeasuredHeight() / 2;
+
+        // get the final radius for the clipping circle
+        int finalRadius = Math.max(checkMark.getWidth(), checkMark.getHeight()) / 2;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Animator anim =
+                    null;
+
+            anim = ViewAnimationUtils.createCircularReveal(checkMark, cx, cy, 0, finalRadius);
+
+            checkMark.setVisibility(View.VISIBLE);
+            anim.setDuration(500);
+            anim.start();
+        } else
+            checkMark.setVisibility(View.VISIBLE);
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startmainactiviy();
+            }
+        }, 3000);
+
+    }
+
+    private void startmainactiviy() {
+        startActivity(new Intent(this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
+
+        finish();
+
+    }
+
 
     class MyVerificationListener implements VerificationListener {
 

@@ -92,11 +92,12 @@ public class BaseActivity extends AppCompatActivity {
     private void setup_nav_header_profile_pic(View view) {
 
         String uri = (String) currentUser.get("picUri");
-        Log.d("Base uri", uri);
-        ImageView img = (ImageView) view.findViewById(R.id.profile_image);
-        Picasso.with(this)
-                .load(uri)
-                .into(img);
+        if (uri != null) {
+            ImageView img = (ImageView) view.findViewById(R.id.profile_image);
+            Picasso.with(this)
+                    .load(uri)
+                    .into(img);
+        }
     }
 
 

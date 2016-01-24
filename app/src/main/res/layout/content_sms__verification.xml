@@ -15,7 +15,7 @@
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
         android:layout_marginTop="60dp"
-        android:fontFamily="sans-serif-condensed"
+        android:fontFamily="sans-serif"
         android:gravity="center"
         android:text="Your Phone number needs to be verified before you can continue"
         android:textColor="#fff"
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginLeft="56dp"
+        android:layout_marginLeft="60dp"
         android:layout_marginRight="56dp"
         android:orientation="horizontal">
 
@@ -47,10 +47,13 @@
        android:layout_width="0dp"
        android:layout_height="wrap_content"
        android:layout_centerInParent="true"
+       android:layout_marginLeft="14dp"
+       android:layout_marginRight="16dp"
+
        android:layout_weight="1"
        android:hint="@string/phone_number_string"
        android:inputType="phone"
-       android:paddingLeft="4dp"
+       android:paddingLeft="12dp"
 
        android:textColorHint="#8fff">
 

@@ -49,6 +49,7 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
     private Button button_fb_login;
     private String userName;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,8 +118,6 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
 
     }
 
-
-
     private void link_with_parse() {
         ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "user_photos", "public_profile"), new LogInCallback() {
             @Override
@@ -126,6 +125,7 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
                 if (user == null) {
                     Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
+
                     getfb_details(user);
                     //start_main_activity();
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
