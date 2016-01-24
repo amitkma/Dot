@@ -198,7 +198,7 @@ public class VerificationActivity extends AppCompatActivity implements ActivityC
             public void run() {
                 startmainactiviy();
             }
-        }, 3000);
+        }, 5000);
 
     }
 

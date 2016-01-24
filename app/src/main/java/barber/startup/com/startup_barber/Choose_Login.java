@@ -164,9 +164,11 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
 
                             user.put("picUri", pictureUrl);
                             Log.d("uri", pictureUrl);
-                            start_main_activity();
-                            user.saveInBackground();
 
+                            user.saveInBackground();
+                            Intent intent = new Intent(Choose_Login.this, SMS_Verification.class);
+                            startActivity(intent);
+                            finish();
 
                         } catch (JSONException e) {
                             e.printStackTrace();
