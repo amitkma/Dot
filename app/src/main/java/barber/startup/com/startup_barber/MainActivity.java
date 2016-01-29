@@ -8,6 +8,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -24,6 +25,7 @@ public class MainActivity extends BaseActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private MainActivityAdapter currentTrendsAdapter;
+    private StaggeredGridLayoutManager gaggeredGridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +33,10 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        mLayoutManager = new LinearLayoutManager(this);
+
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
+        mRecyclerView.setLayoutManager(gaggeredGridLayoutManager);
         currentTrendsAdapter = new MainActivityAdapter(this);
         setup_toolbar();
         setup_nav_drawer();
