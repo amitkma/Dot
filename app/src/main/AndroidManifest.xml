@@ -60,6 +60,11 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar.MainActivity"></activity>
+
+        <activity
+            android:name=".ProfileSetup"
+            android:label="@string/profilesetup"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

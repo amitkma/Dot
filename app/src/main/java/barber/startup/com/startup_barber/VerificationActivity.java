@@ -152,7 +152,7 @@ public class VerificationActivity extends AppCompatActivity implements ActivityC
     void showCompleted() {
 
 
-        enterReveal();
+
 
 
         ParseACL acl = new ParseACL();
@@ -166,7 +166,7 @@ public class VerificationActivity extends AppCompatActivity implements ActivityC
             @Override
             public void done(ParseException e) {
                 if (e != null) e.printStackTrace();
-                startmainactiviy();
+                enterReveal();
             }
         });
 

@@ -70,7 +70,7 @@ public class Signup_Activity extends AppCompatActivity {
                 if (e == null) {
 
                     dismissProgressBar();
-                    Intent intent = new Intent(Signup_Activity.this, SMS_Verification.class);
+                    Intent intent = new Intent(Signup_Activity.this, ProfileSetup.class);
                     startActivity(intent);
                     finish();
                 } else {

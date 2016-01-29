@@ -6,23 +6,39 @@ import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.List;
+
 public class MainActivity extends BaseActivity {
+    private RecyclerView mRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private MainActivityAdapter currentTrendsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        currentTrendsAdapter = new MainActivityAdapter(this);
         setup_toolbar();
         setup_nav_drawer();
         setup_nav_item_listener();
-
+        setUpRecyclerView();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -30,6 +46,29 @@ public class MainActivity extends BaseActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
+        });
+    }
+
+    private void setUpRecyclerView() {
+        mRecyclerView.setAdapter(currentTrendsAdapter);
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+
+                for (int i = 0; i < objects.size(); i++) {
+                    final ParseObject parseObject = objects.get(objects.size() - i - 1);
+                    final Data td = new Data();
+                    td.title = parseObject.getString("title");
+                    ParseFile parseFile = parseObject.getParseFile("image");
+                    td.url = parseFile.getUrl();
+
+                    currentTrendsAdapter.addData(td);
+                }
+
+            }
+
         });
     }
 

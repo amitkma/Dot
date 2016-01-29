@@ -20,10 +20,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Scope;
 import com.parse.LogInCallback;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
@@ -39,7 +41,6 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
     private static final int RC_SIGN_IN = 100;
     private static final String TAG = "Tag";
     TextView login;
-    TextView marquee_login;
     TextView trend;
     List<String> permissions;
     private LoginButton fb_loginButton;
@@ -66,7 +67,7 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-
+                .requestScopes(new Scope(Scopes.PLUS_LOGIN))
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -89,9 +90,7 @@ public class Choose_Login extends AppCompatActivity implements View.OnClickListe
         button_fb_login = (Button) findViewById(R.id.button_fb_login);
         login = (TextView) findViewById(R.id.login);
         register = (TextView) findViewById(R.id.register);
-        marquee_login = (TextView) findViewById(R.id.MarqueeText);
         trend = (TextView) findViewById(R.id.textView2);
-        marquee_login.setSelected(true);
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
