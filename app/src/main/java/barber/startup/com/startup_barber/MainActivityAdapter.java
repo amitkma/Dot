@@ -42,15 +42,16 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     @Override
     public void onBindViewHolder(MainActivityAdapter.ViewHolder holder, int position) {
 
-        StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
-        Log.d("size", layoutParams.toString());
         currentTrendData = data.get(position);
         if (currentTrendData.getTitle() != null)
             holder.title.setText(currentTrendData.getTitle());
         if (currentTrendData.getUrl() != null) {
             Picasso.with(mContext).load(currentTrendData.url).into(holder.mImageView);
-
         }
+        if (currentTrendData.getPrice() != null) {
+            holder.price.setText("Rs " + currentTrendData.getPrice());
+        }
+
 
 
     }
@@ -77,6 +78,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         final Context mcontext;
         private final TextView title;
+        private final TextView price;
         private ImageView mImageView;
 
 
@@ -85,6 +87,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             mcontext = context;
 
             title = (TextView) itemView.findViewById(R.id.card_title);
+            price = (TextView) itemView.findViewById(R.id.card_price);
             mImageView = (ImageView) itemView.findViewById(R.id.card_image);
 
 

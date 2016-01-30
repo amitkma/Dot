@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -68,6 +69,8 @@ public class MainActivity extends BaseActivity {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
                     final Data td = new Data();
                     td.title = parseObject.getString("title");
+                    td.price = parseObject.getString("price");
+
                     ParseFile parseFile = parseObject.getParseFile("image");
                     td.url = parseFile.getUrl();
 
@@ -159,12 +162,12 @@ public class MainActivity extends BaseActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        //  MenuItem item = menu.findItem(R.id.action_cart);
-        //MenuItemCompat.setActionView(item,R.layout.badge);
-        //RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
+        MenuItem item = menu.findItem(R.id.action_cart);
+        MenuItemCompat.setActionView(item, R.layout.badge);
+        RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
-//        TextView tv = (TextView) notifCount.findViewById(R.id.actionbar_notifcation_textview);
-        //      tv.setText("(0)");
+        TextView tv = (TextView) notifCount.findViewById(R.id.actionbar_notifcation_textview);
+        tv.setText("(0)");
         return true;
     }
 
@@ -176,7 +179,8 @@ public class MainActivity extends BaseActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.Cart) {
+        if (id == R.id.action_cart) {
+            Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
             return true;
         }
 

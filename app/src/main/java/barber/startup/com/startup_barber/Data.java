@@ -6,7 +6,12 @@ package barber.startup.com.startup_barber;
 public class Data {
 
     String title;
+    String price;
     String url;
+
+    public String getPrice() {
+        return price;
+    }
 
     public String getTitle() {
         return title;
