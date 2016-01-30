@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/group_user"
 
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/Favorites"
+            android:icon="@drawable/ic_favorite_black_24dp"
+            android:title="Favourites" />
+        <item
+            android:id="@+id/History"
+            android:icon="@drawable/ic_history_black_24dp"
+            android:title="History" />
+        <item
+            android:id="@+id/Cart"
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:title="Cart (0)" />
+
+
+    </group>
+
+    <item
+        android:id="@+id/second"
+        android:title="Extra">
+        <menu
+            android:id="@+id/group_extra"
+
+            android:checkableBehavior="single">
         <item
             android:id="@+id/About"
             android:icon="@drawable/ic_help_black_24dp"
@@ -20,5 +46,6 @@
             android:icon="@drawable/ic_power_settings_new_black_24dp"
             android:title="Logout" />
 
-    </group>
+        </menu>
+    </item>
 </menu>

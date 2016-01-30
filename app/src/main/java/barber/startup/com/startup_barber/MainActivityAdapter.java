@@ -2,6 +2,8 @@ package barber.startup.com.startup_barber;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +42,8 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     @Override
     public void onBindViewHolder(MainActivityAdapter.ViewHolder holder, int position) {
 
-
+        StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+        Log.d("size", layoutParams.toString());
         currentTrendData = data.get(position);
         if (currentTrendData.getTitle() != null)
             holder.title.setText(currentTrendData.getTitle());
