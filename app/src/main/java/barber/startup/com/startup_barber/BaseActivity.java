@@ -28,11 +28,12 @@ public class BaseActivity extends AppCompatActivity {
     private Toolbar toolbar;
 
 
-    public void setup_toolbar() {
+    public Toolbar setup_toolbar() {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        return toolbar;
 
     }
 

@@ -33,5 +33,8 @@ dependencies {
     compile 'de.hdodenhof:circleimageview:2.0.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'com.squareup.picasso:picasso:2.5.2'
+
+    compile 'com.github.clans:fab:1.6.2'
+
     compile files('/home/ayush/AndroidStudioProjects/Startup_barber/libs/sinch-android-verification-1.1.2.jar')
 }

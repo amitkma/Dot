@@ -1,22 +1,25 @@
 package barber.startup.com.startup_barber;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -27,43 +30,240 @@ import com.parse.ParseUser;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
+    boolean track = false;
+    View vi;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private MainActivityAdapter currentTrendsAdapter;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
+    private RecyclerView mRecyclerView_hairStyles;
+    private StaggeredGridLayoutManager gaggeredGridLayoutManager_hairStyles;
+    private MainActivityAdapter hairStyleAdaper;
+    private FrameLayout frame;
+    private FrameLayout frame1;
+    private boolean temp = false;
+    private FrameLayout frame2;
+    private RecyclerView mRecyclerView_moustache;
+    private StaggeredGridLayoutManager gaggeredGridLayoutManager_moustache;
+    private MainActivityAdapter moustacheAdaper;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        vi = findViewById(R.id.fade_view);
+        frame = (FrameLayout) findViewById(R.id.frame);
+        frame1 = (FrameLayout) findViewById(R.id.frame1);
+        frame2 = (FrameLayout) findViewById(R.id.frame2);
+
+        final FloatingActionMenu menu1 = (FloatingActionMenu) findViewById(R.id.menu);
+        FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.menu_item1);
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.menu_item2);
+        FloatingActionButton fab3 = (FloatingActionButton) findViewById(R.id.menu_item3);
+
+        AnimatorSet set = new AnimatorSet();
+        set.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+                menu1.getMenuIconView().setImageResource(menu1.isOpened()
+                        ? R.drawable.ic_tune_white_24dp : R.drawable.ic_add_white_24dp);
+                menu1.getMenuIconView().setRotation(menu1.isOpened() ? -45 : 0);
+
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                menu1.getMenuIconView().setRotation(menu1.isOpened() ? 0 : 45);
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        menu1.setIconToggleAnimatorSet(set);
+
+
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (frame1.getVisibility() == View.VISIBLE)
+                    frame1.setVisibility(View.INVISIBLE);
+
+                else if (frame2.getVisibility() == View.VISIBLE)
+                    frame2.setVisibility(View.INVISIBLE);
+                toolbar.setTitle("HairCuts");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        frame.setVisibility(View.VISIBLE);
+                    }
+                }, 800);
+
+                menu1.close(true);
+
+            }
+
+
+        });
+
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (frame.getVisibility() == View.VISIBLE)
+                    frame.setVisibility(View.INVISIBLE);
+
+                else if (frame2.getVisibility() == View.VISIBLE)
+                    frame2.setVisibility(View.INVISIBLE);
+                toolbar.setTitle("Mustache");
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        frame1.setVisibility(View.VISIBLE);
+                    }
+                }, 800);
+                menu1.close(true);
+
+            }
+
+
+        });
+        fab3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (frame.getVisibility() == View.VISIBLE)
+                    frame.setVisibility(View.INVISIBLE);
+
+                else if (frame1.getVisibility() == View.VISIBLE)
+                    frame1.setVisibility(View.INVISIBLE);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        frame2.setVisibility(View.VISIBLE);
+                    }
+                }, 800);
+                toolbar.setTitle("Beards");
+
+                menu1.close(true);
+            }
+
+
+        });
+
+
+        toolbar = setup_toolbar();
+        setup_nav_drawer();
+        setup_nav_item_listener();
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-
         mRecyclerView.setHasFixedSize(true);
         gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
         mRecyclerView.setLayoutManager(gaggeredGridLayoutManager);
         currentTrendsAdapter = new MainActivityAdapter(this);
-        setup_toolbar();
-        setup_nav_drawer();
-        setup_nav_item_listener();
+
         setUpRecyclerView();
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+
+        mRecyclerView_hairStyles = (RecyclerView) findViewById(R.id.recyclerview_hairStyles);
+        mRecyclerView_hairStyles.setHasFixedSize(true);
+        gaggeredGridLayoutManager_hairStyles = new StaggeredGridLayoutManager(2, 1);
+        mRecyclerView_hairStyles.setLayoutManager(gaggeredGridLayoutManager_hairStyles);
+        hairStyleAdaper = new MainActivityAdapter(this);
+
+        show_hairstyles();
+
+        mRecyclerView_moustache = (RecyclerView) findViewById(R.id.recyclerview_moustache);
+
+        mRecyclerView_moustache.setHasFixedSize(true);
+        gaggeredGridLayoutManager_moustache = new StaggeredGridLayoutManager(2, 1);
+        mRecyclerView_moustache.setLayoutManager(gaggeredGridLayoutManager_moustache);
+        moustacheAdaper = new MainActivityAdapter(this);
+
+        show_moustache();
+
+       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Add Filter", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
+        });*/
+    }
+
+    private void show_moustache() {
+        mRecyclerView_moustache.setAdapter(moustacheAdaper);
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataMoustache");
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+
+                for (int i = 0; i < objects.size(); i++) {
+                    final ParseObject parseObject = objects.get(objects.size() - i - 1);
+                    final Data td = new Data();
+                    td.title = parseObject.getString("title");
+                    td.price = parseObject.getString("price");
+                    ParseFile parseFile = parseObject.getParseFile("image");
+                    td.url = parseFile.getUrl();
+
+                    moustacheAdaper.addData(td);
+                }
+
+            }
+
+        });
+    }
+
+    private void show_hairstyles() {
+
+        mRecyclerView_hairStyles.setAdapter(hairStyleAdaper);
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataHairStyles");
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+
+                for (int i = 0; i < objects.size(); i++) {
+                    final ParseObject parseObject = objects.get(objects.size() - i - 1);
+                    final Data td = new Data();
+                    td.title = parseObject.getString("title");
+                    td.price = parseObject.getString("price");
+                    ParseFile parseFile = parseObject.getParseFile("image");
+                    td.url = parseFile.getUrl();
+
+                    hairStyleAdaper.addData(td);
+                }
+
+            }
+
         });
     }
 
     private void setUpRecyclerView() {
         mRecyclerView.setAdapter(currentTrendsAdapter);
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
 
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
+
 
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
@@ -142,7 +342,6 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
-
 
     private void logout() {
         currentUser = ParseUser.getCurrentUser();
