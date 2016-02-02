@@ -10,6 +10,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -30,8 +32,12 @@ import com.parse.ParseUser;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
+    ParseUser parseUser = ParseUser.getCurrentUser();
+
     boolean track = false;
     View vi;
+    RelativeLayout notifCount;
+    TextView cartText;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private MainActivityAdapter currentTrendsAdapter;
@@ -39,10 +45,10 @@ public class MainActivity extends BaseActivity {
     private RecyclerView mRecyclerView_hairStyles;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager_hairStyles;
     private MainActivityAdapter hairStyleAdaper;
-    private FrameLayout frame;
-    private FrameLayout frame1;
+    private FrameLayout frame_beards;
+    private FrameLayout frame_hairStyles;
     private boolean temp = false;
-    private FrameLayout frame2;
+    private FrameLayout frame_mustache;
     private RecyclerView mRecyclerView_moustache;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager_moustache;
     private MainActivityAdapter moustacheAdaper;
@@ -53,14 +59,14 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         vi = findViewById(R.id.fade_view);
-        frame = (FrameLayout) findViewById(R.id.frame);
-        frame1 = (FrameLayout) findViewById(R.id.frame1);
-        frame2 = (FrameLayout) findViewById(R.id.frame2);
+        frame_beards = (FrameLayout) findViewById(R.id.frame_beards);
+        frame_hairStyles = (FrameLayout) findViewById(R.id.frame_hairStyles);
+        frame_mustache = (FrameLayout) findViewById(R.id.frame_mustache);
 
         final FloatingActionMenu menu1 = (FloatingActionMenu) findViewById(R.id.menu);
-        FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.menu_item1);
-        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.menu_item2);
-        FloatingActionButton fab3 = (FloatingActionButton) findViewById(R.id.menu_item3);
+        FloatingActionButton fab_hairStyles = (FloatingActionButton) findViewById(R.id.menu_item1);
+        FloatingActionButton fab_mustache = (FloatingActionButton) findViewById(R.id.menu_item2);
+        FloatingActionButton fab_beards = (FloatingActionButton) findViewById(R.id.menu_item3);
 
         AnimatorSet set = new AnimatorSet();
         set.addListener(new Animator.AnimatorListener() {
@@ -93,20 +99,20 @@ public class MainActivity extends BaseActivity {
         menu1.setIconToggleAnimatorSet(set);
 
 
-        fab1.setOnClickListener(new View.OnClickListener() {
+        fab_hairStyles.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (frame1.getVisibility() == View.VISIBLE)
-                    frame1.setVisibility(View.INVISIBLE);
+                if (frame_mustache.getVisibility() == View.VISIBLE)
+                    frame_mustache.setVisibility(View.INVISIBLE);
 
-                else if (frame2.getVisibility() == View.VISIBLE)
-                    frame2.setVisibility(View.INVISIBLE);
+                else if (frame_beards.getVisibility() == View.VISIBLE)
+                    frame_beards.setVisibility(View.INVISIBLE);
                 toolbar.setTitle("HairCuts");
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
-                        frame.setVisibility(View.VISIBLE);
+                        frame_hairStyles.setVisibility(View.VISIBLE);
                     }
                 }, 800);
 
@@ -117,21 +123,21 @@ public class MainActivity extends BaseActivity {
 
         });
 
-        fab2.setOnClickListener(new View.OnClickListener() {
+        fab_mustache.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (frame.getVisibility() == View.VISIBLE)
-                    frame.setVisibility(View.INVISIBLE);
+                if (frame_beards.getVisibility() == View.VISIBLE)
+                    frame_beards.setVisibility(View.INVISIBLE);
 
-                else if (frame2.getVisibility() == View.VISIBLE)
-                    frame2.setVisibility(View.INVISIBLE);
+                else if (frame_hairStyles.getVisibility() == View.VISIBLE)
+                    frame_hairStyles.setVisibility(View.INVISIBLE);
                 toolbar.setTitle("Mustache");
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
-                        frame1.setVisibility(View.VISIBLE);
+                        frame_mustache.setVisibility(View.VISIBLE);
                     }
                 }, 800);
                 menu1.close(true);
@@ -140,21 +146,21 @@ public class MainActivity extends BaseActivity {
 
 
         });
-        fab3.setOnClickListener(new View.OnClickListener() {
+        fab_beards.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if (frame.getVisibility() == View.VISIBLE)
-                    frame.setVisibility(View.INVISIBLE);
+                if (frame_mustache.getVisibility() == View.VISIBLE)
+                    frame_mustache.setVisibility(View.INVISIBLE);
 
-                else if (frame1.getVisibility() == View.VISIBLE)
-                    frame1.setVisibility(View.INVISIBLE);
+                else if (frame_hairStyles.getVisibility() == View.VISIBLE)
+                    frame_hairStyles.setVisibility(View.INVISIBLE);
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
 
-                        frame2.setVisibility(View.VISIBLE);
+                        frame_beards.setVisibility(View.VISIBLE);
                     }
                 }, 800);
                 toolbar.setTitle("Beards");
@@ -208,12 +214,16 @@ public class MainActivity extends BaseActivity {
     }
 
     private void show_moustache() {
+
         mRecyclerView_moustache.setAdapter(moustacheAdaper);
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataMoustache");
+        if (!check_connection())
+            parseQuery.fromLocalDatastore();
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
 
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
+                ParseObject.pinAllInBackground(objects);
 
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
@@ -235,10 +245,13 @@ public class MainActivity extends BaseActivity {
 
         mRecyclerView_hairStyles.setAdapter(hairStyleAdaper);
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataHairStyles");
+
+        parseQuery.fromLocalDatastore();
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
 
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
+                ParseObject.pinAllInBackground(objects);
 
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
@@ -259,17 +272,22 @@ public class MainActivity extends BaseActivity {
     private void setUpRecyclerView() {
         mRecyclerView.setAdapter(currentTrendsAdapter);
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        if (!check_connection())
+            parseQuery.fromLocalDatastore();
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
 
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
 
+                ParseObject.pinAllInBackground(objects);
 
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
+
                     final Data td = new Data();
                     td.title = parseObject.getString("title");
                     td.price = parseObject.getString("price");
+                    td.id = parseObject.getObjectId();
 
                     ParseFile parseFile = parseObject.getParseFile("image");
                     td.url = parseFile.getUrl();
@@ -361,27 +379,50 @@ public class MainActivity extends BaseActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
-        MenuItem item = menu.findItem(R.id.action_cart);
-        MenuItemCompat.setActionView(item, R.layout.badge);
-        RelativeLayout notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
 
-        TextView tv = (TextView) notifCount.findViewById(R.id.actionbar_notifcation_textview);
-        tv.setText("(0)");
+        MenuItem item = menu.findItem(R.id.action_cart);
+        MenuItem txt = menu.findItem(R.id.cardtext);
+        MenuItemCompat.setActionView(item, R.layout.badge);
+        notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
+        final View v = notifCount.getChildAt(1);
+
+
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
+            @Override
+            public void done(ParseUser object, ParseException e) {
+                updatecart();
+            }
+
+            private void updatecart() {
+                if (v.getId() == R.id.cardtext) {
+                    int cart_items = 0;
+                    if (parseUser.get("cartItems") != null)
+                        cart_items = (int) parseUser.get("cartItems");
+                    cartText = (TextView) v.findViewById(R.id.cardtext);
+                    if (cart_items != 0)
+                        cartText.setText("(" + cart_items + ")");
+                }
+            }
+        });
+
+
+        notifCount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "clicked me!", Toast.LENGTH_SHORT).show();
+            }
+        });
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_cart) {
-            Toast.makeText(this, "clicked", Toast.LENGTH_SHORT).show();
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }

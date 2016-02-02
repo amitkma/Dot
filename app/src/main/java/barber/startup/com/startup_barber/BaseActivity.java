@@ -37,6 +37,11 @@ public class BaseActivity extends AppCompatActivity {
 
     }
 
+    public int cart_items() {
+        int cart = 0;
+        cart = (int) currentUser.get("cartItems");
+        return cart;
+    }
     public void setup_nav_drawer() {
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         View view = navigationView.inflateHeaderView(R.layout.nav_header);
@@ -93,6 +98,7 @@ public class BaseActivity extends AppCompatActivity {
     private void setup_nav_header_profile_pic(View view) {
 
         String uri = (String) currentUser.get("picUri");
+
         if (uri != null) {
             ImageView img = (ImageView) view.findViewById(R.id.profile_image);
             Picasso.with(this)

@@ -32,7 +32,7 @@
         <RelativeLayout
             android:id="@+id/rl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_below="@+id/card_image">
 
             <View
@@ -41,16 +41,18 @@
                 android:background="@color/divider" />
 
             <ImageView
+                android:id="@+id/options"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="2dp"
                 android:alpha=".54"
-                android:backgroundTint="#000"
-                android:padding="8dp"
-                android:src="@drawable/ic_more_vert_black_24dp"
-                android:tintMode="add" />
+                android:background="?attr/selectableItemBackground"
+
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:src="@drawable/ic_shopping_cart_black_18dp" />
 
             <TextView
                 android:id="@+id/card_title"

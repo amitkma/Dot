@@ -58,6 +58,7 @@ public class Signup_Activity extends AppCompatActivity {
         final ParseUser parseUser = new ParseUser();
         parseUser.setUsername(usernameField.getText().toString().trim());
         parseUser.setPassword(userPasswordField.getText().toString().trim());
+
         // parseUser.put("number", 0);
         //parseUser.put("verified", false);
 

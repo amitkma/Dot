@@ -9,7 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -19,6 +24,7 @@ import java.util.ArrayList;
  * Created by ayush on 29/1/16.
  */
 public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapter.ViewHolder> {
+    ParseUser parseUser = ParseUser.getCurrentUser();
     private Context context;
     private LayoutInflater inflater;
     private ArrayList<Data> data = new ArrayList<>();
@@ -36,11 +42,12 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         this.context = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
+
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(MainActivityAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(MainActivityAdapter.ViewHolder holder, final int position) {
 
         currentTrendData = data.get(position);
         if (currentTrendData.getTitle() != null)
@@ -52,6 +59,29 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             holder.price.setText("Rs " + currentTrendData.getPrice());
         }
 
+        holder.mImageView_options.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext, "Clicked", Toast.LENGTH_SHORT).show();
+                updateCart(v);
+            }
+
+            private void updateCart(View v) {
+
+                parseUser.add("cart", data.get(position).id);
+                parseUser.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+
+                        Toast.makeText(mContext, "done saving to server! Check it", Toast.LENGTH_SHORT).show();
+
+                        if (e != null)
+                            e.printStackTrace();
+                    }
+                });
+
+            }
+        });
 
 
     }
@@ -80,6 +110,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         private final TextView title;
         private final TextView price;
         private ImageView mImageView;
+        private ImageView mImageView_options;
 
 
         public ViewHolder(View itemView, Context context) {
@@ -89,6 +120,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             title = (TextView) itemView.findViewById(R.id.card_title);
             price = (TextView) itemView.findViewById(R.id.card_price);
             mImageView = (ImageView) itemView.findViewById(R.id.card_image);
+            mImageView_options = (ImageView) itemView.findViewById(R.id.options);
 
 
         }
