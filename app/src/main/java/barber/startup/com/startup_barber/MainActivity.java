@@ -245,7 +245,7 @@ public class MainActivity extends BaseActivity {
 
         mRecyclerView_hairStyles.setAdapter(hairStyleAdaper);
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataHairStyles");
-
+        if (!check_connection())
         parseQuery.fromLocalDatastore();
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
 
