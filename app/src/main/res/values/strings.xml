@@ -25,5 +25,6 @@
     <string name="title_activity_main">Beards</string>
     <string name="action_done">tite</string>
     <string name="profilesetup">Profile Setup</string>
+    <string name="title_activity_cart_display">CartDisplay</string>
 
 </resources>

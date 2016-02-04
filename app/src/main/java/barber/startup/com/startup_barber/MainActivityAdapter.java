@@ -35,6 +35,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         inflater = LayoutInflater.from(context);
         mContext = context;
+
     }
 
     @Override
@@ -63,18 +64,19 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             @Override
             public void onClick(View v) {
                 Toast.makeText(mContext, "Clicked", Toast.LENGTH_SHORT).show();
-                updateCart(v);
+                updateCart();
             }
 
-            private void updateCart(View v) {
+            private void updateCart() {
 
-                parseUser.add("cart", data.get(position).id);
+                String id = data.get(position).id;
+                parseUser.addUnique("cart", id);
                 parseUser.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
 
                         Toast.makeText(mContext, "done saving to server! Check it", Toast.LENGTH_SHORT).show();
-
+                        BaseActivity.updatecartbyONE(context);
                         if (e != null)
                             e.printStackTrace();
                     }

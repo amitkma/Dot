@@ -19,9 +19,13 @@
             android:elevation="4dp"
             android:title="Behledi"
             android:titleTextColor="#fff"
-            app:theme="@style/AppTheme.AppBarOverlay"
+            app:theme="@style/AppTheme.AppBarOverlay">
 
-            />
+            <include
+                android:id="@+id/badge"
+                layout="@layout/badge" />
+
+        </android.support.v7.widget.Toolbar>
 
 
         <FrameLayout

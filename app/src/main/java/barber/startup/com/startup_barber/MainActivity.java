@@ -175,6 +175,7 @@ public class MainActivity extends BaseActivity {
         toolbar = setup_toolbar();
         setup_nav_drawer();
         setup_nav_item_listener();
+        update_cart_text();
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
@@ -223,8 +224,10 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                ParseObject.pinAllInBackground(objects);
 
+                if (check_connection()) {
+                    ParseObject.pinAllInBackground(objects);
+                }
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
                     final Data td = new Data();
@@ -232,7 +235,6 @@ public class MainActivity extends BaseActivity {
                     td.price = parseObject.getString("price");
                     ParseFile parseFile = parseObject.getParseFile("image");
                     td.url = parseFile.getUrl();
-
                     moustacheAdaper.addData(td);
                 }
 
@@ -246,7 +248,7 @@ public class MainActivity extends BaseActivity {
         mRecyclerView_hairStyles.setAdapter(hairStyleAdaper);
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataHairStyles");
         if (!check_connection())
-        parseQuery.fromLocalDatastore();
+            parseQuery.fromLocalDatastore();
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
 
             @Override
@@ -361,33 +363,8 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void logout() {
-        currentUser = ParseUser.getCurrentUser();
-        if (currentUser != null) {
-            ParseUser.logOutInBackground();
-        }
 
-        startActivity(new Intent(this, Choose_Login.class));
-        finish();
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-
-
-        MenuItem item = menu.findItem(R.id.action_cart);
-        MenuItem txt = menu.findItem(R.id.cardtext);
-        MenuItemCompat.setActionView(item, R.layout.badge);
-        notifCount = (RelativeLayout) MenuItemCompat.getActionView(item);
-        final View v = notifCount.getChildAt(1);
-
-
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
+    /*   ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
             @Override
             public void done(ParseUser object, ParseException e) {
@@ -404,26 +381,18 @@ public class MainActivity extends BaseActivity {
                         cartText.setText("(" + cart_items + ")");
                 }
             }
-        });
+        });*/
+    private void logout() {
+        currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            ParseUser.logOutInBackground();
+        }
+
+        startActivity(new Intent(this, Choose_Login.class));
+        finish();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
 
-        notifCount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "clicked me!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        return true;
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-
-
-        return super.onOptionsItemSelected(item);
-    }
 }

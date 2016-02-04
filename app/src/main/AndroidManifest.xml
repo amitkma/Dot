@@ -33,7 +33,7 @@
         <activity
             android:name=".Login_Activity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".SMS_Verification"
             android:label="@string/title_activity_sms__verification"
@@ -59,12 +59,15 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar.MainActivity"></activity>
-
+            android:theme="@style/AppTheme.NoActionBar.MainActivity" />
         <activity
             android:name=".ProfileSetup"
             android:label="@string/profilesetup"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CartDisplay"
+            android:label="@string/title_activity_cart_display"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
