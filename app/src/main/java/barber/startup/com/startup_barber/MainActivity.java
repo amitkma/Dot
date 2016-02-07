@@ -6,12 +6,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -22,7 +20,6 @@ import android.widget.Toast;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -40,7 +37,7 @@ public class MainActivity extends BaseActivity {
     TextView cartText;
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
-    private MainActivityAdapter currentTrendsAdapter;
+    private MainActivityAdapter beardsAdapter;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
     private RecyclerView mRecyclerView_hairStyles;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager_hairStyles;
@@ -182,7 +179,7 @@ public class MainActivity extends BaseActivity {
         mRecyclerView.setHasFixedSize(true);
         gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
         mRecyclerView.setLayoutManager(gaggeredGridLayoutManager);
-        currentTrendsAdapter = new MainActivityAdapter(this);
+        beardsAdapter = new MainActivityAdapter(this);
 
         setUpRecyclerView();
 
@@ -218,16 +215,14 @@ public class MainActivity extends BaseActivity {
 
         mRecyclerView_moustache.setAdapter(moustacheAdaper);
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataMoustache");
-        if (!check_connection())
-            parseQuery.fromLocalDatastore();
+        if (check_connection())
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+        else
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ONLY);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
 
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-
-                if (check_connection()) {
-                    ParseObject.pinAllInBackground(objects);
-                }
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
                     final Data td = new Data();
@@ -247,13 +242,13 @@ public class MainActivity extends BaseActivity {
 
         mRecyclerView_hairStyles.setAdapter(hairStyleAdaper);
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataHairStyles");
-        if (!check_connection())
-            parseQuery.fromLocalDatastore();
+        if (check_connection())
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+        else
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ONLY);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
-
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                ParseObject.pinAllInBackground(objects);
 
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
@@ -269,37 +264,39 @@ public class MainActivity extends BaseActivity {
             }
 
         });
+
+
     }
 
     private void setUpRecyclerView() {
-        mRecyclerView.setAdapter(currentTrendsAdapter);
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
-        if (!check_connection())
-            parseQuery.fromLocalDatastore();
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+        mRecyclerView.setAdapter(beardsAdapter);
 
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        if (check_connection())
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
+        else
+            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ONLY);
+
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
 
-                ParseObject.pinAllInBackground(objects);
-
                 for (int i = 0; i < objects.size(); i++) {
                     final ParseObject parseObject = objects.get(objects.size() - i - 1);
-
                     final Data td = new Data();
                     td.title = parseObject.getString("title");
                     td.price = parseObject.getString("price");
-                    td.id = parseObject.getObjectId();
-
                     ParseFile parseFile = parseObject.getParseFile("image");
                     td.url = parseFile.getUrl();
 
-                    currentTrendsAdapter.addData(td);
+                    beardsAdapter.addData(td);
                 }
 
             }
 
         });
+
+
     }
 
     public void setup_nav_item_listener() {
@@ -322,10 +319,11 @@ public class MainActivity extends BaseActivity {
 
                     case R.id.Cart:
                         drawerLayout.closeDrawers();
-                        menuItem.setTitle("Cart(0)");
+                        menuItem.setTitle("Cart");
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                startActivity(new Intent(MainActivity.this, CartDisplay.class));
 
                             }
                         }, 150);
@@ -363,25 +361,6 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-
-    /*   ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
-            @Override
-            public void done(ParseUser object, ParseException e) {
-                updatecart();
-            }
-
-            private void updatecart() {
-                if (v.getId() == R.id.cardtext) {
-                    int cart_items = 0;
-                    if (parseUser.get("cartItems") != null)
-                        cart_items = (int) parseUser.get("cartItems");
-                    cartText = (TextView) v.findViewById(R.id.cardtext);
-                    if (cart_items != 0)
-                        cartText.setText("(" + cart_items + ")");
-                }
-            }
-        });*/
     private void logout() {
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {

@@ -115,4 +115,12 @@
 
     </RelativeLayout>
 
+    <ImageView
+        android:id="@+id/imageView_dummy"
+        android:layout_width="2dp"
+        android:layout_height="2dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible" />
+
 </RelativeLayout>

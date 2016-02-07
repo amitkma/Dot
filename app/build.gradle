@@ -35,6 +35,7 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
 
     compile 'com.github.clans:fab:1.6.2'
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     compile files('/home/ayush/AndroidStudioProjects/Startup_barber/libs/sinch-android-verification-1.1.2.jar')
 }

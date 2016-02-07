@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cart_view"
-    android:layout_width="68dp"
+    android:layout_width="80dp"
     android:layout_height="match_parent"
     android:layout_gravity="center_vertical|right"
     android:padding="8dp">
@@ -11,10 +11,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:paddingBottom="8dp"
-        android:paddingLeft="8dp"
-
-        android:paddingTop="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
         android:src="@drawable/ic_shopping_cart_white_24dp" />
 
     <!-- Badge Count -->
@@ -24,8 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:padding="4dp"
-        android:text="(0)"
+        android:padding="8dp"
+        android:text=""
         android:textColor="#fff" />
 
 </RelativeLayout>

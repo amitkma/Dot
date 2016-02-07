@@ -67,7 +67,7 @@
         <activity
             android:name=".CartDisplay"
             android:label="@string/title_activity_cart_display"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

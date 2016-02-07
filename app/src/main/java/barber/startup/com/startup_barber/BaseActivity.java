@@ -24,6 +24,8 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 /**
  * Created by ayush on 23/1/16.
  */
@@ -32,17 +34,35 @@ public class BaseActivity extends AppCompatActivity {
     static ParseUser currentUser = ParseUser.getCurrentUser();
     static int cart_items = 0;
     private static Toolbar toolbar;
+    private static List<Object> list;
     ListView listview;
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     int Temp;
 
     public static void updatecart() {
-        if (currentUser.get("cartItems") != null)
-            cart_items = (int) currentUser.get("cartItems");
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
+            @Override
+            public void done(final ParseUser object, ParseException e) {
+                if (e == null) {
+                    list = object.getList("cart");
+                    update_text_Items(list.size());
+
+                } else e.printStackTrace();
+                /*if (currentUser.get("cartItems") != null)
+                    cart_items = (int) currentUser.get("cartItems");
+                TextView cartText = (TextView) toolbar.findViewById(R.id.cardtext);
+                if (cart_items != 0)
+                    cartText.setText("(" + cart_items + ")");*/
+            }
+        });
+    }
+
+    private static void update_text_Items(int size) {
         TextView cartText = (TextView) toolbar.findViewById(R.id.cardtext);
-        if (cart_items != 0)
-            cartText.setText("(" + cart_items + ")");
+        cartText.setText("(" + size + ")");
+
     }
 
     public static void updatecartbyONE(final Context c) {
@@ -167,8 +187,7 @@ public class BaseActivity extends AppCompatActivity {
 
     public void update_cart_text() {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
-        if (!check_connection())
-            query.fromLocalDatastore();
+        query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
         query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
             @Override
             public void done(ParseUser object, ParseException e) {
