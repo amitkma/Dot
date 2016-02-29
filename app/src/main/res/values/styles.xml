@@ -14,8 +14,7 @@
 
     </style>
 
-    <style name="AppTheme.NoActionBar.MainActivity">
-
+    <style name="AppTheme.NoActionBar.MainActivity" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
 
@@ -52,7 +51,7 @@
     </style>
 
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
@@ -79,8 +78,7 @@
         <item name="android:textSize">16sp</item>
         <item name="android:background">@drawable/buttons_login_state</item>
         <item name="android:textColor">#fff</item>
-        <item name="android:layout_margin">4dp</item>
-        <item name="android:layout_height">40dp</item>
+
     </style>
 
     <style name="edittext_signup">
@@ -125,6 +123,11 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginLeft">16dp</item>
         <item name="android:layout_marginRight">16dp</item>
+    </style>
+
+    <style name="MineCustomTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">14sp</item>
+
     </style>
 
 

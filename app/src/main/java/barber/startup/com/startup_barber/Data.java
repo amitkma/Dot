@@ -7,11 +7,19 @@ import com.parse.ParseObject;
  */
 public class Data {
     String id;
-
     String title;
     String price;
     String url;
     int cardItems;
+    ParseObject parseobject;
+
+    public ParseObject getParseobject() {
+        return parseobject;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public int getCardItems() {
         return cardItems;

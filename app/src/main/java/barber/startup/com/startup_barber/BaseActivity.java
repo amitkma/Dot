@@ -1,27 +1,27 @@
 package barber.startup.com.startup_barber;
 
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -35,10 +35,13 @@ public class BaseActivity extends AppCompatActivity {
     static int cart_items = 0;
     private static Toolbar toolbar;
     private static List<Object> list;
+    private static ImageView fav;
+    private static ImageView cart;
     ListView listview;
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     int Temp;
+    boolean flag_drawerLeft = false;
 
     public static void updatecart() {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
@@ -46,15 +49,12 @@ public class BaseActivity extends AppCompatActivity {
             @Override
             public void done(final ParseUser object, ParseException e) {
                 if (e == null) {
-                    list = object.getList("cart");
-                    update_text_Items(list.size());
+                    if (object.getList("cart") != null) {
+                        list = object.getList("cart");
+                        update_text_Items(list.size());
+                    }
 
                 } else e.printStackTrace();
-                /*if (currentUser.get("cartItems") != null)
-                    cart_items = (int) currentUser.get("cartItems");
-                TextView cartText = (TextView) toolbar.findViewById(R.id.cardtext);
-                if (cart_items != 0)
-                    cartText.setText("(" + cart_items + ")");*/
             }
         });
     }
@@ -65,45 +65,69 @@ public class BaseActivity extends AppCompatActivity {
 
     }
 
-    public static void updatecartbyONE(final Context c) {
+    public static void make_favIcon_red() {
+        fav.setColorFilter(Color.RED);
+    }
 
-        cart_items++;
-        TextView cartText = (TextView) toolbar.findViewById(R.id.cardtext);
-        if (cart_items != 0)
-            cartText.setText("(" + cart_items + ")");
-        currentUser.increment("cartItems");
-        currentUser.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                Toast.makeText(c, "savedin Server", Toast.LENGTH_SHORT).show();
-            }
-        });
+    public static void make_cartIcon_blue() {
+        cart.setColorFilter(Color.BLUE);
     }
 
     public Toolbar setup_toolbar() {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ImageView img = (ImageView) toolbar.findViewById(R.id.cart_image);
-        img.setOnClickListener(new View.OnClickListener() {
 
+        TextView title = (TextView) toolbar.findViewById(R.id.title_toolbar);
+        Typeface tfe = Typeface.createFromAsset(getAssets(), "fonts/CaveatBrush-Regular.ttf");
+        title.setTypeface(tfe);
+        title.setSelected(true);
+        title.setSingleLine(true);
+
+        final ImageView cart = (ImageView) toolbar.findViewById(R.id.cart_image);
+        final ImageView fav = (ImageView) toolbar.findViewById(R.id.fav_image);
+
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("fav");
+        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+        parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(BaseActivity.this, CartDisplay.class));
-                Cart.getCartItemsId();
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() > 0)
+                        fav.setColorFilter(Color.RED);
+                } else e.printStackTrace();
             }
         });
+
+
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
+        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() > 0)
+                        cart.setColorFilter(Color.BLUE);
+                } else e.printStackTrace();
+            }
+        });
+
+
         return toolbar;
+
 
     }
 
     public void setup_nav_drawer() {
+
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         View view = navigationView.inflateHeaderView(R.layout.nav_header);
         TextView textView = (TextView) view.findViewById(R.id.nav_header_text_welcome);
+        Typeface tf = Typeface.createFromAsset(getAssets(), "fonts/Pacifico.ttf");
+        textView.setTypeface(tf);
         if (currentUser != null) {
             if (currentUser.getUsername() != null)
-                textView.setText("Welcome " + currentUser.getUsername() + " !");
+                textView.setText(currentUser.getUsername());
             if (currentUser.getUsername() != null)
                 Log.d("name", currentUser.getUsername());
         }
@@ -131,20 +155,18 @@ public class BaseActivity extends AppCompatActivity {
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
 
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.openDrawer, R.string.closeDrawer) {
 
+        ImageView button_drawer_left = (ImageView) toolbar.findViewById(R.id.button_drawer_left);
+        button_drawer_left.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDrawerClosed(View drawerView) {
-                //super.onDrawerClosed(drawerView);
-            }
+            public void onClick(View v) {
 
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                // super.onDrawerOpened(drawerView);
+                drawerLayout.openDrawer(GravityCompat.START);
+
+
             }
-        };
-        drawerLayout.setDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
+        });
+
 
         if (currentUser != null)
             setup_nav_header_profile_pic(view);
@@ -187,7 +209,6 @@ public class BaseActivity extends AppCompatActivity {
 
     public void update_cart_text() {
         ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
         query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
             @Override
             public void done(ParseUser object, ParseException e) {

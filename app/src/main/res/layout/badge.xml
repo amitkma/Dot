@@ -1,32 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cart_view"
-    android:layout_width="80dp"
-    android:layout_height="match_parent"
-    android:layout_gravity="center_vertical|right"
-    android:padding="8dp">
-    <!-- Menu Item Image -->
-    <ImageView
-        android:id="@+id/cart_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:background="?attr/selectableItemBackground"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:src="@drawable/ic_shopping_cart_white_24dp" />
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    tools:context=".MainActivity">
 
-    <!-- Badge Count -->
-    <TextView
-        android:id="@+id/cardtext"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:orientation="horizontal">
+
+        <include layout="@layout/open_drawer_imagebutton" />
+
+        <include
+            layout="@layout/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:padding="8dp"
-        android:text=""
-        android:textColor="#fff" />
+        android:orientation="horizontal"
+        android:paddingLeft="8dp"
+        android:paddingRight="4dp">
 
+        <ImageView
+            android:id="@+id/fav_image"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_favorite_border_black_24dp"
+            android:tint="#757575" />
+
+        <LinearLayout
+            android:id="@+id/lll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/cart_image"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+
+                android:src="@drawable/ic_add_shopping_cart_black_24dp"
+                android:tint="#757575" />
+
+            <TextView
+                android:id="@+id/cardtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:paddingRight="8dp"
+                android:text=""
+                android:textColor="#757575"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
 </RelativeLayout>

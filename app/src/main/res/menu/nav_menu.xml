@@ -17,7 +17,8 @@
         <item
             android:id="@+id/Cart"
             android:icon="@drawable/ic_shopping_cart_black_24dp"
-            android:title="Cart (0)" />
+
+            android:title="Cart" />
 
 
     </group>

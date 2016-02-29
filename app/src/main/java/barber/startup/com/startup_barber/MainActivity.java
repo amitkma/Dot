@@ -1,172 +1,57 @@
 package barber.startup.com.startup_barber;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
     ParseUser parseUser = ParseUser.getCurrentUser();
 
-    boolean track = false;
-    View vi;
-    RelativeLayout notifCount;
-    TextView cartText;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private MainActivityAdapter beardsAdapter;
-    private StaggeredGridLayoutManager gaggeredGridLayoutManager;
-    private RecyclerView mRecyclerView_hairStyles;
-    private StaggeredGridLayoutManager gaggeredGridLayoutManager_hairStyles;
-    private MainActivityAdapter hairStyleAdaper;
-    private FrameLayout frame_beards;
-    private FrameLayout frame_hairStyles;
-    private boolean temp = false;
-    private FrameLayout frame_mustache;
-    private RecyclerView mRecyclerView_moustache;
-    private StaggeredGridLayoutManager gaggeredGridLayoutManager_moustache;
-    private MainActivityAdapter moustacheAdaper;
+
+    private ViewPager viewPager;
+    private TabLayout tabLayout;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        vi = findViewById(R.id.fade_view);
-        frame_beards = (FrameLayout) findViewById(R.id.frame_beards);
-        frame_hairStyles = (FrameLayout) findViewById(R.id.frame_hairStyles);
-        frame_mustache = (FrameLayout) findViewById(R.id.frame_mustache);
-
-        final FloatingActionMenu menu1 = (FloatingActionMenu) findViewById(R.id.menu);
-        FloatingActionButton fab_hairStyles = (FloatingActionButton) findViewById(R.id.menu_item1);
-        FloatingActionButton fab_mustache = (FloatingActionButton) findViewById(R.id.menu_item2);
-        FloatingActionButton fab_beards = (FloatingActionButton) findViewById(R.id.menu_item3);
-
-        AnimatorSet set = new AnimatorSet();
-        set.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-
-                menu1.getMenuIconView().setImageResource(menu1.isOpened()
-                        ? R.drawable.ic_tune_white_24dp : R.drawable.ic_add_white_24dp);
-                menu1.getMenuIconView().setRotation(menu1.isOpened() ? -45 : 0);
+        setContentView(R.layout.content_main);
 
 
-            }
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                menu1.getMenuIconView().setRotation(menu1.isOpened() ? 0 : 45);
-
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        menu1.setIconToggleAnimatorSet(set);
-
-
-        fab_hairStyles.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (frame_mustache.getVisibility() == View.VISIBLE)
-                    frame_mustache.setVisibility(View.INVISIBLE);
-
-                else if (frame_beards.getVisibility() == View.VISIBLE)
-                    frame_beards.setVisibility(View.INVISIBLE);
-                toolbar.setTitle("HairCuts");
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        frame_hairStyles.setVisibility(View.VISIBLE);
-                    }
-                }, 800);
-
-                menu1.close(true);
-
-            }
-
-
-        });
-
-        fab_mustache.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (frame_beards.getVisibility() == View.VISIBLE)
-                    frame_beards.setVisibility(View.INVISIBLE);
-
-                else if (frame_hairStyles.getVisibility() == View.VISIBLE)
-                    frame_hairStyles.setVisibility(View.INVISIBLE);
-                toolbar.setTitle("Mustache");
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        frame_mustache.setVisibility(View.VISIBLE);
-                    }
-                }, 800);
-                menu1.close(true);
-
-            }
-
-
-        });
-        fab_beards.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (frame_mustache.getVisibility() == View.VISIBLE)
-                    frame_mustache.setVisibility(View.INVISIBLE);
-
-                else if (frame_hairStyles.getVisibility() == View.VISIBLE)
-                    frame_hairStyles.setVisibility(View.INVISIBLE);
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        frame_beards.setVisibility(View.VISIBLE);
-                    }
-                }, 800);
-                toolbar.setTitle("Beards");
-
-                menu1.close(true);
-            }
-
-
-        });
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        changeTabsFont();
 
 
         toolbar = setup_toolbar();
@@ -174,128 +59,52 @@ public class MainActivity extends BaseActivity {
         setup_nav_item_listener();
         update_cart_text();
 
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        mRecyclerView.setHasFixedSize(true);
-        gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
-        mRecyclerView.setLayoutManager(gaggeredGridLayoutManager);
-        beardsAdapter = new MainActivityAdapter(this);
-
-        setUpRecyclerView();
+        setup_favIcon_toolbar();
+        setup_cartIcon_toolbar();
 
 
-        mRecyclerView_hairStyles = (RecyclerView) findViewById(R.id.recyclerview_hairStyles);
-        mRecyclerView_hairStyles.setHasFixedSize(true);
-        gaggeredGridLayoutManager_hairStyles = new StaggeredGridLayoutManager(2, 1);
-        mRecyclerView_hairStyles.setLayoutManager(gaggeredGridLayoutManager_hairStyles);
-        hairStyleAdaper = new MainActivityAdapter(this);
 
-        show_hairstyles();
-
-        mRecyclerView_moustache = (RecyclerView) findViewById(R.id.recyclerview_moustache);
-
-        mRecyclerView_moustache.setHasFixedSize(true);
-        gaggeredGridLayoutManager_moustache = new StaggeredGridLayoutManager(2, 1);
-        mRecyclerView_moustache.setLayoutManager(gaggeredGridLayoutManager_moustache);
-        moustacheAdaper = new MainActivityAdapter(this);
-
-        show_moustache();
-
-       /* FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Add Filter", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-    }
-
-    private void show_moustache() {
-
-        mRecyclerView_moustache.setAdapter(moustacheAdaper);
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataMoustache");
-        if (check_connection())
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
-        else
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ONLY);
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                for (int i = 0; i < objects.size(); i++) {
-                    final ParseObject parseObject = objects.get(objects.size() - i - 1);
-                    final Data td = new Data();
-                    td.title = parseObject.getString("title");
-                    td.price = parseObject.getString("price");
-                    ParseFile parseFile = parseObject.getParseFile("image");
-                    td.url = parseFile.getUrl();
-                    moustacheAdaper.addData(td);
-                }
-
-            }
-
-        });
-    }
-
-    private void show_hairstyles() {
-
-        mRecyclerView_hairStyles.setAdapter(hairStyleAdaper);
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("DataHairStyles");
-        if (check_connection())
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
-        else
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ONLY);
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-
-                for (int i = 0; i < objects.size(); i++) {
-                    final ParseObject parseObject = objects.get(objects.size() - i - 1);
-                    final Data td = new Data();
-                    td.title = parseObject.getString("title");
-                    td.price = parseObject.getString("price");
-                    ParseFile parseFile = parseObject.getParseFile("image");
-                    td.url = parseFile.getUrl();
-
-                    hairStyleAdaper.addData(td);
-                }
-
-            }
-
-        });
 
 
     }
 
-    private void setUpRecyclerView() {
-        mRecyclerView.setAdapter(beardsAdapter);
 
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
-        if (check_connection())
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.NETWORK_ELSE_CACHE);
-        else
-            parseQuery.setCachePolicy(ParseQuery.CachePolicy.CACHE_ONLY);
-
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+    private void setup_cartIcon_toolbar() {
+        ImageView cart = (ImageView) toolbar.findViewById(R.id.cart_image);
+        cart.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-
-                for (int i = 0; i < objects.size(); i++) {
-                    final ParseObject parseObject = objects.get(objects.size() - i - 1);
-                    final Data td = new Data();
-                    td.title = parseObject.getString("title");
-                    td.price = parseObject.getString("price");
-                    ParseFile parseFile = parseObject.getParseFile("image");
-                    td.url = parseFile.getUrl();
-
-                    beardsAdapter.addData(td);
-                }
-
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CartDisplay.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+                finish();
             }
-
         });
+    }
 
+    private void setup_favIcon_toolbar() {
+        ImageView fav = (ImageView) toolbar.findViewById(R.id.fav_image);
+        fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Favourites.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new Fragment_services(0), "Beards");
+        adapter.addFragment(new Fragment_services(1), "Moustache");
+        adapter.addFragment(new Fragment_services(2), "Hairstyle");
+
+
+        viewPager.setAdapter(adapter);
 
     }
 
@@ -312,7 +121,10 @@ public class MainActivity extends BaseActivity {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-
+                                final Dialog dialog = new Dialog(MainActivity.this);
+                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                dialog.setContentView(R.layout.about_developer);
+                                dialog.show();
                             }
                         }, 150);
                         return true;
@@ -338,8 +150,10 @@ public class MainActivity extends BaseActivity {
                                 public void run() {
                                     logout();
                                 }
-                            }, 250);
+                            }, 280);
                         }
+
+
                         return true;
 
                     case R.id.Feedback:
@@ -364,14 +178,139 @@ public class MainActivity extends BaseActivity {
     private void logout() {
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-            ParseUser.logOutInBackground();
-        }
+            ParseUser.logOutInBackground(new LogOutCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Log.d("REACHED", "ECHED");
+                        parseUser = null;
+                        Intent i = new Intent(getApplicationContext(), Login.class);
+                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        startActivity(new Intent(this, Choose_Login.class));
-        finish();
-        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+                        startActivity(i);
+                        finish();
+                        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+                    } else
+                        e.printStackTrace();
+                }
+            });
+        }
 
 
     }
 
+    private void changeTabsFont() {
+
+        //Typeface tf=Typeface.createFromAsset(getAssets(),"fonts/C");
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+            int tabChildsCount = vgTab.getChildCount();
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+                    ((TextView) tabViewChild).setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
+                    ((TextView) tabViewChild).setAllCaps(true);
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("fav");
+        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+        parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() > 0) {
+                        for (int i = 0; i < objects.size(); i++) {
+                            ParseObject parseObject = objects.get(i);
+                            Log.d("nameoffav", parseObject.getString("favourites"));
+                        }
+                    }
+                } else e.printStackTrace();
+            }
+        });
+
+
+        // Syncing all our data from server
+        if (check_connection()) {
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Data");
+            query.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> objects, ParseException e) {
+                    if (e == null)
+                        if (objects.size() > 0) {
+                            if (XInitialization.APPDEBUG)
+                                Log.d("Objectsize", String.valueOf(objects.size()));
+                            unpinAndRepinData(objects);
+                        }
+                }
+            });
+        }
+    }
+
+    private void unpinAndRepinData(final List<ParseObject> objects) {
+
+
+        ParseObject.unpinAllInBackground("data", new DeleteCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    if (XInitialization.APPDEBUG)
+                        Log.d("MainActivityPin", "unPinnedAll");
+
+                    ParseObject.pinAllInBackground("data", objects, new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                if (XInitialization.APPDEBUG)
+                                    Log.d("MainActivityPin", "PinnedAll");
+                            } else e.printStackTrace();
+                        }
+                    });
+
+                } else e.printStackTrace();
+
+            }
+        });
+
+
+    }
+
+    class ViewPagerAdapter extends FragmentStatePagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
 }

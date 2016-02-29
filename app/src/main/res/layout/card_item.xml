@@ -40,19 +40,41 @@
                 android:layout_height="1dp"
                 android:background="@color/divider" />
 
-            <ImageView
-                android:id="@+id/options"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="2dp"
-                android:alpha=".54"
-                android:background="?attr/selectableItemBackground"
+                android:orientation="horizontal">
 
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:src="@drawable/ic_shopping_cart_black_18dp" />
+                <ImageView
+                    android:id="@+id/fav_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+
+
+                    android:layout_marginRight="4dp"
+
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:paddingLeft="4dp"
+                    android:paddingRight="4dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_favorite_border_black_18dp" />
+
+                <ImageView
+                    android:id="@+id/addToCart_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+
+                    android:background="?attr/selectableItemBackgroundBorderless"
+
+                    android:paddingLeft="4dp"
+
+                    android:paddingRight="8dp"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_add_shopping_cart_black_18dp" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/card_title"
