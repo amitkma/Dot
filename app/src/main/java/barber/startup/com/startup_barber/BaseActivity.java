@@ -66,10 +66,12 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public static void make_favIcon_red() {
+
         fav.setColorFilter(Color.RED);
     }
 
     public static void make_cartIcon_blue() {
+
         cart.setColorFilter(Color.BLUE);
     }
 
@@ -84,8 +86,8 @@ public class BaseActivity extends AppCompatActivity {
         title.setSelected(true);
         title.setSingleLine(true);
 
-        final ImageView cart = (ImageView) toolbar.findViewById(R.id.cart_image);
-        final ImageView fav = (ImageView) toolbar.findViewById(R.id.fav_image);
+        fav = (ImageView) toolbar.findViewById(R.id.fav_image);
+        cart = (ImageView) toolbar.findViewById(R.id.cart_image);
 
         ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("fav");
         parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
