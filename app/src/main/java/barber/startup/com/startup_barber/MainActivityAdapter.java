@@ -14,6 +14,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -32,16 +34,12 @@ import java.util.ArrayList;
 public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapter.ViewHolder> {
     static int height = 0;
     static int width = 0;
-    ParseUser parseUser = ParseUser.getCurrentUser();
     private Context context;
-    private LayoutInflater inflater;
     private ArrayList<Data> data = new ArrayList<>();
     private Context mContext;
     private Data currentTrendData;
 
     public MainActivityAdapter(Context context) {
-
-        inflater = LayoutInflater.from(context);
         mContext = context;
 
     }
@@ -61,118 +59,101 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         height = holder.mImageView.getLayoutParams().height;
         currentTrendData = data.get(position);
+
+        holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(View v) {
+                if (holder.mImageView_fav.getColorFilter() == null) {
+                    updateFavourites();
+
+                } else if (holder.mImageView_fav.getColorFilter() != null)
+                    Toast.makeText(mContext, "Already in favourites", Toast.LENGTH_SHORT).show();
+            }
+
+            private void updateFavourites() {
+
+                ParseObject parseObject = new ParseObject("Fav");
+                parseObject.put("favourites", data.get(position).getId());
+                parseObject.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            BaseActivity.make_favIcon_red();
+                            holder.mImageView_fav.setColorFilter(Color.RED);
+
+                            Log.d("saved", data.get(position).getId());
+                        } else e.printStackTrace();
+                    }
+                });
+
+
+            }
+        });
+
+
+        holder.mImageView_addToCart.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            @Override
+            public void onClick(View v) {
+                if (holder.mImageView_addToCart.getColorFilter() == null) {
+                    updateCart();
+
+                } else if (holder.mImageView_addToCart.getColorFilter() != null)
+                    Toast.makeText(mContext, "Already in Cart", Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            private void updateCart() {
+
+                ParseObject parseObject = new ParseObject("Cart");
+                parseObject.put("cart", data.get(position).getId());
+                parseObject.pinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            BaseActivity.make_cartIcon_blue();
+                            holder.mImageView_addToCart.setColorFilter(Color.BLUE);
+
+                            Log.d("savedincart", data.get(position).getId());
+                        } else e.printStackTrace();
+                    }
+                });
+
+
+            }
+        });
+
+
+        if (currentTrendData.isFav()) {
+            holder.mImageView_fav.setColorFilter(Color.RED);
+        } else holder.mImageView_fav.setColorFilter(null);
+
+        if (currentTrendData.isCart()) {
+            holder.mImageView_addToCart.setColorFilter(Color.BLUE);
+        } else holder.mImageView_addToCart.setColorFilter(null);
+
+
         if (currentTrendData.getTitle() != null)
             holder.title.setText(currentTrendData.getTitle());
 
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("fav");
-        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
-        parseObjectParseQuery.whereEqualTo("favourites", data.get(position).getId());
-        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, ParseException e) {
-
-                holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
-                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                    @Override
-                    public void onClick(View v) {
-                        if (holder.mImageView_fav.getColorFilter() == null) {
-                            updateFavourites();
-
-                        } else if (holder.mImageView_fav.getColorFilter() != null)
-                            Toast.makeText(mContext, "Already in favourites", Toast.LENGTH_SHORT).show();
-                    }
-
-                    private void updateFavourites() {
-
-                        ParseObject parseObject = new ParseObject("fav");
-                        parseObject.put("favourites", data.get(position).getId());
-                        parseObject.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    BaseActivity.make_favIcon_red();
-                                    holder.mImageView_fav.setColorFilter(Color.RED);
-                                    Log.d("saved", data.get(position).getTitle());
-                                } else e.printStackTrace();
-                            }
-                        });
-
-
-                    }
-                });
-                if (e == null) {
-                    if (object != null) {
-                        holder.mImageView_fav.setColorFilter(Color.RED);
-                    }
-                }
-            }
-        });
-
-
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
-        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-        parseQuery.whereEqualTo("cart", data.get(position).getId());
-        parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject object, ParseException e) {
-
-
-                holder.mImageView_addToCart.setOnClickListener(new View.OnClickListener() {
-                    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                    @Override
-                    public void onClick(View v) {
-                        if (holder.mImageView_addToCart.getColorFilter() == null) {
-                            updateCart();
-
-                        } else if (holder.mImageView_addToCart.getColorFilter() != null)
-                            Toast.makeText(mContext, "Already in Cart", Toast.LENGTH_SHORT).show();
-
-
-                    }
-
-                    private void updateCart() {
-
-                        ParseObject parseObject = new ParseObject("Cart");
-                        parseObject.put("cart", data.get(position).getId());
-                        parseObject.pinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-
-                                    BaseActivity.make_cartIcon_blue();
-                                    holder.mImageView_addToCart.setColorFilter(Color.BLUE);
-                                    Log.d("savedincart", data.get(position).getTitle());
-                                } else e.printStackTrace();
-                            }
-                        });
-
-
-                    }
-                });
-                if (e == null) {
-                    if (object != null) {
-                        holder.mImageView_addToCart.setColorFilter(Color.BLUE);
-                    }
-                }
-            }
-        });
-
 
         if (currentTrendData.getUrl() != null) {
-            if (check_connection())
-                Picasso.with(mContext).load(currentTrendData.getUrl()).memoryPolicy(MemoryPolicy.NO_STORE).centerInside().resize(height, height).into(holder.mImageView);
-            else
-                Picasso.with(mContext).load(currentTrendData.getUrl()).memoryPolicy(MemoryPolicy.NO_STORE).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.mImageView);
+            if (check_connection()) {
+                Picasso.with(mContext).load(currentTrendData.getUrl()).centerInside().resize(height, height).into(holder.mImageView);
 
+            }
+            else
+                Picasso.with(mContext).load(currentTrendData.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.mImageView);
+
+            //  Glide.with(mContext).load(currentTrendData.getUrl()).override(height,height).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.mImageView);
         }
 
 
         if (currentTrendData.getPrice() != null) {
             holder.price.setText("Rs " + currentTrendData.getPrice());
         }
-
-
-
 
 
     }
@@ -186,9 +167,6 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 //For WiFi Check
         boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
                 .isConnectedOrConnecting();
-
-        System.out.println(is3g + " net " + isWifi);
-
         if (!is3g && !isWifi) {
 
             return false;

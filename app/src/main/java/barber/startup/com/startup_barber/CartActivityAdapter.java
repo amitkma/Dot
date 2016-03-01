@@ -95,7 +95,37 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
         holder.price.setText("Rs " + data.getPrice());
 
 
-        Picasso.with(mContext).load(data.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).memoryPolicy(MemoryPolicy.NO_STORE).resize(height, height).centerInside().into(holder.img);
+        if (data.getUrl() != null) {
+            if (check_connection())
+                Picasso.with(mContext).load(data.getUrl()).centerInside().resize(height, height).into(holder.img);
+            else
+                Picasso.with(mContext).load(data.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.img);
+
+        }
+
+
+    }
+
+    public boolean check_connection() {
+        ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+//For 3G check
+        boolean is3g = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+                .isConnectedOrConnecting();
+//For WiFi Check
+        boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                .isConnectedOrConnecting();
+
+        System.out.println(is3g + " net " + isWifi);
+
+        if (!is3g && !isWifi) {
+
+            return false;
+        } else {
+
+            return true;
+        }
+
 
     }
 

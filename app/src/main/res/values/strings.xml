@@ -29,5 +29,7 @@
     <string name="title_activity_aw">aw</string>
     <string name="title_activity_main_activty_test">MainActivty_test</string>
     <string name="title_activity_favourites">Favourites</string>
+    <string name="title_activity_data_saving">DataSaving</string>
+    <string name="title_activity_checkout">Checkout</string>
 
 </resources>

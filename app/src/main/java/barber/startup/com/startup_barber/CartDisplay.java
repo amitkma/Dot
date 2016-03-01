@@ -1,7 +1,6 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
@@ -19,14 +18,12 @@ import android.widget.Toast;
 
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +32,7 @@ import java.util.List;
 public class CartDisplay extends AppCompatActivity {
     static ParseUser parseUser = ParseUser.getCurrentUser();
     static List<String> list;
+    int totaltime = 0;
     private RecyclerView mRecyclerView;
     private CartActivityAdapter cartActivityAdapter;
     private Toolbar toolbar;
@@ -68,6 +66,16 @@ public class CartDisplay extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
         toolbarTitle();
+
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startCheckoutActivity();
+            }
+        });
+
 
         final ImageView delete = (ImageView) toolbar.findViewById(R.id.imageview_deleteAll);
         delete.setOnClickListener(new View.OnClickListener() {
@@ -115,12 +123,13 @@ public class CartDisplay extends AppCompatActivity {
 
         backArrow_toolbar();
 
-        //  deleteAllButton();
 
-        // setup_cart_layout();
+    }
 
-        fabButton();
-
+    private void startCheckoutActivity() {
+        Intent i = new Intent(CartDisplay.this, Checkout.class);
+        i.putExtra("totalTimeTaken", totaltime);
+        startActivity(i);
     }
 
 
@@ -137,16 +146,18 @@ public class CartDisplay extends AppCompatActivity {
             @Override
             public void done(List<ParseObject> objects1, ParseException e) {
                 if (e == null) {
-                    if (XInitialization.APPDEBUG)
+                    if (Application.APPDEBUG)
                         Log.d("Cart", "fetched locally");
 
                     for (int i = 0; i < objects1.size(); i++) {
-                        final ParseObject parseObject = objects1.get(objects1.size() - i - 1);
+                        final ParseObject parseObject = objects1.get(i);
                         final Data td = new Data();
-                        td.parseobject = parseObject;
                         td.title = parseObject.getString("title");
                         td.price = parseObject.getString("price");
                         td.id = parseObject.getObjectId();
+                        td.time = parseObject.getInt("time");
+
+                        totaltime = td.time + totaltime;
                         ParseFile parseFile = parseObject.getParseFile("image");
                         td.url = parseFile.getUrl();
                         cartActivityAdapter.addData(td);
@@ -157,28 +168,7 @@ public class CartDisplay extends AppCompatActivity {
     }
 
 
-  /*  private void setup_cart_layout() {
-        if (check_connection())
-            getCartItemsId();
-        else {
-            progressBar.setVisibility(View.INVISIBLE);
-            retry.setVisibility(View.VISIBLE);
-        }
 
-        retry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (check_connection()) {
-
-                    retry.setVisibility(View.INVISIBLE);
-                    progressBar.setVisibility(View.VISIBLE);
-                    getCartItemsId();
-                } else
-                    Toast.makeText(getApplicationContext(), "check network", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-    }*/
 
     private void toolbarTitle() {
         TextView toolbar_title = (TextView) toolbar.findViewById(R.id.title_toolbar);
@@ -199,119 +189,14 @@ public class CartDisplay extends AppCompatActivity {
         });
     }
 
-    private void fabButton() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-    }
-
-    private void deleteAllButton() {
-        ImageView deleteAll = (ImageView) toolbar.findViewById(R.id.imageview_deleteAll);
-        deleteAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (list != null)
-                    if (list.size() > 0) {
-                        if (check_connection()) {
 
 
-                            parseUser.remove("cart");
-                            parseUser.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    if (e == null) {
-                                        finish();
-                                        overridePendingTransition(0, 0);
-                                        startActivity(getIntent());
-                                        overridePendingTransition(0, 0);
-                                        BaseActivity.updatecart();
-                                        Toast.makeText(getApplicationContext(), "Removed All!", Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        e.printStackTrace();
-                                        Toast.makeText(getApplicationContext(), "Something went wrong!", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
 
 
-                            });
-                        }
-                    }
-            }
-        });
-
-    }
-
-  /*  public void getCartItemsId() {
-
-        mRecyclerView.setAdapter(cartActivityAdapter);
-
-        //Retrieve Id's from user cart column
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.getInBackground(parseUser.getObjectId(), new GetCallback<ParseUser>() {
-            @Override
-            public void done(final ParseUser object, ParseException e) {
-                if (e == null) {
-                    if (object.getList("cart") != null) {
-                        list = object.getList("cart");
 
 
-                        //After retrieving list of Id's of cart items, its time to get the those object to show in recycler view
-                        ParseQuery<ParseObject> query2 = new ParseQuery<ParseObject>("Data");
-                        query2.whereContainedIn("objectId", list);
-                        query2.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> objects, ParseException e) {
 
 
-                                progressBar.setVisibility(View.INVISIBLE);
-                                if (e == null) {
-                                    updateItemsCount(list.size());
-
-                                    for (int i = 0; i < objects.size(); i++) {
-                                        ParseObject parseObject = objects.get(i);
-                                        Data data = new Data();
-                                        data.price = parseObject.getString("price");
-                                        data.title = parseObject.getString("title");
-                                        ParseFile parseFile = parseObject.getParseFile("image");
-                                        data.url = parseFile.getUrl();
-                                        cartActivityAdapter.addData(data);
-                                    }
-
-                                } else {
-                                    progressBar.setVisibility(View.INVISIBLE);
-                                    retry.setVisibility(View.VISIBLE);
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-
-                    } else {
-
-                        progressBar.setVisibility(View.INVISIBLE);
-                        empty.setVisibility(View.VISIBLE);
-                    }
-                } else {
-
-                    e.printStackTrace();
-
-                    progressBar.setVisibility(View.INVISIBLE);
-                    retry.setVisibility(View.VISIBLE);
-
-                }
-            }
-        });
-    } */
-
-
-    private void updateItemsCount(int size) {
-        TextView items = (TextView) toolbar.findViewById(R.id.items);
-        items.setText("Items: " + size);
-    }
 
     public boolean check_connection() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
@@ -335,6 +220,7 @@ public class CartDisplay extends AppCompatActivity {
 
 
     }
+
 
     @Override
     public void onBackPressed() {

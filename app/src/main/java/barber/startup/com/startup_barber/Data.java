@@ -1,28 +1,37 @@
 package barber.startup.com.startup_barber;
 
-import com.parse.ParseObject;
-
 /**
  * Created by ayush on 29/1/16.
  */
 public class Data {
-    String id;
-    String title;
-    String price;
-    String url;
-    int cardItems;
-    ParseObject parseobject;
+    String id = "default";
+    String title = "title";
+    String price = "0";
+    String url = "url";
+    boolean fav = false;
+    boolean cart = false;
 
-    public ParseObject getParseobject() {
-        return parseobject;
+    int cost = 0;
+    int time;
+
+    public int getTime() {
+        return time;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    public boolean isFav() {
+        return fav;
+    }
+
+    public boolean isCart() {
+        return cart;
     }
 
     public String getId() {
         return id;
-    }
-
-    public int getCardItems() {
-        return cardItems;
     }
 
     public String getPrice() {

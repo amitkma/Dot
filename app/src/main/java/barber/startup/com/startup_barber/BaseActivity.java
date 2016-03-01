@@ -89,7 +89,7 @@ public class BaseActivity extends AppCompatActivity {
         fav = (ImageView) toolbar.findViewById(R.id.fav_image);
         cart = (ImageView) toolbar.findViewById(R.id.cart_image);
 
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("fav");
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
         parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
         parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override

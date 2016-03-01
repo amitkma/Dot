@@ -47,6 +47,23 @@ public class MainActivity extends BaseActivity {
 
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(1);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
         setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -219,71 +236,9 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("fav");
-        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
-        parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    if (objects.size() > 0) {
-                        for (int i = 0; i < objects.size(); i++) {
-                            ParseObject parseObject = objects.get(i);
-                            Log.d("nameoffav", parseObject.getString("favourites"));
-                        }
-                    }
-                } else e.printStackTrace();
-            }
-        });
 
 
-        // Syncing all our data from server
-        if (check_connection()) {
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Data");
-            query.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> objects, ParseException e) {
-                    if (e == null)
-                        if (objects.size() > 0) {
-                            if (XInitialization.APPDEBUG)
-                                Log.d("Objectsize", String.valueOf(objects.size()));
-                            unpinAndRepinData(objects);
-                        }
-                }
-            });
-        }
-    }
 
-    private void unpinAndRepinData(final List<ParseObject> objects) {
-
-
-        ParseObject.unpinAllInBackground("data", new DeleteCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    if (XInitialization.APPDEBUG)
-                        Log.d("MainActivityPin", "unPinnedAll");
-
-                    ParseObject.pinAllInBackground("data", objects, new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                if (XInitialization.APPDEBUG)
-                                    Log.d("MainActivityPin", "PinnedAll");
-                            } else e.printStackTrace();
-                        }
-                    });
-
-                } else e.printStackTrace();
-
-            }
-        });
-
-
-    }
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();

@@ -12,10 +12,12 @@ import android.view.ViewGroup;
 
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.List;
@@ -37,7 +39,6 @@ public class Fragment_services extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("Re", "Reaached");
         return inflater.inflate(R.layout.item_fragment, container, false);
     }
 
@@ -62,86 +63,70 @@ public class Fragment_services extends Fragment {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
 
-                if (e == null) {
-                    DataLoaded = true;
-                    if (objects.size() == 0)
-                        fetch_from_server();
+                if (e == null && objects.size() > 0) {
 
-                    else {
-
-                        if (XInitialization.APPDEBUG)
-                            Log.d("Fragment", "fetched locally");
-
-                        for (int i = 0; i < objects.size(); i++) {
-                            final ParseObject parseObject = objects.get(objects.size() - i - 1);
-                            final Data td = new Data();
-                            td.parseobject = parseObject;
-                            td.title = parseObject.getString("title");
-                            td.price = parseObject.getString("price");
-                            td.id = parseObject.getObjectId();
-                            ParseFile parseFile = parseObject.getParseFile("image");
-                            td.url = parseFile.getUrl();
-
-                            adapter.addData(td);
-                        }
-                    }
-
-
-                } else
-                    e.printStackTrace();
-            }
-
-
-        });
-
-    }
-
-    private void fetch_from_server() {
-        ParseQuery<ParseObject> parseQueryS = new ParseQuery<ParseObject>("Data");
-        parseQueryS.whereEqualTo("Category", category);
-
-        parseQueryS.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    DataLoaded = true;
                     for (int i = 0; i < objects.size(); i++) {
-                        final ParseObject parseObject = objects.get(objects.size() - i - 1);
+                        final ParseObject parseObject = objects.get(i);
                         final Data td = new Data();
-                        td.parseobject = parseObject;
                         td.title = parseObject.getString("title");
-
                         td.price = parseObject.getString("price");
                         td.id = parseObject.getObjectId();
+
                         ParseFile parseFile = parseObject.getParseFile("image");
                         td.url = parseFile.getUrl();
 
-                        adapter.addData(td);
+
+                        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
+                        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+                        parseObjectParseQuery.whereEqualTo("favourites", parseObject.getObjectId());
+                        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                            @Override
+                            public void done(ParseObject object, ParseException e) {
+
+                                if (e == null && object != null) {
+                                    td.fav = true;
+                                    ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
+                                    parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+                                    parseObjectParseQuery.whereEqualTo("cart", parseObject.getObjectId());
+                                    parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                        @Override
+                                        public void done(ParseObject object, ParseException e) {
+                                            if (e == null && object != null) {
+                                                td.cart = true;
+                                                Log.e("Fragment_services", "cart method is passed");
+                                                adapter.addData(td);
+                                            } else adapter.addData(td);
+
+                                        }
+                                    });
+
+                                } else {
+                                    ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
+                                    parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+                                    parseObjectParseQuery.whereEqualTo("cart", parseObject.getObjectId());
+                                    parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                                        @Override
+                                        public void done(ParseObject object, ParseException e) {
+                                            if (e == null && object != null) {
+                                                td.cart = true;
+                                                adapter.addData(td);
+                                            } else adapter.addData(td);
+
+                                        }
+                                    });
+                                }
+
+                            }
+                        });
                     }
+                } else if (e != null)
+                    e.printStackTrace();
 
-                    unpinAndRepin(objects);
-                } else e.printStackTrace();
             }
+
         });
+
     }
 
-
-    private void unpinAndRepin(List<ParseObject> objects) {
-
-        ParseObject.unpinAllInBackground("data", objects, new DeleteCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (XInitialization.APPDEBUG)
-                    Log.d("pin", "deletedAll");
-            }
-        });
-        ParseObject.pinAllInBackground("data", objects, new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (XInitialization.APPDEBUG)
-                    Log.d("pin", "pinnedAll");
-            }
-        });
-    }
 
 }
