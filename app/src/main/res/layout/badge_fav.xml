@@ -10,7 +10,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <include layout="@layout/backbutton" />
 
         <include
             layout="@layout/toolbar_title"

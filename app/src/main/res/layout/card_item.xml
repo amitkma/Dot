@@ -22,9 +22,9 @@
 
             android:id="@+id/card_image"
             android:layout_width="wrap_content"
-            android:layout_height="160dp"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:scaleType="centerInside"
+            android:scaleType="centerCrop"
             android:src="@drawable/g" />
 
 
@@ -86,7 +86,7 @@
                 android:paddingTop="6dp"
                 android:text="Title"
                 android:textColor="#000"
-                android:textSize="14sp" />
+                android:textSize="14dp" />
 
             <TextView
                 android:id="@+id/card_price"
@@ -99,7 +99,7 @@
                 android:paddingLeft="14dp"
                 android:text="Price"
                 android:textColor="@color/secondary_text"
-                android:textSize="12sp" />
+                android:textSize="12dp" />
 
         </RelativeLayout>
     </RelativeLayout>

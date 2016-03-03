@@ -31,5 +31,8 @@
     <string name="title_activity_favourites">Favourites</string>
     <string name="title_activity_data_saving">DataSaving</string>
     <string name="title_activity_checkout">Checkout</string>
+    <string name="wifi_connection">WIFI</string>
+    <string name="mobile_connection">MOBILE</string>
+    <string name="no_wifi_or_mobile">NO WIFI NO MOBILE</string>
 
 </resources>

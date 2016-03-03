@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -26,17 +25,17 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 
 /**
- * Created by ayush on 5/2/16.
+ * Created by ayush on 28/2/16.
  */
-public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapter.ViewHolder> {
-
+public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.ViewHolder> {
+    static int height = 0;
     private final TextView empty;
+
     ArrayList<Data> cartdata = new ArrayList<>();
     Data data;
     private Context mContext;
-    private int height;
 
-    public CartActivityAdapter(Context c, TextView empty) {
+    public FavActivityAdapter(Context c, TextView empty) {
         this.empty = empty;
         mContext = c;
     }
@@ -44,7 +43,7 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         this.mContext = parent.getContext();
-        View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.cart_card_item, parent, false);
+        View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fav, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
         return viewHolder;
     }
@@ -52,24 +51,29 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
+        height = holder.back.getLayoutParams().height;
+
+        data = cartdata.get(position);
+        holder.title.setText(data.getTitle());
+        holder.price.setText("Rs " + data.getPrice());
+
         holder.remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
-                parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-                parseObjectParseQuery.whereEqualTo("cart", cartdata.get(position).getId());
+                ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
+                parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+                parseObjectParseQuery.whereEqualTo("favourites", cartdata.get(position).getId());
                 parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
                     @Override
-                    public void done(final ParseObject object, ParseException e) {
+                    public void done(ParseObject object, ParseException e) {
                         if (e == null) {
                             if (object != null) {
-                                object.unpinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
+                                object.unpinInBackground(ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
                                     @Override
                                     public void done(ParseException e) {
                                         if (e == null) {
-                                            int lesstime = data.getTime();
-                                            new CartDisplay().updateTotalTime(lesstime);
+
                                             Log.d("object", "removed");
                                             cartdata.remove(position);
                                             notifyItemRemoved(position);
@@ -92,24 +96,20 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
         });
 
 
-        height = holder.img.getLayoutParams().height;
-        data = cartdata.get(position);
-        holder.title.setText(data.getTitle());
-        holder.price.setText("Rs " + data.getPrice());
+        holder.cart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-
+            }
+        });
         if (data.getUrl() != null) {
-            /**    if (check_connection())
-                Picasso.with(mContext).load(data.getUrl()).centerInside().resize(height, height).into(holder.img);
-            else
-                Picasso.with(mContext).load(data.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.img);
+            /** if (check_connection())
+             Picasso.with(mContext).load(data.getUrl()).centerInside().resize(height, height).into(holder.back);
+             else
+             Picasso.with(mContext).load(data.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.back);
              */
+            Glide.with(mContext).load(data.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.back);
         }
-
-        Glide.with(mContext).load(data.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.img);
-
-
-
     }
 
     public boolean check_connection() {
@@ -135,6 +135,19 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
 
     }
 
+    @Override
+    public int getItemCount() {
+
+
+        return cartdata.size();
+    }
+
+    public void addData(Data data) {
+        cartdata.add(data);
+        notifyItemInserted(getItemCount() - 1);
+
+    }
+
     public void removeAllviews(TextView empty) {
 
         int l = cartdata.size();
@@ -146,33 +159,21 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
         empty.setText("Empty");
     }
 
-
-    @Override
-    public int getItemCount() {
-        return cartdata.size();
-    }
-
-    public void addData(Data data) {
-        cartdata.add(data);
-        notifyItemInserted(getItemCount() - 1);
-
-    }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView price;
-        TextView remove;
-        ImageView img;
+        ImageView remove;
+        ImageView cart;
+        ImageView back;
 
         public ViewHolder(View itemView, Context context) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.cart_title);
-            price = (TextView) itemView.findViewById(R.id.cart_price);
-            remove = (TextView) itemView.findViewById(R.id.remove);
-            img = (ImageView) itemView.findViewById(R.id.cart_image);
+            title = (TextView) itemView.findViewById(R.id.title);
+            price = (TextView) itemView.findViewById(R.id.price);
+            remove = (ImageView) itemView.findViewById(R.id.button_remove);
+            back = (ImageView) itemView.findViewById(R.id.image);
+            cart = (ImageView) itemView.findViewById(R.id.button_cart);
         }
 
     }
-
-
 }

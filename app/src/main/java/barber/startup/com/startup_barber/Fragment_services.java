@@ -1,8 +1,9 @@
 package barber.startup.com.startup_barber;
 
+import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -19,31 +21,54 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 /**
  * Created by ayush on 28/2/16.
  */
-public class Fragment_services extends Fragment {
+public class Fragment_services extends android.support.v4.app.Fragment {
     private RecyclerView recyclerView;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
     private MainActivityAdapter adapter;
     private boolean DataLoaded = false;
     private int category;
+    private String[] uri;
 
+
+    public Fragment_services() {
+    }
     public Fragment_services(int i) {
         this.category = i;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        Log.d("Fragment", "onAttach" + category);
+
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d("Fragment", "onCreate" + category);
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d("Fragment", "onCreateView" + category);
+
         return inflater.inflate(R.layout.item_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+
+        Log.d("Fragment", "onViewCategory" + category);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_styles_fragment);
         recyclerView.setHasFixedSize(true);
@@ -65,7 +90,9 @@ public class Fragment_services extends Fragment {
 
                 if (e == null && objects.size() > 0) {
 
+                    uri = new String[objects.size()];
                     for (int i = 0; i < objects.size(); i++) {
+
                         final ParseObject parseObject = objects.get(i);
                         final Data td = new Data();
                         td.title = parseObject.getString("title");
@@ -75,7 +102,7 @@ public class Fragment_services extends Fragment {
                         ParseFile parseFile = parseObject.getParseFile("image");
                         td.url = parseFile.getUrl();
 
-
+                        uri[i] = td.getUrl();
                         ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
                         parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
                         parseObjectParseQuery.whereEqualTo("favourites", parseObject.getObjectId());
@@ -128,5 +155,42 @@ public class Fragment_services extends Fragment {
 
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Fragment", "onDestroy" + category);
 
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("Fragment", "onDetach" + category);
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("Fragment", "onStop" + category);
+
+        Glide.get(getActivity()).clearMemory();
+
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d("Fragment", "onPause" + category);
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("Fragment", "onDestroyView" + category);
+
+
+    }
 }

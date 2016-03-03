@@ -30,6 +30,9 @@ public class Application extends android.app.Application {
         built.setLoggingEnabled(true);
 
         Picasso.setSingletonInstance(built);
+
+
+
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, ParseKeys.PARSE_APPLICATION_ID, ParseKeys.PARSE_CLIENT_KEY);
         ParseInstallation.getCurrentInstallation().saveInBackground();

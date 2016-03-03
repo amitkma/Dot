@@ -16,15 +16,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -49,7 +44,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         this.context = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
-
+        viewHolder.mImageView.getLayoutParams().height = (MainActivity.height - 104) / 2;
         return viewHolder;
     }
 
@@ -58,9 +53,13 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     public void onBindViewHolder(final MainActivityAdapter.ViewHolder holder, final int position) {
 
         height = holder.mImageView.getLayoutParams().height;
+        if (Application.APPDEBUG)
+            Log.d("height", String.valueOf(height));
+
         currentTrendData = data.get(position);
 
         holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
+
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View v) {
@@ -140,16 +139,16 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
 
         if (currentTrendData.getUrl() != null) {
-            if (check_connection()) {
+      /*      if (check_connection()) {
                 Picasso.with(mContext).load(currentTrendData.getUrl()).centerInside().resize(height, height).into(holder.mImageView);
 
             }
             else
                 Picasso.with(mContext).load(currentTrendData.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.mImageView);
 
-            //  Glide.with(mContext).load(currentTrendData.getUrl()).override(height,height).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.mImageView);
+        }*/
+            Glide.with(mContext).load(currentTrendData.getUrl()).override(height, height).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
         }
-
 
         if (currentTrendData.getPrice() != null) {
             holder.price.setText("Rs " + currentTrendData.getPrice());

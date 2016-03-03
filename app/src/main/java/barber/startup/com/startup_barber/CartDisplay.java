@@ -72,12 +72,19 @@ public class CartDisplay extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startCheckoutActivity();
+                if (check_connection()) {
+                    if (totaltime > 120)
+                        Snackbar.make(findViewById(R.id.coordinatorlayout), "Total time required exceeds 2 hrs", Snackbar.LENGTH_LONG).show();
+                    else startCheckoutActivity();
+                } else
+                    Snackbar.make(findViewById(R.id.coordinatorlayout), "You are offline", Snackbar.LENGTH_LONG).show();
+
+
             }
         });
 
 
-        final ImageView delete = (ImageView) toolbar.findViewById(R.id.imageview_deleteAll);
+       /* final ImageView delete = (ImageView) toolbar.findViewById(R.id.imageview_deleteAll);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,7 +101,7 @@ public class CartDisplay extends AppCompatActivity {
                 });
             }
         });
-
+*/
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_cart);
         mRecyclerView.setHasFixedSize(true);
@@ -121,16 +128,21 @@ public class CartDisplay extends AppCompatActivity {
             }
         });
 
-        backArrow_toolbar();
+        //  backArrow_toolbar();
 
 
     }
 
-    private void startCheckoutActivity() {
-        Intent i = new Intent(CartDisplay.this, Checkout.class);
-        i.putExtra("totalTimeTaken", totaltime);
-        startActivity(i);
+    private void backArrow_toolbar() {
+        ImageView back_button = (ImageView) toolbar.findViewById(R.id.button_arrow_back);
+        back_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
+
 
 
     private void getObjects(String[] a) {
@@ -157,7 +169,9 @@ public class CartDisplay extends AppCompatActivity {
                         td.id = parseObject.getObjectId();
                         td.time = parseObject.getInt("time");
 
-                        totaltime = td.time + totaltime;
+                        Log.d("td.time", String.valueOf(td.getTime()));
+                        Log.d("td.total", String.valueOf(totaltime));
+                        totaltime = parseObject.getInt("time") + totaltime;
                         ParseFile parseFile = parseObject.getParseFile("image");
                         td.url = parseFile.getUrl();
                         cartActivityAdapter.addData(td);
@@ -166,8 +180,6 @@ public class CartDisplay extends AppCompatActivity {
             }
         });
     }
-
-
 
 
     private void toolbarTitle() {
@@ -179,24 +191,57 @@ public class CartDisplay extends AppCompatActivity {
         toolbar_title.setSingleLine(true);
     }
 
-    private void backArrow_toolbar() {
-        ImageView back_button = (ImageView) toolbar.findViewById(R.id.button_arrow_back);
-        back_button.setOnClickListener(new View.OnClickListener() {
+
+    private void startCheckoutActivity() {
+
+
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
+        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void onClick(View v) {
-                onBackPressed();
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() > 0) {
+                        String[] b = new String[objects.size()];
+                        for (int i = 0; i < objects.size(); i++) {
+                            ParseObject parseObject = objects.get(i);
+                            b[i] = parseObject.getString("cart");
+                        }
+
+                        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+                        parseQuery.whereContainedIn("objectId", Arrays.asList(b));
+                        parseQuery.fromPin("data");
+
+                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+                            @Override
+                            public void done(List<ParseObject> objects1, ParseException e) {
+                                if (e == null) {
+                                    if (objects1.size() > 0) {
+                                        for (int i = 0; i < objects1.size(); i++) {
+                                            final ParseObject parseObject = objects1.get(i);
+                                            parseObject.getInt("time");
+                                            // totaltime = parseObject.getInt("time") + totaltime;
+                                        }
+                                        Intent i = new Intent(CartDisplay.this, Checkout.class);
+
+                                        i.putExtra("totalTimeTaken", totaltime);
+                                        startActivity(i);
+
+                                        overridePendingTransition(0, 0);
+
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                }
             }
+
         });
+
+
     }
-
-
-
-
-
-
-
-
-
 
     public boolean check_connection() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
@@ -229,6 +274,12 @@ public class CartDisplay extends AppCompatActivity {
         finish();
         overridePendingTransition(0, 0);
 
+    }
+
+    public void updateTotalTime(int lesstime) {
+        Log.d("CartDisplay", Integer.toString(totaltime));
+        totaltime = totaltime - lesstime;
+        Log.d("CartDisplay", Integer.toString(totaltime));
     }
 
 }

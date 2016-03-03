@@ -2,6 +2,7 @@ package barber.startup.com.startup_barber;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +13,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,9 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
+    protected static float width;
+    protected static int height;
     ParseUser parseUser = ParseUser.getCurrentUser();
-
-
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
@@ -44,7 +47,22 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
 
+
+        Display displaydp = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        displaydp.getMetrics(outMetrics);
+
+        float density = getResources().getDisplayMetrics().density;
+        Float f = outMetrics.heightPixels / density;
+        height = Math.round(f);
+        Log.d("H", String.valueOf(height));
+
+
+        width = outMetrics.widthPixels / density;
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(1);
@@ -67,6 +85,7 @@ public class MainActivity extends BaseActivity {
         setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
         tabLayout.setupWithViewPager(viewPager);
         changeTabsFont();
 

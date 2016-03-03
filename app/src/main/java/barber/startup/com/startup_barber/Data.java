@@ -12,7 +12,7 @@ public class Data {
     boolean cart = false;
 
     int cost = 0;
-    int time;
+    int time = 0;
 
     public int getTime() {
         return time;

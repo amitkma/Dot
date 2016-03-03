@@ -6,36 +6,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".CartDisplay">
+    tools:context="barber.startup.com.startup_barber.Checkout">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#E0E0E0"
+        android:theme="@style/AppTheme.AppBarOverlay"
         app:elevation="0dp">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar2"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/toolbar_shape"
-            android:title="Behledi"
-            android:titleTextColor="#BDBDBD"
-            app:theme="@style/AppTheme.AppBarOverlay">
+            android:background="#fff"
 
-            <include
-                layout="@layout/badge_cart" />
+            app:popupTheme="@style/AppTheme.PopupOverlay">
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <include layout="@layout/backbutton" />
+
+                <include
+                    layout="@layout/toolbar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+
+                    />
+
+
+            </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
             android:background="@color/divider" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_cart_display" />
+    <include layout="@layout/content_checkout" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
