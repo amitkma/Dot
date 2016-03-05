@@ -30,7 +30,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private int mYear;
     private DatePicker datePicker;
     private boolean flag = false;
-    private CommunicationChannel mCommChListner;
 
 
     @Override
@@ -73,7 +72,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
                 } else if (flag = false) {
                     datePickerDialog.updateDate(year, monthOfYear, dayOfMonth);
                     flag = true;
-                    sendDate(year, monthOfYear, dayOfMonth);
+                    int month = monthOfYear + 1;
+                    //sendDate(year, month, dayOfMonth);
 
 
                 }
@@ -86,19 +86,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        if (activity instanceof CommunicationChannel) {
-            mCommChListner = (CommunicationChannel) activity;
-        } else {
-            throw new ClassCastException();
-        }
-    }
-
-    public void sendDate(int year, int monthOfYear, int dayOfMonth) {
-        mCommChListner.setCommunication(year, monthOfYear, dayOfMonth);
-    }
 
     public Date getMinDate() {
         Date dateMin = new Date();
@@ -118,9 +105,5 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         ((Checkout) getActivity()).setDate(year, monthOfYear, dayOfMonth);
     }
 
-
-    interface CommunicationChannel {
-        public void setCommunication(int year, int monthofYear, int dayofMonth);
-    }
 
 }

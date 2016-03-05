@@ -78,7 +78,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            BaseActivity.make_favIcon_red();
+                            //BaseActivity.make_favIcon_red();
                             holder.mImageView_fav.setColorFilter(Color.RED);
 
                             Log.d("saved", data.get(position).getId());
@@ -112,7 +112,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            BaseActivity.make_cartIcon_blue();
+                            // BaseActivity.make_cartIcon_blue();
                             holder.mImageView_addToCart.setColorFilter(Color.BLUE);
 
                             Log.d("savedincart", data.get(position).getId());

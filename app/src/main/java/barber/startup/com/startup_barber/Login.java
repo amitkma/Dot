@@ -19,9 +19,11 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseFile;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -132,12 +134,29 @@ public class Login extends AppCompatActivity {
 
                             user.put("picUri", pictureUrl);
                             user.put("gender", gender);
-                            Log.d("uri", pictureUrl);
 
-                            user.saveInBackground();
-                            Intent intent = new Intent(Login.this, MainActivity.class);
-                            startActivity(intent);
-                            finish();
+
+                            user.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                                        installation.put("userId", user.getObjectId());
+                                        installation.saveInBackground(new SaveCallback() {
+                                            @Override
+                                            public void done(ParseException e) {
+                                                if (e == null) {
+                                                    Intent intent = new Intent(Login.this, MainActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                } else Log.d("LoginInstallation", e.getMessage());
+                                            }
+                                        });
+                                    } else Log.d("LoginUser", e.getMessage());
+
+                                }
+                            });
+
 
                         } catch (JSONException e) {
                             e.getMessage();

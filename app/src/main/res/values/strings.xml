@@ -22,7 +22,7 @@
     <string name="failed">Verification failed</string>
     <string name="entercode">Please enter the code you received</string>
     <string name="facebook_app_id">999874136737265</string>
-    <string name="title_activity_main">Beards</string>
+    <string name="title_activity_main">Salon</string>
     <string name="action_done">tite</string>
     <string name="profilesetup">Profile Setup</string>
     <string name="title_activity_cart_display">Your Cart</string>
@@ -34,5 +34,6 @@
     <string name="wifi_connection">WIFI</string>
     <string name="mobile_connection">MOBILE</string>
     <string name="no_wifi_or_mobile">NO WIFI NO MOBILE</string>
+    <string name="title_activity_appointments">Appointments</string>
 
 </resources>

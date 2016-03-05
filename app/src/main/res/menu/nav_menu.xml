@@ -11,9 +11,9 @@
             android:icon="@drawable/ic_favorite_black_24dp"
             android:title="Favourites" />
         <item
-            android:id="@+id/History"
+            android:id="@+id/Appointments"
             android:icon="@drawable/ic_history_black_24dp"
-            android:title="History" />
+            android:title="Appointments" />
         <item
             android:id="@+id/Cart"
             android:icon="@drawable/ic_shopping_cart_black_24dp"

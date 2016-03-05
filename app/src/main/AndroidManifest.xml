@@ -65,7 +65,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar.MainActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar.MainActivity" />
         <activity
             android:name=".CartDisplay"
             android:label="@string/title_activity_cart_display"
@@ -104,7 +104,12 @@
         <activity
             android:name=".Checkout"
             android:label="@string/title_activity_checkout"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Confirmation" />
+        <activity
+            android:name=".Appointments"
+            android:label="@string/title_activity_appointments"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

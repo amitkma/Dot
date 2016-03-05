@@ -10,6 +10,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,28 +43,7 @@ public class BaseActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     int Temp;
     boolean flag_drawerLeft = false;
-
-    public static void updatecart() {
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
-            @Override
-            public void done(final ParseUser object, ParseException e) {
-                if (e == null) {
-                    if (object.getList("cart") != null) {
-                        list = object.getList("cart");
-                        update_text_Items(list.size());
-                    }
-
-                } else e.printStackTrace();
-            }
-        });
-    }
-
-    private static void update_text_Items(int size) {
-        TextView cartText = (TextView) toolbar.findViewById(R.id.cardtext);
-        cartText.setText("(" + size + ")");
-
-    }
+    private NavigationView navigationViewRight;
 
     public static void make_favIcon_red() {
 
@@ -75,19 +55,33 @@ public class BaseActivity extends AppCompatActivity {
         cart.setColorFilter(Color.BLUE);
     }
 
+    public void setup_nav_drawer_right() {
+        navigationViewRight = (NavigationView) findViewById(R.id.navigation_view_right);
+        navigationViewRight.inflateMenu(R.menu.nav_menu_right);
+        navigationViewRight.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+
+
+                switch (item.getItemId()) {
+                    case R.id.hairStyles:
+
+                }
+
+
+                return true;
+            }
+        });
+
+
+
+    }
+
     public Toolbar setup_toolbar() {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView title = (TextView) toolbar.findViewById(R.id.title_toolbar);
-        Typeface tfe = Typeface.createFromAsset(getAssets(), "fonts/CaveatBrush-Regular.ttf");
-        title.setTypeface(tfe);
-        title.setSelected(true);
-        title.setSingleLine(true);
-
-        fav = (ImageView) toolbar.findViewById(R.id.fav_image);
-        cart = (ImageView) toolbar.findViewById(R.id.cart_image);
 
         ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
         parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
@@ -95,8 +89,8 @@ public class BaseActivity extends AppCompatActivity {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-                    if (objects.size() > 0)
-                        fav.setColorFilter(Color.RED);
+                    //if (objects.size() > 0)
+                    //  fav.setColorFilter(Color.RED);
                 } else e.printStackTrace();
             }
         });
@@ -108,8 +102,8 @@ public class BaseActivity extends AppCompatActivity {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-                    if (objects.size() > 0)
-                        cart.setColorFilter(Color.BLUE);
+                    //  if (objects.size() > 0)
+                    //    cart.setColorFilter(Color.BLUE);
                 } else e.printStackTrace();
             }
         });
@@ -158,16 +152,7 @@ public class BaseActivity extends AppCompatActivity {
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
 
 
-        ImageView button_drawer_left = (ImageView) toolbar.findViewById(R.id.button_drawer_left);
-        button_drawer_left.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                drawerLayout.openDrawer(GravityCompat.START);
-
-
-            }
-        });
 
 
         if (currentUser != null)
@@ -209,16 +194,6 @@ public class BaseActivity extends AppCompatActivity {
 
     }
 
-    public void update_cart_text() {
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.getInBackground(currentUser.getObjectId(), new GetCallback<ParseUser>() {
-            @Override
-            public void done(ParseUser object, ParseException e) {
-                updatecart();
-            }
-        });
 
-
-    }
 
 }

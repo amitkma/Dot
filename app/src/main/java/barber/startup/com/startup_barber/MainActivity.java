@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +24,10 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.parse.DeleteCallback;
-import com.parse.FindCallback;
+import com.bumptech.glide.Glide;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +39,7 @@ public class MainActivity extends BaseActivity {
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
+    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +48,17 @@ public class MainActivity extends BaseActivity {
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
+
+
+        dialog = new Dialog(MainActivity.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.developer);
+
+        ImageView ayush = (ImageView) dialog.findViewById(R.id.ayush);
+        ImageView amit = (ImageView) dialog.findViewById(R.id.amit);
+
+        Glide.with(getApplicationContext()).load((R.drawable.ayush)).into(ayush);
+        Glide.with(getApplicationContext()).load((R.drawable.amit)).into(amit);
 
 
         Display displaydp = getWindowManager().getDefaultDisplay();
@@ -93,44 +102,29 @@ public class MainActivity extends BaseActivity {
         toolbar = setup_toolbar();
         setup_nav_drawer();
         setup_nav_item_listener();
-        update_cart_text();
-
-        setup_favIcon_toolbar();
-        setup_cartIcon_toolbar();
-
-
-
 
 
     }
 
 
-    private void setup_cartIcon_toolbar() {
-        ImageView cart = (ImageView) toolbar.findViewById(R.id.cart_image);
-        cart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    private void cartIcon_toolbar() {
+
                 Intent intent = new Intent(MainActivity.this, CartDisplay.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 finish();
-            }
-        });
+
     }
 
-    private void setup_favIcon_toolbar() {
-        ImageView fav = (ImageView) toolbar.findViewById(R.id.fav_image);
-        fav.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+    private void favIcon_toolbar() {
+
                 Intent intent = new Intent(MainActivity.this, Favourites.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 overridePendingTransition(0, 0);
                 finish();
-            }
-        });
+
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -157,12 +151,20 @@ public class MainActivity extends BaseActivity {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                final Dialog dialog = new Dialog(MainActivity.this);
-                                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                dialog.setContentView(R.layout.about_developer);
                                 dialog.show();
                             }
-                        }, 150);
+                        }, 220);
+                        return true;
+
+                    case R.id.Appointments:
+                        drawerLayout.closeDrawers();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startActivity(new Intent(MainActivity.this, Appointments.class));
+                                overridePendingTransition(0, 0);
+                            }
+                        }, 220);
                         return true;
 
                     case R.id.Cart:
@@ -255,9 +257,43 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_fav) {
+
+            favIcon_toolbar();
+
+            return true;
+        }
+
+        if (id == R.id.action_cart) {
+
+            cartIcon_toolbar();
+
+            return true;
+        }
 
 
+        if (id == R.id.action_filter) {
 
+
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();

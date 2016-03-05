@@ -11,6 +11,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,27 +32,12 @@ import java.util.List;
 
 
 public class CartDisplay extends AppCompatActivity {
-    static ParseUser parseUser = ParseUser.getCurrentUser();
-    static List<String> list;
     int totaltime = 0;
     private RecyclerView mRecyclerView;
     private CartActivityAdapter cartActivityAdapter;
     private Toolbar toolbar;
     private TextView retry;
     private TextView empty;
-
-    public static void remove_item(int position) {
-        list.remove(position);
-        parseUser.put("cart", list);
-        parseUser.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                Log.d("Cart", "Removed");
-                //  BaseActivity.updatecart();
-
-            }
-        });
-    }
 
 
     @Override
@@ -65,7 +52,7 @@ public class CartDisplay extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
-        toolbarTitle();
+
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -83,25 +70,6 @@ public class CartDisplay extends AppCompatActivity {
             }
         });
 
-
-       /* final ImageView delete = (ImageView) toolbar.findViewById(R.id.imageview_deleteAll);
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                ParseObject.unpinAllInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-
-                            cartActivityAdapter.removeAllviews(empty);
-                        } else e.printStackTrace();
-                    }
-                });
-            }
-        });
-*/
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_cart);
         mRecyclerView.setHasFixedSize(true);
@@ -128,20 +96,57 @@ public class CartDisplay extends AppCompatActivity {
             }
         });
 
-        //  backArrow_toolbar();
+        backArrow();
 
 
     }
 
-    private void backArrow_toolbar() {
-        ImageView back_button = (ImageView) toolbar.findViewById(R.id.button_arrow_back);
-        back_button.setOnClickListener(new View.OnClickListener() {
+    private void backArrow() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_fav, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_deleteAll) {
+
+            deleteAll();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteAll() {
+        ParseObject.unpinAllInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+
+                    cartActivityAdapter.removeAllviews(empty);
+                } else e.printStackTrace();
+            }
+        });
+    }
+
+
 
 
 

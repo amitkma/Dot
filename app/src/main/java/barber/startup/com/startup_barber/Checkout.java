@@ -1,7 +1,6 @@
 package barber.startup.com.startup_barber;
 
 import android.app.DialogFragment;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -11,19 +10,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.parse.SendCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +35,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-public class Checkout extends AppCompatActivity implements DatePickerFragment.CommunicationChannel {
+public class Checkout extends AppCompatActivity {
 
     int totalmoney;
     int time;
@@ -50,6 +51,10 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
     private String[] objectsId;
     private Toolbar toolbar;
     private String dateFormat;
+    private Button button_time;
+    private FloatingActionButton fab;
+    private String timeslotstart;
+    private String dateformatintent;
 
 
     @Override
@@ -61,6 +66,9 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
 
         toolbarTitle();
         backArrow_toolbar();
+
+
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
         parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
@@ -77,16 +85,17 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
             }
         });
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        progressBar.setVisibility(View.GONE);
+
         Intent i = getIntent();
         if (i != null) {
             time = i.getIntExtra("totalTimeTaken", 0);
         }
 
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        Button select_date = (Button) findViewById(R.id.button_date);
+        select_date.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 if (time > 0) {
                     DialogFragment dialogFragment = new DatePickerFragment();
                     dialogFragment.show(getFragmentManager(), "DatePicker");
@@ -95,14 +104,34 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
         });
 
 
+        button_time = (Button) findViewById(R.id.time);
+        button_time.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerFragment timePickerFragment = new TimePickerFragment();
+                timePickerFragment.show(getFragmentManager(), "TimePicker");
+            }
+        });
+
+
         totalprice = (TextView) findViewById(R.id.price);
         totaltime = (TextView) findViewById(R.id.times);
         mAvailableSlotText = (TextView) findViewById(R.id.availableSlots);
 
-        totaltime.setText("Total Time: " + time);
+        totaltime.setText("Total Time: " + time + " min");
 
 
-        getSlotData();
+        // getSlotData();
+    }
+
+    private void finalcheckoutFAB(final int hourOfDay, final int minute) {
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateSlots(hourOfDay, minute);
+            }
+        });
     }
 
     private void backArrow_toolbar() {
@@ -114,6 +143,18 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
             }
         });
     }
+
+    public void settextTime(int hourOfDay, int minute) {
+        TextView text_time = (TextView) findViewById(R.id.text_time);
+        text_time.setText(String.format("%02d:%02d", hourOfDay, minute));
+        timeslotstart = String.format("%02d:%02d", hourOfDay, minute);
+
+        finalcheckoutFAB(hourOfDay, minute);
+
+    }
+
+    ;
+
 
     private void toolbarTitle() {
         TextView toolbar_title = (TextView) toolbar.findViewById(R.id.title_toolbar);
@@ -157,7 +198,7 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
     }
 
 
-    public void getSlotData() {
+    public void getSlotData(final String dateFormat) {
         Log.d("DO IT", "DONE IT");
         availableTimeSlots.clear();
 
@@ -174,7 +215,7 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
                     JSONObject jsonObject = object.getJSONObject("availableTimeJSON");
                     try {
 
-                        JSONArray jsonArray = jsonObject.getJSONArray("slots");
+                        JSONArray jsonArray = jsonObject.getJSONArray(dateFormat);
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject timeSlotObject = jsonArray.getJSONObject(i);
                             TimeSlotFormat timeSlotFormat = new TimeSlotFormat(timeSlotObject.getInt("mStartTime"), timeSlotObject.getInt("mEndTime"));
@@ -187,14 +228,26 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
                     mAvailableSlotText.setText(getCurrentSlots(Defaults.SLOT_TYPE_AVAILABLE));
                     Log.d("DO IT", "DONE IT");
                 } else
-                    Log.d("MSG", e.getMessage());
+                    Log.d("MSGs", e.getMessage());
             }
         });
     }
 
+    //Method called after date is selected
     public void setDate(int year, int monthOfYear, int dayOfMonth) {
-        dateFormat = String.format("%4d%02d%02d", year, monthOfYear, dayOfMonth);
+        TextView text_date = (TextView) findViewById(R.id.text_date);
+
+        text_date.setText(String.format("%4d/%02d/%02d", year, monthOfYear + 1, dayOfMonth));
+        dateFormat = String.format("%4d%02d%02d", year, monthOfYear + 1, dayOfMonth);
+        dateformatintent = String.format("%4d/%02d/%02d", year, monthOfYear + 1, dayOfMonth);
+        button_time.setVisibility(View.VISIBLE);
+
         Log.e("DATE", dateFormat);
+        progressBar.setVisibility(View.VISIBLE);
+
+        getSlotData(dateFormat);
+
+
     }
 
     // Method for checking whether the desired slot is available or not
@@ -260,7 +313,7 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
                 updateParseSlot(availableTimeSlots, hours, minutes);
             } else {
                 Snackbar.make(findViewById(R.id.coordinatorlayout), "Slots data changed. Conflict!!!", Snackbar.LENGTH_INDEFINITE).show();
-                getSlotData();
+                getSlotData(dateFormat);
             }
 
         } else
@@ -310,7 +363,7 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
 
                     JSONObject finalObject = new JSONObject();
                     try {
-                        finalObject.put("slots", jsonArray);
+                        finalObject.put(dateFormat, jsonArray);
                     } catch (JSONException e1) {
                         e1.printStackTrace();
                     }
@@ -359,20 +412,56 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
             timeSlot = starthour + ":" + "0" + startmin + " - " + endhour + ":" + endmin;
         } else timeSlot = starthour + ":" + startmin + " - " + endhour + ":" + endmin;
 
-
-        ParseObject parseObject = new ParseObject("Appointments");
+        final ParseObject parseObject = new ParseObject("Appointments");
         parseObject.put("servicesId", Arrays.asList(objectsId));
         parseObject.put("user", ParseUser.getCurrentUser().getUsername());
+        parseObject.put("userId", ParseUser.getCurrentUser().getObjectId());
         parseObject.put("url", ParseUser.getCurrentUser().getString("picUri"));
         parseObject.put("barberId", 0);
         parseObject.put("barberName", "Jawahar");
         parseObject.put("timeSlot", timeSlot);
+        parseObject.put("date", dateformatintent);
         parseObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e == null)
-                    Snackbar.make(findViewById(R.id.coordinatorlayout), "Appointment Booked", Snackbar.LENGTH_INDEFINITE).show();
+                if (e == null) {
 
+                    Intent i = new Intent(Checkout.this, Confirmation.class);
+                    i.putExtra("pin", parseObject.getObjectId());
+                    i.putExtra("totalTime", time);
+                    i.putExtra("appointmentDate", dateformatintent);
+                    i.putExtra("timeslot", timeslotstart + " + " + time + "min");
+
+                    ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+                    query.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());  //Send to this user only
+
+                    JSONObject jSonobj;
+                    try {
+                        jSonobj = new JSONObject();
+                        jSonobj.put("action", "com.thoughtrix.introduce.UPDATE_STATUS");
+                        jSonobj.put("from", "Barber");
+                        jSonobj.put("title", "Startup");
+                        jSonobj.put("alert", "Booking Confirmation\nDate: " + dateformatintent + "\nTimeSlot: " + timeslotstart + " + " + time + "min" + "\nBarber: JawaharBhawan");
+                        ParsePush push = new ParsePush();
+                        push.setQuery(query);
+                        push.setData(jSonobj);
+                        push.sendInBackground(new SendCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e != null)
+                                    Log.d("Pushing", e.getMessage());
+                            }
+                        });
+
+                    } catch (JSONException e3) {
+                        Log.d("push", e3.getMessage());
+                    }
+
+
+                    startActivity(i);
+                    finish();
+                    overridePendingTransition(0, 0);
+                }
                 else Log.d("e", e.getMessage());
             }
         });
@@ -387,8 +476,4 @@ public class Checkout extends AppCompatActivity implements DatePickerFragment.Co
     }
 
 
-    @Override
-    public void setCommunication(int year, int monthofYear, int dayofMonth) {
-
-    }
 }
