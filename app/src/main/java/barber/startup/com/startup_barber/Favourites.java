@@ -133,7 +133,7 @@ public class Favourites extends AppCompatActivity {
             @Override
             public void done(List<ParseObject> objects1, ParseException e) {
                 if (e == null) {
-                    if (Application.APPDEBUG)
+                    if (Application.DEBUG)
                         Log.d("Favourites", "fetched locally");
 
                     for (int i = 0; i < objects1.size(); i++) {

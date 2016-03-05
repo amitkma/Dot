@@ -14,9 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
@@ -25,7 +23,6 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.Arrays;
 import java.util.List;
@@ -163,7 +160,7 @@ public class CartDisplay extends AppCompatActivity {
             @Override
             public void done(List<ParseObject> objects1, ParseException e) {
                 if (e == null) {
-                    if (Application.APPDEBUG)
+                    if (Application.DEBUG)
                         Log.d("Cart", "fetched locally");
 
                     for (int i = 0; i < objects1.size(); i++) {

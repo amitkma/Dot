@@ -66,7 +66,7 @@ public class Appointments extends AppCompatActivity {
                             adapter_appointments.addData(data);
                         }
                     }
-                } else if (Application.APPDEBUG) Log.e("Appointments", e.getMessage());
+                } else if (Application.DEBUG) Log.e("Appointments", e.getMessage());
             }
         });
 

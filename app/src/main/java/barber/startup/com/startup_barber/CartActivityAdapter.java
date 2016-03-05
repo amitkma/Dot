@@ -1,7 +1,6 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -19,9 +17,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -34,7 +29,6 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
     ArrayList<Data> cartdata = new ArrayList<>();
     Data data;
     private Context mContext;
-    private int height;
 
     public CartActivityAdapter(Context c, TextView empty) {
         this.empty = empty;
@@ -52,86 +46,51 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        holder.remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
-                parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-                parseObjectParseQuery.whereEqualTo("cart", cartdata.get(position).getId());
-                parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                    @Override
-                    public void done(final ParseObject object, ParseException e) {
-                        if (e == null) {
-                            if (object != null) {
-                                object.unpinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        if (e == null) {
-                                            int lesstime = data.getTime();
-                                            new CartDisplay().updateTotalTime(lesstime);
-                                            Log.d("object", "removed");
-                                            cartdata.remove(position);
-                                            notifyItemRemoved(position);
-                                            if (cartdata.size() == 0) {
-                                                empty.setVisibility(View.VISIBLE);
-                                                empty.setText("Empty");
-
-                                            }
-                                        } else e.printStackTrace();
-
-                                    }
-                                });
-                            }
-                        } else e.printStackTrace();
-                    }
-                });
-
-
-            }
-        });
-
-
-        height = holder.img.getLayoutParams().height;
         data = cartdata.get(position);
         holder.title.setText(data.getTitle());
         holder.price.setText("Rs " + data.getPrice());
 
-
+        Glide.clear(holder.img);
         if (data.getUrl() != null) {
-            /**    if (check_connection())
-                Picasso.with(mContext).load(data.getUrl()).centerInside().resize(height, height).into(holder.img);
-            else
-                Picasso.with(mContext).load(data.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.img);
-             */
+
+
+            Glide.with(mContext).load(data.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.img);
         }
-
-        Glide.with(mContext).load(data.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.img);
-
-
 
     }
 
-    public boolean check_connection() {
-        ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private void remove(final int position) {
 
-//For 3G check
-        boolean is3g = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-                .isConnectedOrConnecting();
-//For WiFi Check
-        boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                .isConnectedOrConnecting();
 
-        System.out.println(is3g + " net " + isWifi);
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
+        parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+        parseObjectParseQuery.whereEqualTo("cart", cartdata.get(position).getId());
+        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(final ParseObject object, ParseException e) {
+                if (e == null) {
+                    if (object != null) {
+                        object.unpinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    cartdata.remove(position);
+                                    notifyItemRemoved(position);
+                                    if (getItemCount() == 0) {
+                                        empty.setVisibility(View.VISIBLE);
+                                        empty.setText("Empty");
 
-        if (!is3g && !isWifi) {
+                                    }
+                                } else if (Application.DEBUG)
+                                    Log.e("CartActAdapterUnpin", e.getMessage());
 
-            return false;
-        } else {
-
-            return true;
-        }
-
+                            }
+                        });
+                    }
+                } else if (Application.DEBUG) Log.e("CartActAdaptergetObject", e.getMessage());
+            }
+        });
 
     }
 
@@ -154,11 +113,11 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
 
     public void addData(Data data) {
         cartdata.add(data);
-        notifyItemInserted(getItemCount() - 1);
+        notifyItemInserted(0);
 
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title;
         TextView price;
         TextView remove;
@@ -170,8 +129,13 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
             price = (TextView) itemView.findViewById(R.id.cart_price);
             remove = (TextView) itemView.findViewById(R.id.remove);
             img = (ImageView) itemView.findViewById(R.id.cart_image);
+            remove.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+            remove(getAdapterPosition());
+        }
     }
 
 

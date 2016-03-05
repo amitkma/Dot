@@ -1,6 +1,5 @@
 package barber.startup.com.startup_barber;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
-import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -20,8 +18,6 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -39,6 +35,7 @@ public class Fragment_services extends android.support.v4.app.Fragment {
 
     public Fragment_services() {
     }
+
     public Fragment_services(int i) {
         this.category = i;
     }
@@ -46,29 +43,35 @@ public class Fragment_services extends android.support.v4.app.Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.d("Fragment", "onAttach" + category);
+        if (Application.DEBUG)
+
+            Log.d("Fragment", "onAttach" + category);
 
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("Fragment", "onCreate" + category);
+        if (Application.DEBUG)
+            Log.d("Fragment", "onCreate" + category);
 
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("Fragment", "onCreateView" + category);
+        if (Application.DEBUG)
+
+            Log.d("Fragment", "onCreateView" + category);
 
         return inflater.inflate(R.layout.item_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        if (Application.DEBUG)
 
-        Log.d("Fragment", "onViewCategory" + category);
+            Log.d("Fragment", "onViewCategory" + category);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_styles_fragment);
         recyclerView.setHasFixedSize(true);
@@ -147,7 +150,9 @@ public class Fragment_services extends android.support.v4.app.Fragment {
                         });
                     }
                 } else if (e != null)
-                    e.printStackTrace();
+                    if (Application.DEBUG)
+
+                        e.printStackTrace();
 
             }
 
@@ -158,21 +163,27 @@ public class Fragment_services extends android.support.v4.app.Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("Fragment", "onDestroy" + category);
+        if (Application.DEBUG)
+
+            Log.d("Fragment", "onDestroy" + category);
 
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("Fragment", "onDetach" + category);
+        if (Application.DEBUG)
+
+            Log.d("Fragment", "onDetach" + category);
 
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.d("Fragment", "onStop" + category);
+        if (Application.DEBUG)
+
+            Log.d("Fragment", "onStop" + category);
 
         Glide.get(getActivity()).clearMemory();
 
@@ -182,14 +193,19 @@ public class Fragment_services extends android.support.v4.app.Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("Fragment", "onPause" + category);
+
+        if (Application.DEBUG)
+
+            Log.d("Fragment", "onPause" + category);
 
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("Fragment", "onDestroyView" + category);
+        if (Application.DEBUG)
+
+            Log.d("Fragment", "onDestroyView" + category);
 
 
     }

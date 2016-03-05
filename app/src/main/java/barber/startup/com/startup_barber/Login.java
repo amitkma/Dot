@@ -61,7 +61,7 @@ public class Login extends AppCompatActivity {
                 if (e == null) {
                     if (objects.size() > 0) {
 
-                        if (Application.APPDEBUG)
+                        if (Application.DEBUG)
                             Log.d("Login", String.valueOf(objects.size()));
                         for (int i = 0; i < objects.size(); i++) {
 
@@ -71,7 +71,7 @@ public class Login extends AppCompatActivity {
                         }
 
                     }
-                } else if (Application.APPDEBUG) Log.d("Login", e.getMessage());
+                } else if (Application.DEBUG) Log.d("Login", e.getMessage());
             }
         });
     }

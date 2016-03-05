@@ -42,6 +42,8 @@ public class Checkout extends AppCompatActivity {
     private TextView totalprice;
     private TextView totaltime;
     private TextView mAvailableSlotText;
+
+
     // Declaring arraylist variables for available time slots and already booked slots
     private ArrayList<TimeSlotFormat> availableTimeSlots = new ArrayList<>();
     private ArrayList<TimeSlotFormat> bookedTimeSlots = new ArrayList<>();
@@ -199,7 +201,6 @@ public class Checkout extends AppCompatActivity {
 
 
     public void getSlotData(final String dateFormat) {
-        Log.d("DO IT", "DONE IT");
         availableTimeSlots.clear();
 
 
@@ -209,7 +210,6 @@ public class Checkout extends AppCompatActivity {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null && object != null) {
-                    Log.d("MSG", "THIS PASS");
                     updateTime = object.getUpdatedAt();
                     objectId = object.getObjectId();
                     JSONObject jsonObject = object.getJSONObject("availableTimeJSON");
@@ -226,8 +226,7 @@ public class Checkout extends AppCompatActivity {
                     }
                     progressBar.setVisibility(View.GONE);
                     mAvailableSlotText.setText(getCurrentSlots(Defaults.SLOT_TYPE_AVAILABLE));
-                    Log.d("DO IT", "DONE IT");
-                } else
+                } else if (Application.DEBUG)
                     Log.d("MSGs", e.getMessage());
             }
         });
@@ -241,8 +240,8 @@ public class Checkout extends AppCompatActivity {
         dateFormat = String.format("%4d%02d%02d", year, monthOfYear + 1, dayOfMonth);
         dateformatintent = String.format("%4d/%02d/%02d", year, monthOfYear + 1, dayOfMonth);
         button_time.setVisibility(View.VISIBLE);
-
-        Log.e("DATE", dateFormat);
+        if (Application.DEBUG)
+            Log.e("DATE", dateFormat);
         progressBar.setVisibility(View.VISIBLE);
 
         getSlotData(dateFormat);
@@ -372,10 +371,12 @@ public class Checkout extends AppCompatActivity {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
-                                Log.e("SAVED", "HO GYA BHAI");
+                                if (Application.DEBUG)
+                                    Log.e("SAVED", "HO GYA BHAI");
                                 saveAppointment(hours, minutes);
                             } else {
-                                Log.e("SAVED", e.getMessage());
+                                if (Application.DEBUG)
+                                    Log.e("SAVED", e.getMessage());
 
                             }
 
@@ -449,20 +450,21 @@ public class Checkout extends AppCompatActivity {
                             @Override
                             public void done(ParseException e) {
                                 if (e != null)
-                                    Log.d("Pushing", e.getMessage());
+                                    if (Application.DEBUG)
+                                        Log.d("Pushing", e.getMessage());
                             }
                         });
 
                     } catch (JSONException e3) {
-                        Log.d("push", e3.getMessage());
+                        if (Application.DEBUG)
+                            Log.d("push", e3.getMessage());
                     }
 
 
                     startActivity(i);
                     finish();
                     overridePendingTransition(0, 0);
-                }
-                else Log.d("e", e.getMessage());
+                } else if ((Application.DEBUG)) Log.d("e", e.getMessage());
             }
         });
     }

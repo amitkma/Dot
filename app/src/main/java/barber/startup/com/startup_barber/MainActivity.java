@@ -2,8 +2,11 @@ package barber.startup.com.startup_barber;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -25,8 +28,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.parse.FindCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
@@ -35,11 +41,28 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
     protected static float width;
     protected static int height;
+    private static Menu menu;
     ParseUser parseUser = ParseUser.getCurrentUser();
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Toolbar toolbar;
     private Dialog dialog;
+
+    public static void makeFavIconRed() {
+
+        MenuItem item = menu.findItem(R.id.action_fav);
+        Drawable newIcon = (Drawable) item.getIcon();
+        newIcon.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+        item.setIcon(newIcon);
+
+    }
+
+    public static void makeCartIconBlue() {
+        MenuItem item = menu.findItem(R.id.action_cart);
+        Drawable newIcon = (Drawable) item.getIcon();
+        newIcon.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
+        item.setIcon(newIcon);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,24 +129,23 @@ public class MainActivity extends BaseActivity {
 
     }
 
-
     private void cartIcon_toolbar() {
 
-                Intent intent = new Intent(MainActivity.this, CartDisplay.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                overridePendingTransition(0, 0);
-                finish();
+        Intent intent = new Intent(MainActivity.this, CartDisplay.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+        finish();
 
     }
 
     private void favIcon_toolbar() {
 
-                Intent intent = new Intent(MainActivity.this, Favourites.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
-                overridePendingTransition(0, 0);
-                finish();
+        Intent intent = new Intent(MainActivity.this, Favourites.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+        finish();
 
     }
 
@@ -132,6 +154,7 @@ public class MainActivity extends BaseActivity {
         adapter.addFragment(new Fragment_services(0), "Beards");
         adapter.addFragment(new Fragment_services(1), "Moustache");
         adapter.addFragment(new Fragment_services(2), "Hairstyle");
+        adapter.addFragment(new Fragment_services(3), "Extras");
 
 
         viewPager.setAdapter(adapter);
@@ -220,7 +243,6 @@ public class MainActivity extends BaseActivity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Log.d("REACHED", "ECHED");
                         parseUser = null;
                         Intent i = new Intent(getApplicationContext(), Login.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -230,8 +252,7 @@ public class MainActivity extends BaseActivity {
                         finish();
                         overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
-                    } else
-                        e.printStackTrace();
+                    } else if (Application.DEBUG) Log.e("MainActivity", e.getMessage());
                 }
             });
         }
@@ -257,10 +278,42 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    ;
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        this.menu = menu;
+
+
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
+        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+        parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() > 0)
+                        MainActivity.makeFavIconRed();
+                } else e.printStackTrace();
+            }
+        });
+
+
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
+        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() > 0)
+                        MainActivity.makeCartIconBlue();
+                } else if (Application.DEBUG) Log.e("MainActivity", e.getMessage());
+            }
+        });
+
+
         return true;
     }
 
@@ -287,11 +340,6 @@ public class MainActivity extends BaseActivity {
         }
 
 
-        if (id == R.id.action_filter) {
-
-
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 

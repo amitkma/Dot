@@ -77,7 +77,7 @@ public class DataSaving extends AppCompatActivity {
                 public void done(List<ParseObject> objects, ParseException e) {
                     if (e == null) {
                         if (objects.size() > 0) {
-                            if (Application.APPDEBUG)
+                            if (Application.DEBUG)
                                 Log.d("Objectsize", String.valueOf(objects.size()));
                             for (int i = 0; i < objects.size(); i++) {
                                 ParseObject parseObject = objects.get(i);
@@ -107,14 +107,14 @@ public class DataSaving extends AppCompatActivity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    if (Application.APPDEBUG)
+                    if (Application.DEBUG)
                         Log.d("MainActivityPin", "unPinnedAll");
 
                     ParseObject.pinAllInBackground("data", objects, new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
-                                if (Application.APPDEBUG)
+                                if (Application.DEBUG)
                                     Log.d("Login", "PinnedAll");
 
                                 prefs.edit().putBoolean("dataSaved", true).commit();

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
@@ -13,15 +14,19 @@ import com.squareup.picasso.LruCache;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 
+import io.fabric.sdk.android.Fabric;
+
 /**
  * Created by Arish on 08-01-2016.
  */
 public class Application extends android.app.Application {
-    public static final boolean APPDEBUG = true;
+    public static final boolean DEBUG = false;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        Fabric.with(this, new Crashlytics());
+
 
         Picasso.Builder builder = new Picasso.Builder(this);
         builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));

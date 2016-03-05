@@ -53,7 +53,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     public void onBindViewHolder(final MainActivityAdapter.ViewHolder holder, final int position) {
 
         height = holder.mImageView.getLayoutParams().height;
-        if (Application.APPDEBUG)
+        if (Application.DEBUG)
             Log.d("height", String.valueOf(height));
 
         currentTrendData = data.get(position);
@@ -78,10 +78,11 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            //BaseActivity.make_favIcon_red();
+                            MainActivity.makeFavIconRed();
                             holder.mImageView_fav.setColorFilter(Color.RED);
 
-                            Log.d("saved", data.get(position).getId());
+                            if (Application.DEBUG)
+                                Log.d("MainActivityAdapter", "Saved" + data.get(position).getId());
                         } else e.printStackTrace();
                     }
                 });
@@ -112,10 +113,10 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            // BaseActivity.make_cartIcon_blue();
+                            MainActivity.makeCartIconBlue();
                             holder.mImageView_addToCart.setColorFilter(Color.BLUE);
-
-                            Log.d("savedincart", data.get(position).getId());
+                            if (Application.DEBUG)
+                                Log.d("MainActivityAdapter", "Saved" + data.get(position).getId());
                         } else e.printStackTrace();
                     }
                 });
@@ -139,39 +140,12 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
 
         if (currentTrendData.getUrl() != null) {
-      /*      if (check_connection()) {
-                Picasso.with(mContext).load(currentTrendData.getUrl()).centerInside().resize(height, height).into(holder.mImageView);
 
-            }
-            else
-                Picasso.with(mContext).load(currentTrendData.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.mImageView);
-
-        }*/
             Glide.with(mContext).load(currentTrendData.getUrl()).override(height, height).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
         }
 
         if (currentTrendData.getPrice() != null) {
             holder.price.setText("Rs " + currentTrendData.getPrice());
-        }
-
-
-    }
-
-    public boolean check_connection() {
-        ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-//For 3G check
-        boolean is3g = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-                .isConnectedOrConnecting();
-//For WiFi Check
-        boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                .isConnectedOrConnecting();
-        if (!is3g && !isWifi) {
-
-            return false;
-        } else {
-
-            return true;
         }
 
 

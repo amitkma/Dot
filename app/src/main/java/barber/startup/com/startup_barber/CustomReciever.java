@@ -61,7 +61,7 @@ public class CustomReciever extends ParsePushBroadcastReceiver {
                     public void done(List<ParseObject> objects, ParseException e) {
                         if (e == null)
                             if (objects.size() > 0) {
-                                if (Application.APPDEBUG)
+                                if (Application.DEBUG)
                                     Log.d("Objectsize", String.valueOf(objects.size()));
                                 unpinAndRepinData(objects);
                             }
@@ -103,14 +103,14 @@ public class CustomReciever extends ParsePushBroadcastReceiver {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-                    if (Application.APPDEBUG)
+                    if (Application.DEBUG)
                         Log.d("MainActivityPin", "unPinnedAll");
 
                     ParseObject.pinAllInBackground("data", objects, new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
-                                if (Application.APPDEBUG)
+                                if (Application.DEBUG)
                                     Log.d("MainActivityPin", "PinnedAll");
                             } else e.printStackTrace();
                         }

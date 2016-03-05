@@ -36,4 +36,5 @@
     <string name="no_wifi_or_mobile">NO WIFI NO MOBILE</string>
     <string name="title_activity_appointments">Appointments</string>
 
+    <string name="com.optimizely.api_key" translatable="false">AANNNgcBrNDsy-Xcm0kouiKfAgynEQQR~5222850419</string>
 </resources>

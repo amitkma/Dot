@@ -1,7 +1,6 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,9 +17,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.squareup.picasso.MemoryPolicy;
-import com.squareup.picasso.NetworkPolicy;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -28,7 +24,6 @@ import java.util.ArrayList;
  * Created by ayush on 28/2/16.
  */
 public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.ViewHolder> {
-    static int height = 0;
     private final TextView empty;
 
     ArrayList<Data> cartdata = new ArrayList<>();
@@ -51,89 +46,52 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        height = holder.back.getLayoutParams().height;
 
         data = cartdata.get(position);
         holder.title.setText(data.getTitle());
         holder.price.setText("Rs " + data.getPrice());
 
-        holder.remove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
-                parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
-                parseObjectParseQuery.whereEqualTo("favourites", cartdata.get(position).getId());
-                parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                    @Override
-                    public void done(ParseObject object, ParseException e) {
-                        if (e == null) {
-                            if (object != null) {
-                                object.unpinInBackground(ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
-                                    @Override
-                                    public void done(ParseException e) {
-                                        if (e == null) {
-
-                                            Log.d("object", "removed");
-                                            cartdata.remove(position);
-                                            notifyItemRemoved(position);
-                                            if (cartdata.size() == 0) {
-                                                empty.setVisibility(View.VISIBLE);
-                                                empty.setText("Empty");
-
-                                            }
-                                        } else e.printStackTrace();
-
-                                    }
-                                });
-                            }
-                        } else e.printStackTrace();
-                    }
-                });
-
-
-            }
-        });
-
-
-        holder.cart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         if (data.getUrl() != null) {
-            /** if (check_connection())
-             Picasso.with(mContext).load(data.getUrl()).centerInside().resize(height, height).into(holder.back);
-             else
-             Picasso.with(mContext).load(data.getUrl()).networkPolicy(NetworkPolicy.OFFLINE).centerInside().resize(height, height).into(holder.back);
-             */
+
             Glide.with(mContext).load(data.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.back);
         }
     }
 
-    public boolean check_connection() {
-        ConnectivityManager manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private void remove(final int position) {
 
-//For 3G check
-        boolean is3g = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-                .isConnectedOrConnecting();
-//For WiFi Check
-        boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                .isConnectedOrConnecting();
 
-        System.out.println(is3g + " net " + isWifi);
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
+        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+        parseObjectParseQuery.whereEqualTo("favourites", cartdata.get(position).getId());
+        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(final ParseObject object, ParseException e) {
+                if (e == null) {
+                    if (object != null) {
+                        object.unpinInBackground(ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    cartdata.remove(position);
+                                    notifyItemRemoved(position);
+                                    if (getItemCount() == 0) {
+                                        empty.setVisibility(View.VISIBLE);
+                                        empty.setText("Empty");
 
-        if (!is3g && !isWifi) {
+                                    }
+                                } else if (Application.DEBUG)
+                                    Log.e("FavActAdapterUnpin", e.getMessage());
 
-            return false;
-        } else {
-
-            return true;
-        }
-
+                            }
+                        });
+                    }
+                } else if (Application.DEBUG) Log.e("FavActAdaptergetObject", e.getMessage());
+            }
+        });
 
     }
+
 
     @Override
     public int getItemCount() {
@@ -144,7 +102,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
 
     public void addData(Data data) {
         cartdata.add(data);
-        notifyItemInserted(getItemCount() - 1);
+        notifyItemInserted(0);
 
     }
 
@@ -159,7 +117,8 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
         empty.setText("Empty");
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title;
         TextView price;
         ImageView remove;
@@ -173,7 +132,16 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
             remove = (ImageView) itemView.findViewById(R.id.button_remove);
             back = (ImageView) itemView.findViewById(R.id.image);
             cart = (ImageView) itemView.findViewById(R.id.button_cart);
+            remove.setOnClickListener(this);
+
         }
 
+
+        @Override
+        public void onClick(View v) {
+            Data d = cartdata.get(getAdapterPosition());
+            Log.d("d", d.getId());
+            remove(getAdapterPosition());
+        }
     }
 }
