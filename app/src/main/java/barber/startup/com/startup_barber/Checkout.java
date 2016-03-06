@@ -30,10 +30,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class Checkout extends AppCompatActivity {
 
@@ -57,6 +61,7 @@ public class Checkout extends AppCompatActivity {
     private FloatingActionButton fab;
     private String timeslotstart;
     private String dateformatintent;
+    private JSONObject jsonObject;
 
 
     @Override
@@ -123,7 +128,6 @@ public class Checkout extends AppCompatActivity {
         totaltime.setText("Total Time: " + time + " min");
 
 
-        // getSlotData();
     }
 
     private void finalcheckoutFAB(final int hourOfDay, final int minute) {
@@ -209,25 +213,32 @@ public class Checkout extends AppCompatActivity {
         parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
-                if (e == null && object != null) {
-                    updateTime = object.getUpdatedAt();
-                    objectId = object.getObjectId();
-                    JSONObject jsonObject = object.getJSONObject("availableTimeJSON");
-                    try {
+                if (e == null) {
+                    if (object != null) {
+                        updateTime = object.getUpdatedAt();
+                        objectId = object.getObjectId();
+                        jsonObject = object.getJSONObject("availableTimeJSON");
+                        try {
 
-                        JSONArray jsonArray = jsonObject.getJSONArray(dateFormat);
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject timeSlotObject = jsonArray.getJSONObject(i);
-                            TimeSlotFormat timeSlotFormat = new TimeSlotFormat(timeSlotObject.getInt("mStartTime"), timeSlotObject.getInt("mEndTime"));
+                            JSONArray jsonArray = jsonObject.getJSONArray(dateFormat);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject timeSlotObject = jsonArray.getJSONObject(i);
+                                TimeSlotFormat timeSlotFormat = new TimeSlotFormat(timeSlotObject.getInt("mStartTime"), timeSlotObject.getInt("mEndTime"));
+                                availableTimeSlots.add(timeSlotFormat);
+                            }
+                        } catch (JSONException e1) {
+                            if (Application.DEBUG)
+                                Log.e("Checkout:JSON object", e1.getMessage());
+                            TimeSlotFormat timeSlotFormat = new TimeSlotFormat(900, 2200);
                             availableTimeSlots.add(timeSlotFormat);
+
+
                         }
-                    } catch (JSONException e1) {
-                        Log.d("MSG", e1.getMessage());
-                    }
-                    progressBar.setVisibility(View.GONE);
-                    mAvailableSlotText.setText(getCurrentSlots(Defaults.SLOT_TYPE_AVAILABLE));
+                        progressBar.setVisibility(View.GONE);
+                        mAvailableSlotText.setText(getCurrentSlots(Defaults.SLOT_TYPE_AVAILABLE));
+                    } else if (Application.DEBUG) Log.e("Checkout", "object is null");
                 } else if (Application.DEBUG)
-                    Log.d("MSGs", e.getMessage());
+                    Log.e("Checkout:getslotdata", e.getMessage());
             }
         });
     }
@@ -238,7 +249,7 @@ public class Checkout extends AppCompatActivity {
 
         text_date.setText(String.format("%4d/%02d/%02d", year, monthOfYear + 1, dayOfMonth));
         dateFormat = String.format("%4d%02d%02d", year, monthOfYear + 1, dayOfMonth);
-        dateformatintent = String.format("%4d/%02d/%02d", year, monthOfYear + 1, dayOfMonth);
+        dateformatintent = String.format("%02d/%02d/%4d", dayOfMonth, monthOfYear + 1, year);
         button_time.setVisibility(View.VISIBLE);
         if (Application.DEBUG)
             Log.e("DATE", dateFormat);
@@ -360,13 +371,12 @@ public class Checkout extends AppCompatActivity {
                         jsonArray.put(jsonObject);
                     }
 
-                    JSONObject finalObject = new JSONObject();
                     try {
-                        finalObject.put(dateFormat, jsonArray);
+                        jsonObject.put(dateFormat, jsonArray);
                     } catch (JSONException e1) {
                         e1.printStackTrace();
                     }
-                    object.put("availableTimeJSON", finalObject);
+                    object.put("availableTimeJSON", jsonObject);
                     object.saveInBackground(new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -382,6 +392,7 @@ public class Checkout extends AppCompatActivity {
 
                         }
                     });
+
                 }
 
 
@@ -421,7 +432,8 @@ public class Checkout extends AppCompatActivity {
         parseObject.put("barberId", 0);
         parseObject.put("barberName", "Jawahar");
         parseObject.put("timeSlot", timeSlot);
-        parseObject.put("date", dateformatintent);
+        parseObject.put("date", Integer.valueOf(dateFormat));
+        parseObject.put("completed", false);
         parseObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -436,6 +448,9 @@ public class Checkout extends AppCompatActivity {
                     ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
                     query.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());  //Send to this user only
 
+                    String a[] = {"oEhBK7XN5Q", ParseUser.getCurrentUser().getObjectId()};
+
+                    query.whereContainedIn("userId", Arrays.asList(a));
                     JSONObject jSonobj;
                     try {
                         jSonobj = new JSONObject();

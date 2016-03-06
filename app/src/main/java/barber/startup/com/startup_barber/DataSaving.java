@@ -118,6 +118,8 @@ public class DataSaving extends AppCompatActivity {
                                     Log.d("Login", "PinnedAll");
 
                                 prefs.edit().putBoolean("dataSaved", true).commit();
+                                progressDialog.dismiss();
+                                progressDialog = null;
                                 startMainActivity();
 
                             } else {

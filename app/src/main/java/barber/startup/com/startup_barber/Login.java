@@ -88,16 +88,17 @@ public class Login extends AppCompatActivity {
     }
 
     private void link_with_parse() {
-        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "user_photos", "public_profile"), new LogInCallback() {
+        ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "user_friends", "public_profile"), new LogInCallback() {
             @Override
             public void done(ParseUser user, com.parse.ParseException e) {
                 if (user == null) {
                     Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
                     getfb_details(user);
-                    startDataLoadActivity();
+
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
                 } else {
+
                     startDataLoadActivity();
                     Log.d("MyApp", "User logged in through Facebook!");
 
@@ -108,9 +109,30 @@ public class Login extends AppCompatActivity {
     }
 
     private void getfb_details(final ParseUser user) {
+/*GraphRequest.
+        GraphRequest request = GraphRequest.newMeRequest(
+                AccessToken.getCurrentAccessToken(),
+                new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(
+                            JSONObject object,
+                            GraphResponse response) {
+                        // Application code
 
+                        Log.d("JSONobject", String.valueOf(object));
+
+
+                    }
+                });*/
         Bundle parameters = new Bundle();
+        //  parameters.putString("fields", "id,name,first_name,last_name,age_range,link,gender,locale,picture,user_friends");
+        // request.setParameters(parameters);
+        // request.executeAsync();
+
+
         parameters.putString("fields", "picture.type(small).width(100).height(100),name,gender,birthday");
+
+
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/me",
@@ -146,9 +168,7 @@ public class Login extends AppCompatActivity {
                                             @Override
                                             public void done(ParseException e) {
                                                 if (e == null) {
-                                                    Intent intent = new Intent(Login.this, MainActivity.class);
-                                                    startActivity(intent);
-                                                    finish();
+                                                    startDataLoadActivity();
                                                 } else Log.d("LoginInstallation", e.getMessage());
                                             }
                                         });
