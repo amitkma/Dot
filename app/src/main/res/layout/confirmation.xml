@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/confirmtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:fontFamily="sans-serif-condensed"
+
+        android:padding="2dp"
+        android:text="Confirmation Reciept"
+        android:textColor="@color/primary"
+        android:textSize="28dp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/lll"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/confirmtext"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/confirm_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_marginTop="24dp"
+            android:padding="2dp"
+
+            android:text="Username"
+            android:textColor="@color/primary"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/confirm_barber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:padding="2dp"
+
+            android:text="Barber"
+            android:textColor="@color/primary"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/confirm_appointment_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:padding="2dp"
+
+            android:text="Date"
+            android:textColor="@color/primary"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/confirm_appointment_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:padding="2dp"
+
+            android:text="Time Slot"
+            android:textColor="@color/primary"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/confirm_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:padding="2dp"
+
+            android:text="Total Cost"
+            android:textColor="@color/primary"
+            android:textSize="18dp" />
+
+        <TextView
+            android:id="@+id/confirm_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:padding="2dp"
+
+            android:text="Total Time"
+            android:textColor="@color/primary"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lll"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/confirm_pintext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="2dp"
+
+            android:text="PIN"
+            android:textColor="@color/primary"
+            android:textSize="24dp" />
+
+        <TextView
+            android:id="@+id/confirm_pin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="2dp"
+            android:text="PIN"
+            android:textColor="@color/primary"
+            android:textSize="28dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</RelativeLayout>
