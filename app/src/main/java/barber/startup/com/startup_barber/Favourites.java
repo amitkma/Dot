@@ -53,7 +53,7 @@ public class Favourites extends AppCompatActivity {
         favAdapter = new FavActivityAdapter(this, empty);
 
 
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Fav");
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.FavouritesClass);
         parseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -124,7 +124,7 @@ public class Favourites extends AppCompatActivity {
 
         recyclerView_fav.setAdapter(favAdapter);
 
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
         parseQuery.whereContainedIn("objectId", Arrays.asList(a));
         parseQuery.fromPin("data");
         parseQuery.orderByDescending("updatedAt");

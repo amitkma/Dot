@@ -7,3 +7,11 @@
 /build
 /captures
 /app/src/main/java/barber/startup/com/startup_barber/ParseKeys.java
+/app/src/main/java/barber/startup/com/startup_barber/Defaults.java
+
+
+git rm -r --cached .
+
+git add .
+
+git commit -m "fixing .gitignore"

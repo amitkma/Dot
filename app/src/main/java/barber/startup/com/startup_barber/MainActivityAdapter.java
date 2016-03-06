@@ -72,7 +72,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
             private void updateFavourites() {
 
-                ParseObject parseObject = new ParseObject("Fav");
+                ParseObject parseObject = new ParseObject(Defaults.FavouritesClass);
                 parseObject.put("favourites", data.get(position).getId());
                 parseObject.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
                     @Override
@@ -107,7 +107,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
             private void updateCart() {
 
-                ParseObject parseObject = new ParseObject("Cart");
+                ParseObject parseObject = new ParseObject(Defaults.CartClass);
                 parseObject.put("cart", data.get(position).getId());
                 parseObject.pinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
                     @Override

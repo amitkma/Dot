@@ -71,7 +71,7 @@ public class DataSaving extends AppCompatActivity {
         progressDialog.show();
         // Syncing all our data from server
         if (check_connection()) {
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Data");
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Defaults.DataClass);
             query.findInBackground(new FindCallback<ParseObject>() {
                 @Override
                 public void done(List<ParseObject> objects, ParseException e) {

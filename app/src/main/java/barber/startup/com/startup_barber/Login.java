@@ -54,7 +54,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void downloadData() {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("Data");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Defaults.DataClass);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {

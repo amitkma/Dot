@@ -83,7 +83,7 @@ public class Fragment_services extends android.support.v4.app.Fragment {
     }
 
     public void setUpRecyclerView() {
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
         parseQuery.whereEqualTo("Category", category);
         parseQuery.fromPin("data");
         parseQuery.orderByDescending("updatedAt");

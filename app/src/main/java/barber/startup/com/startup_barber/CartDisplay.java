@@ -132,7 +132,7 @@ public class CartDisplay extends AppCompatActivity {
     }
 
     private void deleteAll() {
-        ParseObject.unpinAllInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
+        ParseObject.unpinAllInBackground(Defaults.CartClass+ ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
@@ -151,7 +151,7 @@ public class CartDisplay extends AppCompatActivity {
 
         mRecyclerView.setAdapter(cartActivityAdapter);
 
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
         parseQuery.whereContainedIn("objectId", Arrays.asList(a));
         parseQuery.fromPin("data");
         parseQuery.orderByDescending("updatedAt");
@@ -197,7 +197,7 @@ public class CartDisplay extends AppCompatActivity {
     private void startCheckoutActivity() {
 
 
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.CartClass);
         parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -210,7 +210,7 @@ public class CartDisplay extends AppCompatActivity {
                             b[i] = parseObject.getString("cart");
                         }
 
-                        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+                        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
                         parseQuery.whereContainedIn("objectId", Arrays.asList(b));
                         parseQuery.fromPin("data");
 

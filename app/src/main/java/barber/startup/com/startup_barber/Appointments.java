@@ -46,7 +46,7 @@ public class Appointments extends AppCompatActivity {
 
         adapter_appointments = new Adapter_Appointments();
         recyclerView.setAdapter(adapter_appointments);
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Appointments");
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>(Defaults.AppointmentClass);
         parseObjectParseQuery.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
         parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
