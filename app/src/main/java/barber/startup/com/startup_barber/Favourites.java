@@ -21,11 +21,13 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Favourites extends AppCompatActivity {
 
+    List<String> listcart = new ArrayList<String>();
+    List<String> listfav = new ArrayList<String>();
     private RecyclerView recyclerView_fav;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
     private FavActivityAdapter favAdapter;
@@ -67,9 +69,9 @@ public class Favourites extends AppCompatActivity {
                         String[] a = new String[objects.size()];
                         for (int i = 0; i < objects.size(); i++) {
                             ParseObject parseObject = objects.get(i);
-                            a[i] = parseObject.getString("favourites");
+                            listfav.add(parseObject.getString("favourites"));
                         }
-
+                        Log.d("fav", String.valueOf(listfav));
 
                         getObjects(a);
                     } else empty.setVisibility(View.VISIBLE);
@@ -77,7 +79,19 @@ public class Favourites extends AppCompatActivity {
             }
         });
 
+        backArrow();
+    }
 
+
+    private void backArrow() {
+
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     private void deleteAll() {
@@ -125,27 +139,73 @@ public class Favourites extends AppCompatActivity {
         recyclerView_fav.setAdapter(favAdapter);
 
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
-        parseQuery.whereContainedIn("objectId", Arrays.asList(a));
+        parseQuery.whereContainedIn("objectId", listfav);
         parseQuery.fromPin("data");
         parseQuery.orderByDescending("updatedAt");
 
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(List<ParseObject> objects1, ParseException e) {
+            public void done(final List<ParseObject> objects1, ParseException e) {
                 if (e == null) {
                     if (Application.DEBUG)
                         Log.d("Favourites", "fetched locally");
 
-                    for (int i = 0; i < objects1.size(); i++) {
-                        final ParseObject parseObject = objects1.get(objects1.size() - i - 1);
-                        final Data td = new Data();
-                        td.title = parseObject.getString("title");
-                        td.price = parseObject.getString("price");
-                        td.id = parseObject.getObjectId();
-                        ParseFile parseFile = parseObject.getParseFile("image");
-                        td.url = parseFile.getUrl();
-                        favAdapter.addData(td);
-                    }
+
+                    ParseQuery<ParseObject> parseObjectParseQuery2 = new ParseQuery<ParseObject>("Cart");
+                    parseObjectParseQuery2.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+                    parseObjectParseQuery2.findInBackground(new FindCallback<ParseObject>() {
+                        @Override
+                        public void done(List<ParseObject> objects, ParseException e) {
+                            if (objects != null) {
+                                for (int i = 0; i < objects.size(); i++) {
+                                    final ParseObject parseObject = objects.get(i);
+                                    listcart.add(parseObject.getString("cart"));
+                                }
+
+
+                                for (int i = 0; i < objects1.size(); i++) {
+                                    final ParseObject parseObject = objects1.get(objects1.size() - i - 1);
+                                    final Data td = new Data();
+                                    td.title = parseObject.getString("title");
+                                    td.price = parseObject.getString("price");
+                                    td.id = parseObject.getObjectId();
+                                    ParseFile parseFile = parseObject.getParseFile("image");
+                                    td.url = parseFile.getUrl();
+
+                                    if (listcart.contains(parseObject.getObjectId())) {
+                                        Log.d("Reached", "passed");
+                                        td.cart = true;
+                                    }
+                                    favAdapter.addData(td);
+
+
+                                }
+
+
+                                Log.d("listcart", String.valueOf(listcart));
+                            }
+                        }
+                    });
+
+
+
+
+
+                       /* ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
+                        parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+                        parseObjectParseQuery.whereEqualTo("cart", parseObject.getObjectId());
+                        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+                            @Override
+                            public void done(ParseObject object, ParseException e) {
+                                if (e == null && object != null) {
+                                    td.cart = true;
+                                    favAdapter.addData(td);
+                                } else favAdapter.addData(td);
+
+
+                            }
+                        });     */
+
                 }
             }
         });

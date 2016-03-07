@@ -12,23 +12,24 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by ayush on 28/2/16.
  */
 public class Fragment_services extends android.support.v4.app.Fragment {
+    List<String> listcart = new ArrayList<String>();
+    List<String> listfav = new ArrayList<String>();
     private RecyclerView recyclerView;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
     private MainActivityAdapter adapter;
-    private boolean DataLoaded = false;
     private int category;
     private String[] uri;
 
@@ -77,9 +78,60 @@ public class Fragment_services extends android.support.v4.app.Fragment {
         recyclerView.setHasFixedSize(true);
         gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
         recyclerView.setLayoutManager(gaggeredGridLayoutManager);
-        adapter = new MainActivityAdapter(getContext());
+        // adapter = new MainActivityAdapter(getContext());
         recyclerView.setAdapter(adapter);
-        setUpRecyclerView();
+
+        getFavlist();
+
+    }
+
+    private void getFavlist() {
+        final ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
+        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+        parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null)
+                    if (objects != null) {
+                        MainActivity.makeFavIconRed();
+                        for (int i = 0; i < objects.size(); i++) {
+                            final ParseObject parseObject = objects.get(i);
+                            listfav.add(parseObject.getString("favourites"));
+                        }
+
+                        Log.d("frag_serv listfav", String.valueOf(listfav));
+
+                        getCartlist();
+
+
+                    }
+            }
+
+
+        });
+    }
+
+    private void getCartlist() {
+        ParseQuery<ParseObject> parseObjectParseQuery2 = new ParseQuery<ParseObject>("Cart");
+        parseObjectParseQuery2.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+        parseObjectParseQuery2.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null)
+                    if (objects != null) {
+                        MainActivity.makeCartIconBlue();
+                        for (int i = 0; i < objects.size(); i++) {
+                            final ParseObject parseObject = objects.get(i);
+                            listcart.add(parseObject.getString("cart"));
+
+                        }
+                        Log.d("frag_serv listcart", String.valueOf(listcart));
+
+                        setUpRecyclerView();
+                    }
+            }
+        });
+
     }
 
     public void setUpRecyclerView() {
@@ -106,59 +158,28 @@ public class Fragment_services extends android.support.v4.app.Fragment {
                         td.url = parseFile.getUrl();
 
                         uri[i] = td.getUrl();
-                        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
-                        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
-                        parseObjectParseQuery.whereEqualTo("favourites", parseObject.getObjectId());
-                        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                            @Override
-                            public void done(ParseObject object, ParseException e) {
 
-                                if (e == null && object != null) {
-                                    td.fav = true;
-                                    ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
-                                    parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-                                    parseObjectParseQuery.whereEqualTo("cart", parseObject.getObjectId());
-                                    parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                                        @Override
-                                        public void done(ParseObject object, ParseException e) {
-                                            if (e == null && object != null) {
-                                                td.cart = true;
-                                                Log.e("Fragment_services", "cart method is passed");
-                                                adapter.addData(td);
-                                            } else adapter.addData(td);
+                        Log.e("Fragment_services", "cart method is passed");
+                        if (listfav.contains(parseObject.getObjectId()))
+                            td.fav = true;
 
-                                        }
-                                    });
 
-                                } else {
-                                    ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
-                                    parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-                                    parseObjectParseQuery.whereEqualTo("cart", parseObject.getObjectId());
-                                    parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                                        @Override
-                                        public void done(ParseObject object, ParseException e) {
-                                            if (e == null && object != null) {
-                                                td.cart = true;
-                                                adapter.addData(td);
-                                            } else adapter.addData(td);
+                        if (listcart.contains(parseObject.getObjectId()))
+                            td.cart = true;
 
-                                        }
-                                    });
-                                }
+                        adapter.addData(td);
 
-                            }
-                        });
                     }
                 } else if (e != null)
                     if (Application.DEBUG)
+                        Log.e("Fragment_services", "setuprecyclerview " + e.getMessage());
 
-                        e.printStackTrace();
 
             }
-
         });
 
     }
+
 
     @Override
     public void onDestroy() {

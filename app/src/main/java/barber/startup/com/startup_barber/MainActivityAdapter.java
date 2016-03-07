@@ -3,7 +3,6 @@ package barber.startup.com.startup_barber;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by ayush on 29/1/16.
@@ -30,13 +32,13 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     static int height = 0;
     static int width = 0;
     private Context context;
-    private ArrayList<Data> data = new ArrayList<>();
+    private List<Data> data = new ArrayList<>();
     private Context mContext;
     private Data currentTrendData;
 
-    public MainActivityAdapter(Context context) {
+    public MainActivityAdapter(List<Data> listparseobject, Context context) {
         mContext = context;
-
+        this.data = listparseobject;
     }
 
     @Override
@@ -44,7 +46,12 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         this.context = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
-        viewHolder.mImageView.getLayoutParams().height = (MainActivity.height - 104) / 2;
+
+        final float scale = context.getResources().getDisplayMetrics().density;
+        int pixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
+
+
+        viewHolder.rl.getLayoutParams().height = (pixels) / 2;
         return viewHolder;
     }
 
@@ -52,9 +59,6 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     @Override
     public void onBindViewHolder(final MainActivityAdapter.ViewHolder holder, final int position) {
 
-        height = holder.mImageView.getLayoutParams().height;
-        if (Application.DEBUG)
-            Log.d("height", String.valueOf(height));
 
         currentTrendData = data.get(position);
 
@@ -138,10 +142,9 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         if (currentTrendData.getTitle() != null)
             holder.title.setText(currentTrendData.getTitle());
 
-
+        holder.mImageView.setImageResource(0);
         if (currentTrendData.getUrl() != null) {
-
-            Glide.with(mContext).load(currentTrendData.getUrl()).override(height, height).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
+            Glide.with(mContext).load(currentTrendData.getUrl()).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
         }
 
         if (currentTrendData.getPrice() != null) {
@@ -173,7 +176,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         private ImageView mImageView;
         private ImageView mImageView_addToCart;
         private ImageView mImageView_fav;
-
+        private RelativeLayout rl;
 
         public ViewHolder(View itemView, Context context) {
             super(itemView);
@@ -184,7 +187,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             mImageView = (ImageView) itemView.findViewById(R.id.card_image);
             mImageView_addToCart = (ImageView) itemView.findViewById(R.id.addToCart_button);
             mImageView_fav = (ImageView) itemView.findViewById(R.id.fav_button);
-
+            rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
         }
 
 

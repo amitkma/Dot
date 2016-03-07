@@ -8,16 +8,19 @@
 
         <item
             android:id="@+id/Favorites"
+            android:checked="false"
             android:icon="@drawable/ic_favorite_black_24dp"
             android:title="Favourites" />
         <item
             android:id="@+id/Appointments"
+            android:checked="false"
             android:icon="@drawable/ic_history_black_24dp"
             android:title="Appointments" />
         <item
             android:id="@+id/Cart"
-            android:icon="@drawable/ic_shopping_cart_black_24dp"
+            android:checked="false"
 
+            android:icon="@drawable/ic_shopping_cart_black_24dp"
             android:title="Cart" />
 
 

@@ -50,31 +50,10 @@ public class Login extends AppCompatActivity {
         dummy = (ImageView) findViewById(R.id.dummy);
         setup_fb_login_button();
 
-        downloadData();
+
     }
 
-    private void downloadData() {
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Defaults.DataClass);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    if (objects.size() > 0) {
 
-                        if (Application.DEBUG)
-                            Log.d("Login", String.valueOf(objects.size()));
-                        for (int i = 0; i < objects.size(); i++) {
-
-                            ParseObject parseObject = objects.get(i);
-                            ParseFile parseFile = parseObject.getParseFile("image");
-                            Glide.with(getApplicationContext()).load(parseFile.getUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE).into(dummy);
-                        }
-
-                    }
-                } else if (Application.DEBUG) Log.d("Login", e.getMessage());
-            }
-        });
-    }
 
 
     private void setup_fb_login_button() {
@@ -145,19 +124,12 @@ public class Login extends AppCompatActivity {
                             Log.d("response", String.valueOf(response));
                             String name = response.getJSONObject().getString("name");
                             user.setUsername(name);
-
-
                             JSONObject picture = response.getJSONObject().getJSONObject("picture");
-
                             JSONObject data = picture.getJSONObject("data");
-
-                            String gender = response.getJSONObject().getString("gender");
+                            final String gender = response.getJSONObject().getString("gender");
                             String pictureUrl = data.getString("url");
-
                             user.put("picUri", pictureUrl);
                             user.put("gender", gender);
-
-
                             user.saveInBackground(new SaveCallback() {
                                 @Override
                                 public void done(ParseException e) {
@@ -169,6 +141,8 @@ public class Login extends AppCompatActivity {
                                             public void done(ParseException e) {
                                                 if (e == null) {
                                                     startDataLoadActivity();
+
+
                                                 } else Log.d("LoginInstallation", e.getMessage());
                                             }
                                         });

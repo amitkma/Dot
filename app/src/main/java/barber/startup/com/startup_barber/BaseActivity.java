@@ -2,10 +2,14 @@ package barber.startup.com.startup_barber;
 
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
+import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,6 +28,7 @@ public class BaseActivity extends AppCompatActivity {
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     int Temp;
+    private ActionBarDrawerToggle mDrawerToggle;
 
 
     public Toolbar setup_toolbar() {
@@ -32,8 +37,42 @@ public class BaseActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
+
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
+        mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open_content_desc, R.string.drawer_close_content_desc){
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        drawerLayout.setDrawerListener(mDrawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+mDrawerToggle.syncState();
         return toolbar;
 
+
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void setup_nav_drawer() {
@@ -70,12 +109,12 @@ public class BaseActivity extends AppCompatActivity {
         });
 
 
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
-
 
         if (currentUser != null)
             setup_nav_header_profile_pic(view);
     }
+
+
 
     private void setup_nav_header_profile_pic(View view) {
 

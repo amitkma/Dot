@@ -2,6 +2,7 @@ package barber.startup.com.startup_barber;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
@@ -23,12 +24,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -41,6 +44,7 @@ import java.util.List;
 public class MainActivity extends BaseActivity {
     protected static float width;
     protected static int height;
+    protected static int a;
     private static Menu menu;
     ParseUser parseUser = ParseUser.getCurrentUser();
     private ViewPager viewPager;
@@ -68,6 +72,32 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
+
+        final View v = findViewById(R.id.viewframe);
+
+        v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                Log.d("heightv", String.valueOf(v.getHeight()));
+
+
+                float b = (v.getHeight() / Resources.getSystem().getDisplayMetrics().density);
+
+                a = Math.round(b);
+                Log.d("a", String.valueOf(a));
+
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+                    v.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                else
+                    v.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+            }
+        });
+
+
+
+
+
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -91,6 +121,8 @@ public class MainActivity extends BaseActivity {
         float density = getResources().getDisplayMetrics().density;
         Float f = outMetrics.heightPixels / density;
         height = Math.round(f);
+
+
         Log.d("H", String.valueOf(height));
 
 
@@ -151,10 +183,10 @@ public class MainActivity extends BaseActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new Fragment_services(0), "Beards");
-        adapter.addFragment(new Fragment_services(1), "Moustache");
-        adapter.addFragment(new Fragment_services(2), "Hairstyle");
-        adapter.addFragment(new Fragment_services(3), "Extras");
+        adapter.addFragment(new Fragment_services_test(0), "Beards");
+        adapter.addFragment(new Fragment_services_test(1), "Moustache");
+        adapter.addFragment(new Fragment_services_test(2), "Hairstyle");
+        adapter.addFragment(new Fragment_services_test(3), "Extras");
 
 
         viewPager.setAdapter(adapter);
@@ -169,6 +201,16 @@ public class MainActivity extends BaseActivity {
 
                 switch (menuItem.getItemId()) {
 
+                    case R.id.Favorites:
+                        drawerLayout.closeDrawers();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startActivity(new Intent(MainActivity.this, Favourites.class));
+                                overridePendingTransition(0, 0);
+                            }
+                        }, 220);
+                        return true;
                     case R.id.About:
                         drawerLayout.closeDrawers();
                         new Handler().postDelayed(new Runnable() {
@@ -197,7 +239,7 @@ public class MainActivity extends BaseActivity {
                             @Override
                             public void run() {
                                 startActivity(new Intent(MainActivity.this, CartDisplay.class));
-
+                                overridePendingTransition(0, 0);
                             }
                         }, 150);
                         return true;
@@ -278,41 +320,12 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    ;
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         this.menu = menu;
-
-
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
-        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
-        parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    if (objects.size() > 0)
-                        MainActivity.makeFavIconRed();
-                } else e.printStackTrace();
-            }
-        });
-
-
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
-        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    if (objects.size() > 0)
-                        MainActivity.makeCartIconBlue();
-                } else if (Application.DEBUG) Log.e("MainActivity", e.getMessage());
-            }
-        });
-
 
         return true;
     }

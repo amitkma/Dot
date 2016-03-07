@@ -1,6 +1,9 @@
 package barber.startup.com.startup_barber;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -17,6 +21,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 
@@ -51,6 +56,9 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
         holder.title.setText(data.getTitle());
         holder.price.setText("Rs " + data.getPrice());
 
+        if (data.isCart()) {
+            holder.cart.setColorFilter(Color.BLUE);
+        } else holder.cart.setColorFilter(null);
 
         if (data.getUrl() != null) {
 
@@ -133,15 +141,49 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
             back = (ImageView) itemView.findViewById(R.id.image);
             cart = (ImageView) itemView.findViewById(R.id.button_cart);
             remove.setOnClickListener(this);
+            cart.setOnClickListener(this);
 
         }
 
 
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
         @Override
         public void onClick(View v) {
-            Data d = cartdata.get(getAdapterPosition());
-            Log.d("d", d.getId());
-            remove(getAdapterPosition());
+            if (v.getId() == R.id.button_remove) {
+                Data d = cartdata.get(getAdapterPosition());
+                Log.d("d", d.getId());
+                remove(getAdapterPosition());
+            }
+            if (v.getId() == R.id.button_cart) {
+
+                if (cart.getColorFilter() == null) {
+                    updateCart();
+
+                } else if (cart.getColorFilter() != null)
+                    Toast.makeText(mContext, "Already in Cart", Toast.LENGTH_SHORT).show();
+
+            }
         }
+
+        private void updateCart() {
+
+            ParseObject parseObject = new ParseObject(Defaults.CartClass);
+            parseObject.put("cart", cartdata.get(getAdapterPosition()).getId());
+            parseObject.pinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        MainActivity.makeCartIconBlue();
+                        cart.setColorFilter(Color.BLUE);
+                        if (Application.DEBUG)
+                            Log.d("FavActivityAdapter", "Saved" + cartdata.get(getAdapterPosition()).getId());
+                    } else e.printStackTrace();
+                }
+            });
+
+
+        }
+
     }
+
 }
