@@ -30,14 +30,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class Checkout extends AppCompatActivity {
 
@@ -458,6 +454,9 @@ public class Checkout extends AppCompatActivity {
                         jSonobj.put("from", "Barber");
                         jSonobj.put("title", "Startup");
                         jSonobj.put("alert", "Booking Confirmation\nDate: " + dateformatintent + "\nTimeSlot: " + timeslotstart + " + " + time + "min" + "\nBarber: JawaharBhawan");
+
+
+                        sendPushtoUser();
                         ParsePush push = new ParsePush();
                         push.setQuery(query);
                         push.setData(jSonobj);
@@ -482,6 +481,10 @@ public class Checkout extends AppCompatActivity {
                 } else if ((Application.DEBUG)) Log.d("e", e.getMessage());
             }
         });
+    }
+
+    private void sendPushtoUser() {
+
     }
 
     @Override

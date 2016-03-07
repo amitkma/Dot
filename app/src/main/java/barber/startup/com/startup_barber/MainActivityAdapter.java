@@ -144,7 +144,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         holder.mImageView.setImageResource(0);
         if (currentTrendData.getUrl() != null) {
-            Glide.with(mContext).load(currentTrendData.getUrl()).centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
+            Glide.with(mContext).load(currentTrendData.getUrl()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.mImageView);
         }
 
         if (currentTrendData.getPrice() != null) {

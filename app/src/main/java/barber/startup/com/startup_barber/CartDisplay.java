@@ -204,7 +204,7 @@ public class CartDisplay extends AppCompatActivity {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     if (objects.size() > 0) {
-                        String[] b = new String[objects.size()];
+                        final String[] b = new String[objects.size()];
                         for (int i = 0; i < objects.size(); i++) {
                             ParseObject parseObject = objects.get(i);
                             b[i] = parseObject.getString("cart");
@@ -224,9 +224,12 @@ public class CartDisplay extends AppCompatActivity {
                                             parseObject.getInt("time");
                                             // totaltime = parseObject.getInt("time") + totaltime;
                                         }
-                                        Intent i = new Intent(CartDisplay.this, Checkout.class);
+                                        Intent i = new Intent(CartDisplay.this, BarberActivity.class);
 
+                                        Bundle bundle = new Bundle();
+                                        bundle.putStringArray("OBJECTID", b);
                                         i.putExtra("totalTimeTaken", totaltime);
+                                        i.putExtra("objectIdList", bundle);
                                         startActivity(i);
 
                                         overridePendingTransition(0, 0);

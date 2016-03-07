@@ -120,11 +120,13 @@
             android:name=".Appointments"
             android:label="@string/title_activity_appointments"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
 
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="00c4cad723628241c327916665366947c596d084" />
+
+        <activity android:name=".BarberActivity"></activity>
     </application>
 
 </manifest>
