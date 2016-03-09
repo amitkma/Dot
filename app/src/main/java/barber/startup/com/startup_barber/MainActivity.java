@@ -15,6 +15,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
@@ -45,28 +46,13 @@ public class MainActivity extends BaseActivity {
     protected static float width;
     protected static int height;
     protected static int a;
-    private static Menu menu;
+    private Menu menu;
     ParseUser parseUser = ParseUser.getCurrentUser();
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    private Toolbar toolbar;
     private Dialog dialog;
 
-    public static void makeFavIconRed() {
 
-        MenuItem item = menu.findItem(R.id.action_fav);
-        Drawable newIcon = (Drawable) item.getIcon();
-        newIcon.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-        item.setIcon(newIcon);
-
-    }
-
-    public static void makeCartIconBlue() {
-        MenuItem item = menu.findItem(R.id.action_cart);
-        Drawable newIcon = (Drawable) item.getIcon();
-        newIcon.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-        item.setIcon(newIcon);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,13 +66,10 @@ public class MainActivity extends BaseActivity {
             public void onGlobalLayout() {
                 Log.d("heightv", String.valueOf(v.getHeight()));
 
-
                 float b = (v.getHeight() / Resources.getSystem().getDisplayMetrics().density);
 
                 a = Math.round(b);
                 Log.d("a", String.valueOf(a));
-
-
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
                     v.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 else
@@ -94,14 +77,9 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-
-
-
-
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-
 
         dialog = new Dialog(MainActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -112,7 +90,6 @@ public class MainActivity extends BaseActivity {
 
         Glide.with(getApplicationContext()).load((R.drawable.ayush)).into(ayush);
         Glide.with(getApplicationContext()).load((R.drawable.amit)).into(amit);
-
 
         Display displaydp = getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
@@ -130,41 +107,20 @@ public class MainActivity extends BaseActivity {
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(1);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
         setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
         tabLayout.setupWithViewPager(viewPager);
         changeTabsFont();
 
-
-        toolbar = setup_toolbar();
+        Toolbar toolbar = setup_toolbar();
         setup_nav_drawer();
         setup_nav_item_listener();
-
-
     }
 
     private void cartIcon_toolbar() {
 
         Intent intent = new Intent(MainActivity.this, CartDisplay.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(0, 0);
         finish();
@@ -174,7 +130,6 @@ public class MainActivity extends BaseActivity {
     private void favIcon_toolbar() {
 
         Intent intent = new Intent(MainActivity.this, Favourites.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(0, 0);
         finish();
@@ -324,9 +279,7 @@ public class MainActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
         this.menu = menu;
-
         return true;
     }
 
@@ -351,7 +304,6 @@ public class MainActivity extends BaseActivity {
 
             return true;
         }
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -383,5 +335,9 @@ public class MainActivity extends BaseActivity {
         public CharSequence getPageTitle(int position) {
             return mFragmentTitleList.get(position);
         }
+    }
+
+    public Menu getMenu() {
+        return menu;
     }
 }

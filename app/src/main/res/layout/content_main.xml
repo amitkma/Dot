@@ -21,11 +21,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="@drawable/toolbar_shape"
-                android:title="Salon"
-                android:titleTextColor="#BDBDBD"
+                android:title="Salo"
                 app:layout_scrollFlags="scroll|enterAlways"
-                app:theme="@style/AppTheme.AppBarOverlay">
+               >
 
 
 
@@ -44,6 +42,8 @@
                 android:paddingBottom="2dp"
                 android:paddingLeft="4dp"
                 app:tabMode="scrollable"
+                app:tabIndicatorHeight="4dp"
+                app:tabIndicatorColor="@color/colorAccent_light"
                 app:tabTextAppearance="@style/MineCustomTabText" />
         </android.support.design.widget.AppBarLayout>
 

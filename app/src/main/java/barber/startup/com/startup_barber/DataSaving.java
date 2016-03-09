@@ -8,6 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +25,9 @@ import com.parse.SaveCallback;
 
 import java.util.List;
 
+import barber.startup.com.startup_barber.Utility.NetworkCheck;
+
+
 public class DataSaving extends AppCompatActivity {
 
     // Whether there is a Wi-Fi connection.
@@ -33,15 +38,22 @@ public class DataSaving extends AppCompatActivity {
     private SharedPreferences prefs;
     private boolean dataSaved = false;
 
+    private Context mContext;
+
+    private CoordinatorLayout coordinatorLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_data_saving);
+
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.data_saving_dialog);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         dataSaved = prefs.getBoolean("dataSaved", false);
 
+        mContext = getApplicationContext();
 
     }
 
@@ -50,14 +62,18 @@ public class DataSaving extends AppCompatActivity {
         super.onStart();
 
 
-        if (dataSaved == false && check_connection()) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("First Run Setup");
-            progressDialog.setCancelable(false);
-            Fetch_data();
-        } else if (dataSaved == true)
-            startMainActivity();
+        if (NetworkCheck.checkConnection(mContext)) {
+            if (dataSaved == false) {
 
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("Loading styles and barbers");
+                progressDialog.setCancelable(false);
+                Fetch_data();
+
+            } else if (dataSaved == true)
+                startMainActivity();
+        } else
+            Snackbar.make(coordinatorLayout, "Error in connection", Snackbar.LENGTH_LONG).show();
     }
 
     private void startMainActivity() {
@@ -69,47 +85,45 @@ public class DataSaving extends AppCompatActivity {
     private void Fetch_data() {
 
         progressDialog.show();
+
         // Syncing all our data from server
-        if (check_connection()) {
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Defaults.DataClass);
-            query.findInBackground(new FindCallback<ParseObject>() {
-                @Override
-                public void done(List<ParseObject> objects, ParseException e) {
-                    if (e == null) {
-                        if (objects.size() > 0) {
-                            if (Application.DEBUG)
-                                Log.d("Objectsize", String.valueOf(objects.size()));
-                            for (int i = 0; i < objects.size(); i++) {
-                                ParseObject parseObject = objects.get(i);
-                                ParseFile parseFile = parseObject.getParseFile("image");
-                                Glide.with(getApplicationContext()).load(parseFile.getUrl());
-                            }
-                            unpinAndRepinData(objects);
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() > 0) {
+                        if (Application.DEBUG)
+                            Log.d("Objectsize", String.valueOf(objects.size()));
+                        for (int i = 0; i < objects.size(); i++) {
+                            ParseObject parseObject = objects.get(i);
+                            ParseFile parseFile = parseObject.getParseFile("image");
+                            Glide.with(getApplicationContext()).load(parseFile.getUrl());
                         }
-                    } else {
-                        e.printStackTrace();
-                        if (progressDialog != null) {
-                            progressDialog.dismiss();
-                            progressDialog = null;
-                        }
+                        unpinAndRepinData(objects);
+                    }
+                } else {
+                    if (e.getCode() == 100) {
+                        Snackbar.make(coordinatorLayout, "Error in connection", Snackbar.LENGTH_LONG).show();
+                    }
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                        progressDialog = null;
                     }
                 }
-            });
-        }
+            }
+        });
 
 
     }
 
     private void unpinAndRepinData(final List<ParseObject> objects) {
-
-
         ParseObject.unpinAllInBackground("data", new DeleteCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
                     if (Application.DEBUG)
                         Log.d("MainActivityPin", "unPinnedAll");
-
                     ParseObject.pinAllInBackground("data", objects, new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -139,28 +153,6 @@ public class DataSaving extends AppCompatActivity {
             }
         });
 
-
     }
 
-    public boolean check_connection() {
-
-        ConnectivityManager connMgr =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeInfo = connMgr.getActiveNetworkInfo();
-        if (activeInfo != null && activeInfo.isConnected()) {
-            wifiConnected = activeInfo.getType() == ConnectivityManager.TYPE_WIFI;
-            mobileConnected = activeInfo.getType() == ConnectivityManager.TYPE_MOBILE;
-            if (wifiConnected) {
-                Log.i("DATA SAVING", getString(R.string.wifi_connection));
-                return true;
-            } else if (mobileConnected) {
-                Log.i("DATA SAVING", getString(R.string.mobile_connection));
-                return true;
-            }
-        } else {
-            Log.i("DATASAVING", getString(R.string.no_wifi_or_mobile));
-            return false;
-        }
-        return false;
-    }
 }

@@ -6,16 +6,16 @@ package barber.startup.com.startup_barber;
 public class ServiceDescriptionFormat {
 
     private String barberObjectId;
-    private String barberId;
+    private int barberId;
     private String barberName;
     private int servicePrice;
     private int serviceTime;
 
-    public String getBarberId() {
+    public int getBarberId() {
         return barberId;
     }
 
-    public void setBarberId(String barberId) {
+    public void setBarberId(int barberId) {
         this.barberId = barberId;
     }
 

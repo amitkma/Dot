@@ -41,20 +41,16 @@ public class Login extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-
-
         setContentView(R.layout.activity_choose_login);
 
-
         dummy = (ImageView) findViewById(R.id.dummy);
+
         setup_fb_login_button();
 
 
     }
-
-
-
 
     private void setup_fb_login_button() {
         button_fb_login = (Button) findViewById(R.id.button_fb_login);
@@ -67,6 +63,7 @@ public class Login extends AppCompatActivity {
     }
 
     private void link_with_parse() {
+
         ParseFacebookUtils.logInWithReadPermissionsInBackground(this, Arrays.asList("email", "user_friends", "public_profile"), new LogInCallback() {
             @Override
             public void done(ParseUser user, com.parse.ParseException e) {
@@ -88,30 +85,9 @@ public class Login extends AppCompatActivity {
     }
 
     private void getfb_details(final ParseUser user) {
-/*GraphRequest.
-        GraphRequest request = GraphRequest.newMeRequest(
-                AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(
-                            JSONObject object,
-                            GraphResponse response) {
-                        // Application code
 
-                        Log.d("JSONobject", String.valueOf(object));
-
-
-                    }
-                });*/
         Bundle parameters = new Bundle();
-        //  parameters.putString("fields", "id,name,first_name,last_name,age_range,link,gender,locale,picture,user_friends");
-        // request.setParameters(parameters);
-        // request.executeAsync();
-
-
         parameters.putString("fields", "picture.type(small).width(100).height(100),name,gender,birthday");
-
-
         new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/me",
@@ -161,7 +137,6 @@ public class Login extends AppCompatActivity {
 
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -170,12 +145,9 @@ public class Login extends AppCompatActivity {
 
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
-
-
         if (ParseUser.getCurrentUser() != null) {
             startActivity(new Intent(this, DataSaving.class));
             finish();
@@ -183,14 +155,9 @@ public class Login extends AppCompatActivity {
 
     }
 
-
     private void startDataLoadActivity() {
-
         startActivity(new Intent(getApplicationContext(), DataSaving.class));
         overridePendingTransition(0, 0);
         finish();
-
     }
-
-
 }

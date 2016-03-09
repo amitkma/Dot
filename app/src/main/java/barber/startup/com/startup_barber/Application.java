@@ -26,8 +26,6 @@ public class Application extends android.app.Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
-
-
         Picasso.Builder builder = new Picasso.Builder(this);
         builder.downloader(new OkHttpDownloader(this, Integer.MAX_VALUE));
         Picasso built = builder.build();

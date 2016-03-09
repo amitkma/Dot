@@ -7,9 +7,11 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,13 +19,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BarberActivity extends AppCompatActivity {
 
     private String[] b;
     private TextView tv;
-
+    private ArrayList<ArrayList<ServiceDescriptionFormat>> completeBarberList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,49 +43,122 @@ public class BarberActivity extends AppCompatActivity {
 
             Bundle bundle = i.getBundleExtra("objectIdList");
             b = bundle.getStringArray("OBJECTID");
+            for (int k = 0; k < b.length; k++) {
+                Log.e("OBJECTIDS", b[k]);
+            }
         }
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Data");
         parseQuery.whereContainedIn("objectId", Arrays.asList(b));
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null && objects != null) {
-                    ArrayList<ServiceDescriptionFormat> arrayList = new ArrayList<ServiceDescriptionFormat>();
+                    Log.e("OBJECTIDS", Integer.toString(objects.size()));
+                    ArrayList<Map<Integer, ArrayList<Integer>>> barberSelectionList = new ArrayList<>();
                     for (int i = 0; i < objects.size(); i++) {
 
+                        ArrayList<ServiceDescriptionFormat> arrayList = new ArrayList<>();
+                        ArrayList<Integer> barberIds = new ArrayList<>();
                         JSONArray jsonArray = objects.get(i).getJSONArray("serviceDescription");
-                        arrayList.clear();
                         for (int j = 0; j < jsonArray.length(); j++) {
                             try {
-                                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
+                                JSONObject jsonObject = jsonArray.getJSONObject(j);
                                 ServiceDescriptionFormat serviceDescriptionFormat = new ServiceDescriptionFormat();
                                 serviceDescriptionFormat.setBarberObjectId(jsonObject.getString("barberObjectId"));
-                                serviceDescriptionFormat.setBarberId(jsonObject.getString("barberId"));
                                 serviceDescriptionFormat.setBarberName(jsonObject.getString("barberName"));
-                                Log.e("Bol", jsonObject.getString("barberName"));
+                                serviceDescriptionFormat.setBarberId(jsonObject.getInt("barberId"));
                                 serviceDescriptionFormat.setServicePrice(jsonObject.getInt("servicePrice"));
                                 serviceDescriptionFormat.setServiceTime(jsonObject.getInt("serviceTime"));
-
+                                barberIds.add(jsonObject.getInt("barberId"));
                                 arrayList.add(serviceDescriptionFormat);
                             } catch (JSONException e1) {
                                 e1.printStackTrace();
                             }
 
                         }
+
+                        Map<Integer, ArrayList<Integer>> map = new HashMap();
+                        map.put(i, barberIds);
+                        barberSelectionList.add(map);
+
+                        completeBarberList.add(arrayList);
                     }
 
-                    updateTextView(arrayList);
-                } else Log.e("BarberActivity", e.getMessage());
+                    findBarbers(barberSelectionList);
+
+                } else
+                {
+                    if(e.getCode() == 209){
+                        ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                startActivity(new Intent(BarberActivity.this, Login.class));
+                                finish();
+                            }
+                        });
+
+                    }
+                }
             }
         });
 
     }
 
-    private void updateTextView(ArrayList<ServiceDescriptionFormat> arrayList) {
-        for (int i = 0; i < arrayList.size(); i++) {
-            ServiceDescriptionFormat serviceDescriptionFormat = arrayList.get(i);
-            tv.append(serviceDescriptionFormat.getBarberName() + " Price:" + serviceDescriptionFormat.getServicePrice() + " Time:" + serviceDescriptionFormat.getServiceTime() + "\n");
+    private void findBarbers(ArrayList<Map<Integer, ArrayList<Integer>>> barbersSelectionList) {
+        ArrayList<Integer> barbersList = new ArrayList<>();
+        for (int i = 0; i < barbersSelectionList.size(); i++) {
+
+            Map<Integer, ArrayList<Integer>> map = barbersSelectionList.get(i);
+            for (Integer key : map.keySet()) {
+                if (i == 0) {
+                    barbersList = map.get(key);
+                } else
+                    barbersList.retainAll(map.get(key));
+            }
+
+
         }
+        for (int i = 0; i < completeBarberList.size(); i++) {
+            ArrayList<ServiceDescriptionFormat> serviceFormatList = completeBarberList.get(i);
+            for (int j = 0; j < serviceFormatList.size(); j++) {
+                ServiceDescriptionFormat serviceFormat = serviceFormatList.get(j);
+                if (barbersList.contains(serviceFormat.getBarberId())) {
+                    continue;
+                } else {
+                    serviceFormatList.remove(j);
+                    j--;
+                }
+            }
+        }
+
+        updateTextView(completeBarberList);
     }
+
+
+    private void updateTextView(ArrayList<ArrayList<ServiceDescriptionFormat>> arrayList) {
+        if (arrayList.size() == 0) {
+            tv.append("No barber is providing cumulative services.");
+        } else{
+
+            int j =0;
+          while(j<arrayList.get(0).size()){
+              int servicesPrice = 0;
+              int servicesTime = 0;
+              String barberName = null;
+              for(int i=0; i<arrayList.size(); i++){
+                  ArrayList<ServiceDescriptionFormat> newServiceList = arrayList.get(i);
+                  ServiceDescriptionFormat serviceDescriptionFormat = newServiceList.get(j);
+                  servicesPrice += serviceDescriptionFormat.getServicePrice();
+                  servicesTime += serviceDescriptionFormat.getServiceTime();
+                  barberName = serviceDescriptionFormat.getBarberName();
+              }
+
+              tv.append(barberName+" Price: "+servicesPrice+" Time: "+servicesTime+"\n");
+              j++;
+          }
+
+    }
+
+        }
+
 }
