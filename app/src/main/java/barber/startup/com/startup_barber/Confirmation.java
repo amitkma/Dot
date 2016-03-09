@@ -18,6 +18,8 @@ public class Confirmation extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.confirmation);
         TextView username = (TextView) findViewById(R.id.confirm_username);
         TextView barber = (TextView) findViewById(R.id.confirm_barber);
