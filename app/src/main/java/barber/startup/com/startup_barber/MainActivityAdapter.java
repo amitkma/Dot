@@ -3,10 +3,13 @@ package barber.startup.com.startup_barber;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +28,8 @@ import com.parse.SaveCallback;
 import java.util.ArrayList;
 import java.util.List;
 
+import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
+
 /**
  * Created by ayush on 29/1/16.
  */
@@ -35,9 +40,10 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     private List<Data> data = new ArrayList<>();
     private Context mContext;
     private Data currentTrendData;
+    private Menu menu;
 
     public MainActivityAdapter(List<Data> listparseobject, Context context) {
-        mContext = context;
+       this.mContext = context;
         this.data = listparseobject;
     }
 
@@ -82,8 +88,11 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            MainActivity.makeFavIconRed();
-                            holder.mImageView_fav.setColorFilter(Color.RED);
+                            if(mContext instanceof MainActivity){
+                               menu = ((MainActivity) mContext).getMenu();
+                            }
+                            new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_fav);
+                            holder.mImageView_fav.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
 
                             if (Application.DEBUG)
                                 Log.d("MainActivityAdapter", "Saved" + data.get(position).getId());
@@ -117,8 +126,12 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            MainActivity.makeCartIconBlue();
-                            holder.mImageView_addToCart.setColorFilter(Color.BLUE);
+                            if(mContext instanceof MainActivity){
+                                menu = ((MainActivity) mContext).getMenu();
+                            }
+
+                            new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
+                            holder.mImageView_addToCart.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
                             if (Application.DEBUG)
                                 Log.d("MainActivityAdapter", "Saved" + data.get(position).getId());
                         } else e.printStackTrace();
@@ -131,11 +144,11 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
 
         if (currentTrendData.isFav()) {
-            holder.mImageView_fav.setColorFilter(Color.RED);
+            holder.mImageView_fav.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
         } else holder.mImageView_fav.setColorFilter(null);
 
         if (currentTrendData.isCart()) {
-            holder.mImageView_addToCart.setColorFilter(Color.BLUE);
+            holder.mImageView_addToCart.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
         } else holder.mImageView_addToCart.setColorFilter(null);
 
 

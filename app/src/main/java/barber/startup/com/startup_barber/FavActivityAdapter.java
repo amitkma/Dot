@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +27,8 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 
+import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
+
 /**
  * Created by ayush on 28/2/16.
  */
@@ -34,6 +38,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
     ArrayList<Data> cartdata = new ArrayList<>();
     Data data;
     private Context mContext;
+    private Menu menu;
 
     public FavActivityAdapter(Context c, TextView empty) {
         this.empty = empty;
@@ -173,8 +178,11 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        MainActivity.makeCartIconBlue();
-                        cart.setColorFilter(Color.BLUE);
+                        if(mContext instanceof Favourites){
+                            menu = ((Favourites) mContext).getMenu();
+                        }
+                        new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
+                        cart.setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent_light));
                         if (Application.DEBUG)
                             Log.d("FavActivityAdapter", "Saved" + cartdata.get(getAdapterPosition()).getId());
                     } else e.printStackTrace();

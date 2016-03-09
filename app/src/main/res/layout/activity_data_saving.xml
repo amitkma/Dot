@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="barber.startup.com.startup_barber.DataSaving">
+    tools:context="barber.startup.com.startup_barber.DataSaving"
+    android:id="@+id/data_saving_dialog">
 
 
     <include layout="@layout/content_data_saving" />

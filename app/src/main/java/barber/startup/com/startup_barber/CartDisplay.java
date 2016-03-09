@@ -27,6 +27,8 @@ import com.parse.ParseUser;
 import java.util.Arrays;
 import java.util.List;
 
+import barber.startup.com.startup_barber.Utility.NetworkCheck;
+
 
 public class CartDisplay extends AppCompatActivity {
     int totaltime = 0;
@@ -56,7 +58,7 @@ public class CartDisplay extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (check_connection()) {
+                if (NetworkCheck.checkConnection(getApplicationContext())) {
                     if (totaltime > 120)
                         Snackbar.make(findViewById(R.id.coordinatorlayout), "Total time required exceeds 2 hrs", Snackbar.LENGTH_LONG).show();
                     else startCheckoutActivity();
@@ -151,7 +153,7 @@ public class CartDisplay extends AppCompatActivity {
 
         mRecyclerView.setAdapter(cartActivityAdapter);
 
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
         parseQuery.whereContainedIn("objectId", Arrays.asList(a));
         parseQuery.fromPin("data");
         parseQuery.orderByDescending("updatedAt");
@@ -210,7 +212,7 @@ public class CartDisplay extends AppCompatActivity {
                             b[i] = parseObject.getString("cart");
                         }
 
-                        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
+                        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
                         parseQuery.whereContainedIn("objectId", Arrays.asList(b));
                         parseQuery.fromPin("data");
 
@@ -244,29 +246,6 @@ public class CartDisplay extends AppCompatActivity {
             }
 
         });
-
-
-    }
-
-    public boolean check_connection() {
-        ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-
-//For 3G check
-        boolean is3g = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
-                .isConnectedOrConnecting();
-//For WiFi Check
-        boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-                .isConnectedOrConnecting();
-
-        System.out.println(is3g + " net " + isWifi);
-
-        if (!is3g && !isWifi) {
-
-            return false;
-        } else {
-
-            return true;
-        }
 
 
     }
