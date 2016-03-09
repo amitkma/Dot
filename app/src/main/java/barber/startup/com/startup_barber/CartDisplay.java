@@ -275,7 +275,6 @@ public class CartDisplay extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        startActivity(new Intent(CartDisplay.this, MainActivity.class));
         finish();
         overridePendingTransition(0, 0);
 

@@ -62,7 +62,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         currentTrendData = data.get(position);
 
-        holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
+   /*     holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
 
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
@@ -93,7 +93,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
 
             }
-        });
+        });*/
 
 
         holder.mImageView_addToCart.setOnClickListener(new View.OnClickListener() {
@@ -117,6 +117,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
+
                             MainActivity.makeCartIconBlue();
                             holder.mImageView_addToCart.setColorFilter(Color.BLUE);
                             if (Application.DEBUG)
@@ -167,7 +168,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public  class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
 
         final Context mcontext;
@@ -188,13 +189,93 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             mImageView_addToCart = (ImageView) itemView.findViewById(R.id.addToCart_button);
             mImageView_fav = (ImageView) itemView.findViewById(R.id.fav_button);
             rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
+
+            mImageView.setOnClickListener(this);
+            mImageView_fav.setOnClickListener(this);
+            mImageView_addToCart.setOnClickListener(this);
         }
 
 
         @Override
         public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.fav_button:
+                    checkinfav();  //Check if already present in favourites
+                    break;
+                case R.id.addToCart_button:
+                    checkinCart();   //Check if already present in cart
+                    break;
+                default:
+                    Toast.makeText(mContext,"Ouch!!!",Toast.LENGTH_SHORT).show();
+                    break;
+            }
+
+
+
+
 
         }
+
+        private void checkinCart() {
+            if (mImageView_addToCart.getColorFilter() == null) {
+                updateCart();   //If not update cart
+
+            } else if (mImageView_addToCart.getColorFilter() != null)  //Display 'already in cart'
+                Toast.makeText(mContext, "Already in Cart", Toast.LENGTH_SHORT).show();
+
+        }
+
+        private void updateCart() {
+
+            ParseObject parseObject = new ParseObject(Defaults.CartClass);
+            parseObject.put("cart", data.get(getAdapterPosition()).getId());
+            parseObject.pinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+
+                        MainActivity.makeCartIconBlue();
+                       mImageView_addToCart.setColorFilter(Color.BLUE);
+                        if (Application.DEBUG)
+                            Log.d("MainActivityAdapter", "Saved " + data.get(getAdapterPosition()).getId());
+                    } else e.printStackTrace();
+                }
+            });
+
+
+        }
+
+
+        private void checkinfav() {
+
+                if (mImageView_fav.getColorFilter() == null) {
+                    updateFavourites();  //If not update favourites
+
+                } else if (mImageView_fav.getColorFilter() != null)  //Display 'already in favourites'
+                    Toast.makeText(mContext, "Already in favourites", Toast.LENGTH_SHORT).show();
+            }
+
+        private void updateFavourites() {
+
+            ParseObject parseObject = new ParseObject(Defaults.FavouritesClass);
+            parseObject.put("favourites", data.get(getAdapterPosition()).getId());
+            parseObject.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        MainActivity.makeFavIconRed();
+                        mImageView_fav.setColorFilter(Color.RED);
+
+                        if (Application.DEBUG)
+                            Log.d("MainActivityAdapter", "Saved" + data.get(getAdapterPosition()).getId());
+                    } else Log.e("Mainadapter",e.getMessage());
+                }
+            });
+
+
+        }
+
+
     }
 
 }

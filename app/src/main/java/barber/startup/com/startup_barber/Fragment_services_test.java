@@ -1,6 +1,5 @@
 package barber.startup.com.startup_barber;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -24,39 +23,27 @@ import java.util.List;
 /**
  * Created by ayush on 28/2/16.
  */
-public class Fragment_services extends android.support.v4.app.Fragment {
-    List<String> listcart = new ArrayList<String>();
-    List<String> listfav = new ArrayList<String>();
+public class Fragment_services_test extends android.support.v4.app.Fragment {
+
+
     private RecyclerView recyclerView;
-    private StaggeredGridLayoutManager gaggeredGridLayoutManager;
-    private MainActivityAdapter adapter;
+
     private int category;
     private String[] uri;
+   private List<String> listcart = new ArrayList<String>();
+   private List<String> listfav = new ArrayList<String>();
+    private List<Data> listparseobject = new ArrayList<Data>();
 
 
-    public Fragment_services() {
+    public Fragment_services_test() {
+
     }
 
-    public Fragment_services(int i) {
+    public Fragment_services_test(int i) {
+        //int genderCode=ParseUser.getCurrentUser().getInt("genderCode");
         this.category = i;
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (Application.DEBUG)
-
-            Log.d("Fragment", "onAttach" + category);
-
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (Application.DEBUG)
-            Log.d("Fragment", "onCreate" + category);
-
-    }
 
     @Nullable
     @Override
@@ -76,12 +63,41 @@ public class Fragment_services extends android.support.v4.app.Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_styles_fragment);
         recyclerView.setHasFixedSize(true);
-        gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
+        StaggeredGridLayoutManager gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
         recyclerView.setLayoutManager(gaggeredGridLayoutManager);
-        // adapter = new MainActivityAdapter(getContext());
-        recyclerView.setAdapter(adapter);
+
+
+
+
+    }
+
+    @Override
+    public void setMenuVisibility(boolean menuVisible) {
+        super.setMenuVisibility(menuVisible);
+        Log.d("Fragment", "called menu" + category);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d("Fragment", "onstart" + category);
 
         getFavlist();
+    }
+
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Log.d("Fragment", "onstart" + category);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("Fragment", "onResume" + category);
 
     }
 
@@ -91,20 +107,25 @@ public class Fragment_services extends android.support.v4.app.Fragment {
         parseObjectParseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null)
+                if (e == null) {
                     if (objects != null) {
-                        MainActivity.makeFavIconRed();
-                        for (int i = 0; i < objects.size(); i++) {
-                            final ParseObject parseObject = objects.get(i);
-                            listfav.add(parseObject.getString("favourites"));
+                        if (objects.size() > 0) {
+                            Log.d("passed", "passed");
+                            MainActivity.makeFavIconRed();
+                            for (int i = 0; i < objects.size(); i++) {
+                                final ParseObject parseObject = objects.get(i);
+                                listfav.add(parseObject.getString("favourites"));
+                            }
+
+                            Log.d("frag_serv listfav", String.valueOf(listfav));
+
+
                         }
-
-                        Log.d("frag_serv listfav", String.valueOf(listfav));
-
-                        getCartlist();
-
-
                     }
+
+
+                }else  Log.e("servicesfav", e.getMessage());
+                getCartlist();
             }
 
 
@@ -117,18 +138,21 @@ public class Fragment_services extends android.support.v4.app.Fragment {
         parseObjectParseQuery2.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null)
+                if (e == null) {
                     if (objects != null) {
-                        MainActivity.makeCartIconBlue();
-                        for (int i = 0; i < objects.size(); i++) {
-                            final ParseObject parseObject = objects.get(i);
-                            listcart.add(parseObject.getString("cart"));
+                        if (objects.size() > 0) {
+                            MainActivity.makeCartIconBlue();
+                            for (int i = 0; i < objects.size(); i++) {
+                                final ParseObject parseObject = objects.get(i);
+                                listcart.add(parseObject.getString("cart"));
 
+                            }
+                            Log.d("frag_serv listcart", String.valueOf(listcart));
                         }
-                        Log.d("frag_serv listcart", String.valueOf(listcart));
 
-                        setUpRecyclerView();
                     }
+                } else Log.e("servicescart", e.getMessage());
+                setUpRecyclerView();
             }
         });
 
@@ -159,7 +183,6 @@ public class Fragment_services extends android.support.v4.app.Fragment {
 
                         uri[i] = td.getUrl();
 
-                        Log.e("Fragment_services", "cart method is passed");
                         if (listfav.contains(parseObject.getObjectId()))
                             td.fav = true;
 
@@ -167,9 +190,14 @@ public class Fragment_services extends android.support.v4.app.Fragment {
                         if (listcart.contains(parseObject.getObjectId()))
                             td.cart = true;
 
-                        adapter.addData(td);
+                        listparseobject.add(td);
+
 
                     }
+
+                    MainActivityAdapter adapter = new MainActivityAdapter(listparseobject, getContext());
+                    recyclerView.setAdapter(adapter);
+
                 } else if (e != null)
                     if (Application.DEBUG)
                         Log.e("Fragment_services", "setuprecyclerview " + e.getMessage());
@@ -180,24 +208,6 @@ public class Fragment_services extends android.support.v4.app.Fragment {
 
     }
 
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (Application.DEBUG)
-
-            Log.d("Fragment", "onDestroy" + category);
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        if (Application.DEBUG)
-
-            Log.d("Fragment", "onDetach" + category);
-
-    }
 
     @Override
     public void onStop() {
@@ -211,22 +221,12 @@ public class Fragment_services extends android.support.v4.app.Fragment {
 
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if (Application.DEBUG)
-
-            Log.d("Fragment", "onPause" + category);
-
-    }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (Application.DEBUG)
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("Fragment", "onDestroy" + category);
 
-            Log.d("Fragment", "onDestroyView" + category);
 
 
     }
