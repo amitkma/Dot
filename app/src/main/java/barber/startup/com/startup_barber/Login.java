@@ -6,19 +6,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -29,13 +28,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Login extends AppCompatActivity {
 
 
     private Button button_fb_login;
+    private EditText rollno;
+    private EditText name;
     private ImageView dummy;
+    private int rollnumber;
+    private String username;
 
 
     @Override
@@ -50,14 +52,55 @@ public class Login extends AppCompatActivity {
         setup_fb_login_button();
 
 
+        rollno = (EditText) findViewById(R.id.rollno);
+        name = (EditText) findViewById(R.id.name);
+
+
+        setup_fb_login_button();
+
+
     }
+
+
 
     private void setup_fb_login_button() {
         button_fb_login = (Button) findViewById(R.id.button_fb_login);
         button_fb_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                link_with_parse();
+
+                if (!rollno.getText().toString().trim().isEmpty() && !name.getText().toString().trim().isEmpty()) {
+                    rollnumber = Integer.parseInt(rollno.getText().toString());
+                    username = name.getText().toString().toLowerCase();
+
+
+                    ParseQuery<ParseObject> parsequery = new ParseQuery<ParseObject>(Defaults.Enrollmentclass);
+                    parsequery.whereEqualTo("rollno", rollnumber);
+                    parsequery.getFirstInBackground(new GetCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject object, ParseException e) {
+                            if (e == null) {
+                                if (object != null) {
+                                    String nametemp = object.getString("name");
+
+                                    if (username.equals(nametemp.toLowerCase())) {
+                                        Toast.makeText(getApplication(), "Hurrah! your details are verifed", Toast.LENGTH_SHORT).show();
+                                        Log.i("Login", "Verified");
+                                        link_with_parse();
+                                    } else
+                                        Toast.makeText(getApplication(), "Sorry! Try Again", Toast.LENGTH_SHORT).show();
+
+
+                                }
+
+                            } else Log.i("Login", e.getMessage());
+                        }
+                    });
+
+
+                }
+
+
             }
         });
     }
@@ -103,9 +146,17 @@ public class Login extends AppCompatActivity {
                             JSONObject picture = response.getJSONObject().getJSONObject("picture");
                             JSONObject data = picture.getJSONObject("data");
                             final String gender = response.getJSONObject().getString("gender");
+                            int gendercode = -1;
+                            if (gender.compareTo("male") == 0) {
+                                gendercode = 1;
+                            }
+                            if (gender.compareTo("female") == 0) {
+                                gendercode = 0;
+                            }
                             String pictureUrl = data.getString("url");
                             user.put("picUri", pictureUrl);
                             user.put("gender", gender);
+                            user.put("genderCode", gendercode);
                             user.saveInBackground(new SaveCallback() {
                                 @Override
                                 public void done(ParseException e) {

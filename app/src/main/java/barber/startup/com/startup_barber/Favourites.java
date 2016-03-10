@@ -216,7 +216,7 @@ public class Favourites extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        startActivity(new Intent(Favourites.this, MainActivity.class));
+
         finish();
         overridePendingTransition(0, 0);
 

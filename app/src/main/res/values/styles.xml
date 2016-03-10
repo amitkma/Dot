@@ -21,13 +21,14 @@
         <item name="popupTheme">@style/Theme.AppCompat.Light</item>
 
 
+
     </style>
 
 
     <style name="AppTheme.NoActionBar.Login" parent="AppTheme.NoActionBar">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/black</item>
         <item name="android:windowBackground">@color/colorAccent_light2</item>
-        <item name="colorControlNormal">#fff</item>
+        <item name="colorControlNormal">@color/primary</item>
         <item name="colorControlActivated">@color/accent</item>
         <item name="colorControlHighlight">@color/accent</item>
         <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>

@@ -48,7 +48,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     }
 
     @Override
-    public MainActivityAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         this.context = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
@@ -63,7 +63,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
 
     @Override
-    public void onBindViewHolder(final MainActivityAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
 
 
         currentTrendData = data.get(position);

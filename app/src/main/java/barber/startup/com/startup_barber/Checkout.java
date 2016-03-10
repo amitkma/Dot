@@ -34,11 +34,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class Checkout extends AppCompatActivity {
 
-    int totalmoney;
-    int time;
+    private int time;
+    private int price;
+    private int barberId;
+
+
     private TextView totalprice;
     private TextView totaltime;
     private TextView mAvailableSlotText;
@@ -58,6 +62,8 @@ public class Checkout extends AppCompatActivity {
     private String timeslotstart;
     private String dateformatintent;
     private JSONObject jsonObject;
+    private String barberName;
+    private TextView checkoutbutton;
 
 
     @Override
@@ -71,8 +77,9 @@ public class Checkout extends AppCompatActivity {
         backArrow_toolbar();
 
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-
+        //fab = (FloatingActionButton) findViewById(R.id.fab);
+        checkoutbutton = (TextView) findViewById(R.id.checkout);
+        checkoutbutton.setVisibility(View.INVISIBLE);
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
         parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
@@ -92,7 +99,10 @@ public class Checkout extends AppCompatActivity {
 
         Intent i = getIntent();
         if (i != null) {
-            time = i.getIntExtra("totalTimeTaken", 0);
+            time = i.getIntExtra("totalTime", 0);
+            price = i.getIntExtra("totalPrice", 0);
+            barberId = i.getIntExtra("barberId", -1);
+            barberName = i.getStringExtra("barberName");
         }
 
         Button select_date = (Button) findViewById(R.id.button_date);
@@ -121,14 +131,15 @@ public class Checkout extends AppCompatActivity {
         totaltime = (TextView) findViewById(R.id.times);
         mAvailableSlotText = (TextView) findViewById(R.id.availableSlots);
 
-        totaltime.setText("Total Time: " + time + " min");
+        totaltime.setText("Total Time : " + time + " min");
+        totalprice.setText("Total Price: " + "Rs. " + price);
 
 
     }
 
     private void finalcheckoutFAB(final int hourOfDay, final int minute) {
-
-        fab.setOnClickListener(new View.OnClickListener() {
+            checkoutbutton.setVisibility(View.VISIBLE);
+        checkoutbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 updateSlots(hourOfDay, minute);
@@ -205,7 +216,7 @@ public class Checkout extends AppCompatActivity {
 
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Barber");
-        parseQuery.whereEqualTo("barberId", 0);
+        parseQuery.whereEqualTo("barberId", barberId);
         parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -347,7 +358,7 @@ public class Checkout extends AppCompatActivity {
 
     private void updateParseSlot(final ArrayList<TimeSlotFormat> availableTimeSlots, final int hours, final int minutes) {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Barber");
-        parseQuery.whereEqualTo("barberId", 0);
+        parseQuery.whereEqualTo("barberId", barberId);
         parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
@@ -425,8 +436,8 @@ public class Checkout extends AppCompatActivity {
         parseObject.put("user", ParseUser.getCurrentUser().getUsername());
         parseObject.put("userId", ParseUser.getCurrentUser().getObjectId());
         parseObject.put("url", ParseUser.getCurrentUser().getString("picUri"));
-        parseObject.put("barberId", 0);
-        parseObject.put("barberName", "Jawahar");
+        parseObject.put("barberId", barberId);
+        parseObject.put("barberName", barberName);
         parseObject.put("timeSlot", timeSlot);
         parseObject.put("date", Integer.valueOf(dateFormat));
         parseObject.put("completed", false);
@@ -436,16 +447,20 @@ public class Checkout extends AppCompatActivity {
                 if (e == null) {
 
                     Intent i = new Intent(Checkout.this, Confirmation.class);
-                    i.putExtra("pin", parseObject.getObjectId());
+                    Random r = new Random();
+                    int pin = r.nextInt(99999 - 9999) + 9999;
+                    i.putExtra("pin", pin);
+                    i.putExtra("price",price);
+                    i.putExtra("barberName",barberName);
                     i.putExtra("totalTime", time);
                     i.putExtra("appointmentDate", dateformatintent);
                     i.putExtra("timeslot", timeslotstart + " + " + time + "min");
 
+
+                 //Send Push to user and barber
                     ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
                     query.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());  //Send to this user only
-
                     String a[] = {"oEhBK7XN5Q", ParseUser.getCurrentUser().getObjectId()};
-
                     query.whereContainedIn("userId", Arrays.asList(a));
                     JSONObject jSonobj;
                     try {
@@ -453,7 +468,7 @@ public class Checkout extends AppCompatActivity {
                         jSonobj.put("action", "com.thoughtrix.introduce.UPDATE_STATUS");
                         jSonobj.put("from", "Barber");
                         jSonobj.put("title", "Startup");
-                        jSonobj.put("alert", "Booking Confirmation\nDate: " + dateformatintent + "\nTimeSlot: " + timeslotstart + " + " + time + "min" + "\nBarber: JawaharBhawan");
+                        jSonobj.put("alert", "Booking Confirmation\nDate: " + dateformatintent + "\nTimeSlot: " + timeslotstart + " + " + time + "min" + "\nBarber: " + barberName);
 
 
                         sendPushtoUser();

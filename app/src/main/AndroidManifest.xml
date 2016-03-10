@@ -110,7 +110,11 @@
             android:name="io.fabric.ApiKey"
             android:value="00c4cad723628241c327916665366947c596d084" />
 
-        <activity android:name=".BarberActivity"></activity>
+        <activity android:name=".BarberActivity"
+            android:label="Choose Barber"
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>

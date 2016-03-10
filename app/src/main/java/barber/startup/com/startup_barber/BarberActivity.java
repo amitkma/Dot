@@ -1,9 +1,13 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
@@ -29,14 +33,35 @@ public class BarberActivity extends AppCompatActivity {
     private TextView tv;
     private ArrayList<ArrayList<ServiceDescriptionFormat>> completeBarberList = new ArrayList<>();
 
+    private RecyclerView recyclerView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_barber);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                overridePendingTransition(0, 0);
+            }
+        });
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
+
         tv = (TextView) findViewById(R.id.textView);
         tv.setText("Barber Details \n");
+
 
         Intent i = getIntent();
         if (i != null) {
@@ -87,8 +112,9 @@ public class BarberActivity extends AppCompatActivity {
                     findBarbers(barberSelectionList);
 
                 } else
+
                 {
-                    if(e.getCode() == 209){
+                    if (e.getCode() == 209) {
                         ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
                             @Override
                             public void done(ParseException e) {
@@ -97,8 +123,9 @@ public class BarberActivity extends AppCompatActivity {
                             }
                         });
 
-                    }
+                    }else Log.e("BarberActivity",e.getMessage());
                 }
+
             }
         });
 
@@ -136,29 +163,54 @@ public class BarberActivity extends AppCompatActivity {
 
 
     private void updateTextView(ArrayList<ArrayList<ServiceDescriptionFormat>> arrayList) {
+
+
         if (arrayList.size() == 0) {
             tv.append("No barber is providing cumulative services.");
-        } else{
+        } else {
 
-            int j =0;
-          while(j<arrayList.get(0).size()){
-              int servicesPrice = 0;
-              int servicesTime = 0;
-              String barberName = null;
-              for(int i=0; i<arrayList.size(); i++){
-                  ArrayList<ServiceDescriptionFormat> newServiceList = arrayList.get(i);
-                  ServiceDescriptionFormat serviceDescriptionFormat = newServiceList.get(j);
-                  servicesPrice += serviceDescriptionFormat.getServicePrice();
-                  servicesTime += serviceDescriptionFormat.getServiceTime();
-                  barberName = serviceDescriptionFormat.getBarberName();
-              }
+            List<Format_Barber> barberslist = new ArrayList<>();
 
-              tv.append(barberName+" Price: "+servicesPrice+" Time: "+servicesTime+"\n");
-              j++;
-          }
 
-    }
+            int j = 0;
+            while (j < arrayList.get(0).size()) {
+
+                Format_Barber data = new Format_Barber();
+                int servicesPrice = 0;
+                int servicesTime = 0;
+                String barberName = null;
+                int barberId = -1;
+                for (int i = 0; i < arrayList.size(); i++) {
+                    ArrayList<ServiceDescriptionFormat> newServiceList = arrayList.get(i);
+                    ServiceDescriptionFormat serviceDescriptionFormat = newServiceList.get(j);
+                    servicesPrice += serviceDescriptionFormat.getServicePrice();
+                    servicesTime += serviceDescriptionFormat.getServiceTime();
+                    barberName = serviceDescriptionFormat.getBarberName();
+                    barberId = serviceDescriptionFormat.getBarberId();
+                }
+
+                data.setPrice(servicesPrice);
+                data.setTime(servicesTime);
+                data.setBarber(barberName);
+                data.setBarberId(barberId);
+                barberslist.add(data);
+
+                // tv.append(barberName+" Price: "+servicesPrice+" Time: "+servicesTime+"\n");
+
+
+                j++;
+            }
+            Adapter_Barber adapter_barber = new Adapter_Barber(this, barberslist);
+            recyclerView.setAdapter(adapter_barber);
 
         }
 
+    }
+
+
 }
+
+
+
+
+
