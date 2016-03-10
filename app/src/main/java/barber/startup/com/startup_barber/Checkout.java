@@ -99,7 +99,7 @@ public class Checkout extends AppCompatActivity {
         select_date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (time > 0) {
+                if (time >= 0) {
                     DialogFragment dialogFragment = new DatePickerFragment();
                     dialogFragment.show(getFragmentManager(), "DatePicker");
                 }

@@ -1,5 +1,9 @@
 package barber.startup.com.startup_barber;
 
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.util.Base64;
 import android.util.Log;
 
 import com.bumptech.glide.Glide;
@@ -13,6 +17,9 @@ import com.parse.ParseInstallation;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -31,11 +38,7 @@ public class Application extends android.app.Application {
         Picasso built = builder.build();
 
         built.setLoggingEnabled(true);
-
         Picasso.setSingletonInstance(built);
-
-
-
         Parse.enableLocalDatastore(this);
         Parse.initialize(this, ParseKeys.PARSE_APPLICATION_ID, ParseKeys.PARSE_CLIENT_KEY);
         ParseInstallation.getCurrentInstallation().saveInBackground();

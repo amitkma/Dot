@@ -50,6 +50,11 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
         this.mContext = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fav, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
+     /**   int pixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
+
+
+        viewHolder.rl.getLayoutParams().height = (pixels) / 2;
+      */
         return viewHolder;
     }
 

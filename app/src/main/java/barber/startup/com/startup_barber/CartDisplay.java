@@ -226,7 +226,7 @@ public class CartDisplay extends AppCompatActivity {
                                             parseObject.getInt("time");
                                             // totaltime = parseObject.getInt("time") + totaltime;
                                         }
-                                        Intent i = new Intent(CartDisplay.this, BarberActivity.class);
+                                        Intent i = new Intent(CartDisplay.this, Checkout.class);
 
                                         Bundle bundle = new Bundle();
                                         bundle.putStringArray("OBJECTID", b);

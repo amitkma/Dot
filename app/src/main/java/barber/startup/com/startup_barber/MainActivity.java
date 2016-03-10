@@ -42,6 +42,8 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import barber.startup.com.startup_barber.Utility.NetworkCheck;
+
 public class MainActivity extends BaseActivity {
     protected static float width;
     protected static int height;
@@ -57,7 +59,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_main);
+        setContentView(R.layout.main_layout);
 
         final View v = findViewById(R.id.viewframe);
 
@@ -201,7 +203,7 @@ public class MainActivity extends BaseActivity {
 
                     case R.id.logout:
 
-                        if (check_connection()) {
+                        if (NetworkCheck.checkConnection(getApplicationContext())) {
                             drawerLayout.closeDrawers();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
