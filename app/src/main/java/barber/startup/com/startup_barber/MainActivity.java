@@ -256,7 +256,7 @@ public class MainActivity extends BaseActivity {
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        if (ParseUser.getCurrentUser().getInt("genderCode") == 1) {
+    /*    if (ParseUser.getCurrentUser().getInt("genderCode") == 1) {
             adapter.addFragment(new Fragment_services_test(1), "hairStyle");
             adapter.addFragment(new Fragment_services_test(2), "Beards");
             adapter.addFragment(new Fragment_services_test(0), "HairRemoval");
@@ -268,7 +268,7 @@ public class MainActivity extends BaseActivity {
             adapter.addFragment(new Fragment_services_test(10), "Short");
             adapter.addFragment(new Fragment_services_test(11), "Medium");
             adapter.addFragment(new Fragment_services_test(12), "Long");
-        }
+        }*/
 
         viewPager.setAdapter(adapter);
 
@@ -525,7 +525,14 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return new Fragment_services_test(position);
+
+            int genderposition;
+            if (ParseUser.getCurrentUser().getInt("genderCode") == 0)
+                genderposition = position + 10;
+            else
+                genderposition = position;
+
+            return new Fragment_services_test(genderposition);
         }
 
         @Override
