@@ -178,7 +178,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        if(mContext instanceof Favourites){
+                        if (mContext instanceof Favourites) {
                             menu = ((Favourites) mContext).getMenu();
                         }
                         new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);

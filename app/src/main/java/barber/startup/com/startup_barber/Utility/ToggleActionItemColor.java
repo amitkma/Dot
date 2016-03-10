@@ -17,13 +17,14 @@ public class ToggleActionItemColor {
     private final Menu menu;
     private final Context context;
 
-    public ToggleActionItemColor(Menu menu, Context context){
+    public ToggleActionItemColor(Menu menu, Context context) {
         this.menu = menu;
         this.context = context;
     }
+
     public void makeIconRed(int id) {
         MenuItem item = menu.findItem(id);
-        Drawable newIcon =  item.getIcon();
+        Drawable newIcon = item.getIcon();
         newIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
         item.setIcon(newIcon);
     }

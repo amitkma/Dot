@@ -123,7 +123,7 @@ public class BarberActivity extends AppCompatActivity {
                             }
                         });
 
-                    }else Log.e("BarberActivity",e.getMessage());
+                    } else Log.e("BarberActivity", e.getMessage());
                 }
 
             }

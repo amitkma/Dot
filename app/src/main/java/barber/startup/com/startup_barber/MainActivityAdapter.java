@@ -43,7 +43,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     private Menu menu;
 
     public MainActivityAdapter(List<Data> listparseobject, Context context) {
-       this.mContext = context;
+        this.mContext = context;
         this.data = listparseobject;
     }
 
@@ -88,8 +88,8 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            if(mContext instanceof MainActivity){
-                               menu = ((MainActivity) mContext).getMenu();
+                            if (mContext instanceof MainActivity) {
+                                menu = ((MainActivity) mContext).getMenu();
                             }
                             new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_fav);
                             holder.mImageView_fav.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
@@ -126,7 +126,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            if(mContext instanceof MainActivity){
+                            if (mContext instanceof MainActivity) {
                                 menu = ((MainActivity) mContext).getMenu();
                             }
 

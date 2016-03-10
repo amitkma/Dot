@@ -28,13 +28,13 @@ import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
  * Created by ayush on 28/2/16.
  */
 public class Fragment_services_test extends android.support.v4.app.Fragment {
+    List<String> listcart = new ArrayList<String>();
+    List<String> listfav = new ArrayList<String>();
+    List<Data> listparseobject = new ArrayList<Data>();
     private RecyclerView recyclerView;
     private MainActivityAdapter adapter;
     private int category;
     private String[] uri;
-    List<String> listcart = new ArrayList<String>();
-    List<String> listfav = new ArrayList<String>();
-    List<Data> listparseobject = new ArrayList<Data>();
     private Menu menu;
 
 
@@ -96,7 +96,7 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null)
                     if (objects != null) {
-                        if(getActivity() instanceof MainActivity){
+                        if (getActivity() instanceof MainActivity) {
                             menu = ((MainActivity) getActivity()).getMenu();
                         }
                         new ToggleActionItemColor(menu, getActivity()).makeIconRed(R.id.action_fav);
@@ -125,7 +125,7 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null)
                     if (objects != null) {
-                        if(getActivity() instanceof MainActivity){
+                        if (getActivity() instanceof MainActivity) {
                             menu = ((MainActivity) getActivity()).getMenu();
                         }
                         new ToggleActionItemColor(menu, getActivity()).makeIconRed(R.id.action_cart);

@@ -2,11 +2,11 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/data_saving_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="barber.startup.com.startup_barber.DataSaving"
-    android:id="@+id/data_saving_dialog">
+    tools:context="barber.startup.com.startup_barber.DataSaving">
 
 
     <include layout="@layout/content_data_saving" />

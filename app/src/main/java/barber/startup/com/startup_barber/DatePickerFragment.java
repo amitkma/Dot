@@ -28,7 +28,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private int mDay;
     private int mMonth;
     private int mYear;
-    private DatePicker datePicker;
     private boolean flag = false;
 
 
@@ -41,10 +40,17 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         mMonth = c.get(Calendar.MONTH);
         mDay = c.get(Calendar.DAY_OF_MONTH);
 
+
+        Log.e("TEST", Integer.toString(mYear) + " " + Integer.toString(mMonth) + " " + Integer.toString(mDay));
+
+
         datePickerDialog = new DatePickerDialog(getActivity(), this, mYear, mMonth, mDay) {
+
 
             public void onDateChanged(DatePicker view, int year,
                                       int monthOfYear, int dayOfMonth) {
+
+                //Log.e("THIS", Integer.toString(calMin.get(Calendar.YEAR)) + "  " + Integer.toString(calMax.get(Calendar.YEAR)) + " " + Integer.toString(mYear));
                 Date dateMin = getMinDate();
                 Calendar calMin = Calendar.getInstance();
                 calMin.setTime(dateMin);
@@ -72,15 +78,12 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
                 } else if (flag = false) {
                     datePickerDialog.updateDate(year, monthOfYear, dayOfMonth);
                     flag = true;
-                    int month = monthOfYear + 1;
-                    //sendDate(year, month, dayOfMonth);
-
-
                 }
 
             }
         };
 
+        DatePicker datePicker = datePickerDialog.getDatePicker();
         return datePickerDialog;
 
 
