@@ -35,6 +35,7 @@ public class Favourites extends AppCompatActivity {
     private TextView empty;
     private ImageView back_button;
     private int categories[] = {0, 1, 2};
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +115,7 @@ public class Favourites extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_fav, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -138,7 +140,7 @@ public class Favourites extends AppCompatActivity {
 
         recyclerView_fav.setAdapter(favAdapter);
 
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.DataClass);
+        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
         parseQuery.whereContainedIn("objectId", listfav);
         parseQuery.fromPin("data");
         parseQuery.orderByDescending("updatedAt");
@@ -218,5 +220,9 @@ public class Favourites extends AppCompatActivity {
         finish();
         overridePendingTransition(0, 0);
 
+    }
+
+    public Menu getMenu() {
+        return menu;
     }
 }

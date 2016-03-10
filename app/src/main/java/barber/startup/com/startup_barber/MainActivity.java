@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -14,10 +15,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,23 +31,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity {
     protected static float width;
     protected static int height;
     protected static int a;
-    private static Menu menu;
+    private Menu menu;
     ParseUser parseUser = ParseUser.getCurrentUser();
     private ViewPager viewPager;
     private TabLayout tabLayout;
-    private Toolbar toolbar;
     private Dialog dialog;
-    private String[] categoriesName;
+
 
 
     @Override
@@ -59,13 +66,10 @@ public class MainActivity extends BaseActivity {
             public void onGlobalLayout() {
                 Log.d("heightv", String.valueOf(v.getHeight()));
 
-
                 float b = (v.getHeight() / Resources.getSystem().getDisplayMetrics().density);
 
                 a = Math.round(b);
                 Log.d("a", String.valueOf(a));
-
-
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
                     v.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 else
@@ -73,13 +77,10 @@ public class MainActivity extends BaseActivity {
             }
         });
 
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
 
-
-int genderCode=ParseUser.getCurrentUser().getInt("genderCode");
-        if (genderCode==0)
-            this.categoriesName=Defaults.categoriesNameGirls;
-        else if(genderCode==1)
-            this.categoriesName=Defaults.categoriesNameBoys;
         dialog = new Dialog(MainActivity.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.developer);
@@ -90,77 +91,61 @@ int genderCode=ParseUser.getCurrentUser().getInt("genderCode");
         Glide.with(getApplicationContext()).load((R.drawable.ayush)).into(ayush);
         Glide.with(getApplicationContext()).load((R.drawable.amit)).into(amit);
 
+        Display displaydp = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        displaydp.getMetrics(outMetrics);
+
+        float density = getResources().getDisplayMetrics().density;
+        Float f = outMetrics.heightPixels / density;
+        height = Math.round(f);
+
+
+        Log.d("H", String.valueOf(height));
+
+
+        width = outMetrics.widthPixels / density;
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(1);
+        setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.accent));
+        tabLayout.setupWithViewPager(viewPager);
         changeTabsFont();
 
-
-        toolbar = setup_toolbar();
+        Toolbar toolbar = setup_toolbar();
         setup_nav_drawer();
         setup_nav_item_listener();
-
-
     }
 
     private void cartIcon_toolbar() {
 
         Intent intent = new Intent(MainActivity.this, CartDisplay.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(0, 0);
+        finish();
 
     }
 
     private void favIcon_toolbar() {
 
         Intent intent = new Intent(MainActivity.this, Favourites.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(0, 0);
+        finish();
 
     }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new Fragment_services_test(0), "Beards");
+        adapter.addFragment(new Fragment_services_test(1), "Moustache");
+        adapter.addFragment(new Fragment_services_test(2), "Hairstyle");
+        adapter.addFragment(new Fragment_services_test(3), "Extras");
+
+
         viewPager.setAdapter(adapter);
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (Application.DEBUG)
-            Log.i("MainActivity", "onStart() called");
-
-        setupViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (Application.DEBUG)
-            Log.i("MainActivity", "onStop() called");
-
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        Log.d("fraglist", String.valueOf(fragments));
-
-
-        if (fragments != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            for (Fragment f : fragments) {
-                //You can perform additional check to remove some (not all) fragments:
-                if (f instanceof Fragment_services_test) {
-                    ft.remove(f);
-                }
-            }
-            ft.commitAllowingStateLoss();
-        }
     }
 
     public void setup_nav_item_listener() {
@@ -290,30 +275,11 @@ int genderCode=ParseUser.getCurrentUser().getInt("genderCode");
         }
     }
 
-    public static void makeFavIconRed() {
-
-        MenuItem item = menu.findItem(R.id.action_fav);
-        Drawable newIcon = (Drawable) item.getIcon();
-        newIcon.setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
-        item.setIcon(newIcon);
-
-    }
-
-    public static void makeCartIconBlue() {
-        MenuItem item = menu.findItem(R.id.action_cart);
-        Drawable newIcon = (Drawable) item.getIcon();
-        newIcon.setColorFilter(Color.BLUE, PorterDuff.Mode.SRC_IN);
-        item.setIcon(newIcon);
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
         this.menu = menu;
-
         return true;
     }
 
@@ -339,11 +305,12 @@ int genderCode=ParseUser.getCurrentUser().getInt("genderCode");
             return true;
         }
 
-
         return super.onOptionsItemSelected(item);
     }
 
     class ViewPagerAdapter extends FragmentStatePagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -351,17 +318,26 @@ int genderCode=ParseUser.getCurrentUser().getInt("genderCode");
 
         @Override
         public Fragment getItem(int position) {
-            return new Fragment_services_test(position);
+            return mFragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            return categoriesName.length;
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return categoriesName[position];
+            return mFragmentTitleList.get(position);
         }
+    }
+
+    public Menu getMenu() {
+        return menu;
     }
 }

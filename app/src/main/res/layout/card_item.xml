@@ -32,7 +32,7 @@
         <RelativeLayout
             android:id="@+id/rl"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="50dp"
             android:layout_alignParentBottom="true">
 
             <View
@@ -53,20 +53,17 @@
                     android:layout_height="match_parent"
                     android:layout_marginRight="4dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:paddingLeft="4dp"
-                    android:paddingRight="4dp"
-                    android:scaleType="centerInside"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
                     android:src="@drawable/ic_favorite_border_black_18dp" />
 
                 <ImageView
                     android:id="@+id/addToCart_button"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-
+                    android:layout_marginLeft="4dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-
-                    android:paddingLeft="4dp"
-
+                    android:paddingLeft="8dp"
                     android:paddingRight="8dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_add_shopping_cart_black_18dp" />
@@ -79,10 +76,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center_vertical"
-                android:paddingLeft="14dp"
-                android:paddingTop="6dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
                 android:text="Title"
-                android:textColor="#000"
+                android:textColor="@color/primary_text"
                 android:textSize="14dp" />
 
             <TextView
@@ -90,10 +87,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/card_title"
-                android:fontFamily="sans-serif"
                 android:gravity="center_vertical"
-                android:paddingBottom="6dp"
-                android:paddingLeft="14dp"
+                android:paddingBottom="8dp"
+                android:paddingLeft="16dp"
                 android:text="Price"
                 android:textColor="@color/secondary_text"
                 android:textSize="12dp" />

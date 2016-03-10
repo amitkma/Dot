@@ -49,8 +49,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.github.bumptech.glide:glide:3.7.0'
-
-    compile files('libs/sinch-android-verification-1.1.2.jar')
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }

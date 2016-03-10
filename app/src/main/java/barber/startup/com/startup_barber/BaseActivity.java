@@ -2,8 +2,6 @@ package barber.startup.com.startup_barber;
 
 import android.graphics.Typeface;
 import android.net.ConnectivityManager;
-import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -17,27 +15,20 @@ import android.widget.TextView;
 import com.parse.ParseUser;
 import com.squareup.picasso.Picasso;
 
-/**
- * Created by ayush on 23/1/16.
- */
 public class BaseActivity extends AppCompatActivity {
 
     static ParseUser currentUser = ParseUser.getCurrentUser();
 
-
     NavigationView navigationView;
     DrawerLayout drawerLayout;
     int Temp;
-    private ActionBarDrawerToggle mDrawerToggle;
 
+    private ActionBarDrawerToggle mDrawerToggle;
 
     public Toolbar setup_toolbar() {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
-
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer);
         mDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open_content_desc, R.string.drawer_close_content_desc){
@@ -52,13 +43,11 @@ public class BaseActivity extends AppCompatActivity {
             }
         };
 
-        drawerLayout.setDrawerListener(mDrawerToggle);
+        drawerLayout.addDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-mDrawerToggle.syncState();
+        mDrawerToggle.syncState();
         return toolbar;
-
-
     }
 
 
