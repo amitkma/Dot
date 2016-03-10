@@ -7,6 +7,7 @@
 
 
     <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/colayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -22,8 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:title="Salo"
-                app:layout_scrollFlags="scroll|enterAlways"
-               >
+                app:layout_scrollFlags="scroll|enterAlways">
 
 
 
@@ -44,7 +44,6 @@
                 app:tabMode="scrollable"
                 app:tabIndicatorHeight="4dp"
                 app:tabSelectedTextColor="@color/colorAccent_light"
-                app:tabIndicatorColor="@color/colorAccent_light"
                 app:tabTextAppearance="@style/MineCustomTabText" />
         </android.support.design.widget.AppBarLayout>
 
@@ -53,6 +52,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        <TextView
+            android:id="@+id/checkconnection"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#D5D5D5"
+            android:gravity="center"
+            android:text="Check network connection"
+            android:textSize="18dp"
+            android:visibility="invisible" />
+
 
         <View
             android:id="@+id/viewframe"

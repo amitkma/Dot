@@ -30,10 +30,6 @@ import barber.startup.com.startup_barber.Utility.NetworkCheck;
 
 public class DataSaving extends AppCompatActivity {
 
-    // Whether there is a Wi-Fi connection.
-    private static boolean wifiConnected = false;
-    // Whether there is a mobile connection.
-    private static boolean mobileConnected = false;
     ProgressDialog progressDialog = null;
     private SharedPreferences prefs;
     private boolean dataSaved = false;

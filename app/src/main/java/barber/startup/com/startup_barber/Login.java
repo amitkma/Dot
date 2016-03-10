@@ -62,7 +62,6 @@ public class Login extends AppCompatActivity {
     }
 
 
-
     private void setup_fb_login_button() {
         button_fb_login = (Button) findViewById(R.id.button_fb_login);
         button_fb_login.setOnClickListener(new View.OnClickListener() {
@@ -147,10 +146,10 @@ public class Login extends AppCompatActivity {
                             JSONObject data = picture.getJSONObject("data");
                             final String gender = response.getJSONObject().getString("gender");
                             int gendercode = -1;
-                            if (gender.compareTo("male") == 0) {
+                            if (gender.equals("male")) {
                                 gendercode = 1;
                             }
-                            if (gender.compareTo("female") == 0) {
+                            if (gender.equals("female")) {
                                 gendercode = 0;
                             }
                             String pictureUrl = data.getString("url");
@@ -200,14 +199,14 @@ public class Login extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         if (ParseUser.getCurrentUser() != null) {
-            startActivity(new Intent(this, DataSaving.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         }
 
     }
 
     private void startDataLoadActivity() {
-        startActivity(new Intent(getApplicationContext(), DataSaving.class));
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
         overridePendingTransition(0, 0);
         finish();
     }
