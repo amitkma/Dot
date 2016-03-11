@@ -65,7 +65,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:paddingLeft="8dp"
                     android:paddingRight="8dp"
-                    android:src="@drawable/ic_shopping_cart_black_18dp" />
+                    android:src="@drawable/ic_add_shopping_cart_black_18dp" />
 
             </LinearLayout>
 

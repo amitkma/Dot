@@ -36,6 +36,7 @@
                android:paddingLeft="4dp"
                 app:tabMode="scrollable"
                 app:tabIndicatorHeight="4dp"
+                app:tabIndicatorColor="@color/colorAccent_light"
                 app:tabSelectedTextColor="#FFF"
                 app:tabTextColor="@color/secondary_text"
                 app:tabTextAppearance="@style/MineCustomTabText" />
