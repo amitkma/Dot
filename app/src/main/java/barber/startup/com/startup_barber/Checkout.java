@@ -52,7 +52,7 @@ public class Checkout extends AppCompatActivity {
 
     // Declaring arraylist variables for available time slots and already booked slots
     private ArrayList<TimeSlotFormat> availableTimeSlots = new ArrayList<>();
-    private ArrayList<TimeSlotFormat> bookedTimeSlots = new ArrayList<>();
+    private JSONArray bookedTimeSlots = new JSONArray();
     private Date updateTime;
     private String objectId;
     private ProgressBar progressBar;
@@ -296,6 +296,10 @@ public class Checkout extends AppCompatActivity {
 
         int endTimeSlotFormat = hours * 100 + ((minutes + time) % 60); // Convert preferred slot's end time in TimeSlot Format
 
+
+        bookedTimeSlots.put(startTimeSlotFormat);
+        bookedTimeSlots.put(endTimeSlotFormat);
+
         int updateSlotPosition = checkSlots(startTimeSlotFormat, endTimeSlotFormat); // Returns corresponding slot position or -1 if no slot is available
 
         if (updateSlotPosition > -1) {
@@ -397,32 +401,20 @@ public class Checkout extends AppCompatActivity {
 
     private void saveAppointment(int hours, int minutes) {
 
-        String starthour = Integer.toString(hours);
-        String startmin = Integer.toString(minutes);
-
-
-        String endhour;
-        String endmin;
-
         String timeSlot = null;
-        Log.i("time", String.valueOf(time));
 
-        if(minutes+time>=60)
-        {
-            Log.i("reacheed", "here");
-            endhour = Integer.toString(hours + 1);
-            int min = time - minutes;
-            endmin = Integer.toString(min);
+        try {
+            int startTimeHour = bookedTimeSlots.getInt(0)/ 100;
+            int startTimeMinute = bookedTimeSlots.getInt(0)% 100;
+            int endTimeHour = bookedTimeSlots.getInt(1)/ 100;
+            int endTimeMinute = bookedTimeSlots.getInt(1)% 100;
 
-        } else {
-            Log.i("reacheed", "here else");
-            endhour = Integer.toString(hours);
-            endmin = Integer.toString(minutes + time);
+            timeSlot = new String(String.format("%02d:%02d - %02d:%02d \n", startTimeHour, startTimeMinute, endTimeHour, endTimeMinute));
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        if (minutes < 10) {
-            timeSlot = starthour + ":" + "0" + startmin + " - " + endhour + ":" + endmin;
-        } else timeSlot = starthour + ":" + startmin + " - " + endhour + ":" + endmin;
+
 
         final ParseObject parseObject = new ParseObject("Appointments");
         parseObject.put("servicesId", UserFavsAndCarts.listcart);
@@ -434,6 +426,7 @@ public class Checkout extends AppCompatActivity {
         parseObject.put("timeSlot", timeSlot);
         parseObject.put("date", Integer.valueOf(dateFormat));
         parseObject.put("completed", false);
+        parseObject.put("bookedSlot", bookedTimeSlots);
         parseObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {

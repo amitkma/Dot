@@ -138,53 +138,57 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
                 if(e == null){
                     if(object != null) {
                         JSONArray arrayFav = object.getJSONArray("favLists");
-                        Log.e("FRagment_services", String.valueOf(arrayFav.length()));
-                        if (arrayFav.length() > 0) {
-                            if (mContext instanceof MainActivity) {
-                                menu = ((MainActivity) mContext).getMenu();
-                            }
-                            new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_fav);
-                        }
 
-                      else  if (arrayFav.length() == 0) {
-                            if (mContext instanceof MainActivity) {
-                                menu = ((MainActivity) mContext).getMenu();
+                        if(arrayFav != null) {
+                            if (arrayFav.length() > 0) {
+                                if (mContext instanceof MainActivity) {
+                                    menu = ((MainActivity) mContext).getMenu();
+                                }
+                                new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_fav);
+                            } else if (arrayFav.length() == 0) {
+                                if (mContext instanceof MainActivity) {
+                                    menu = ((MainActivity) mContext).getMenu();
+                                }
+                                new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_fav);
                             }
-                            new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_fav);
+                            UserFavsAndCarts.listfav.clear();
+                            for (int i = 0; i < arrayFav.length(); i++) {
+                                try {
+                                    UserFavsAndCarts.listfav.add(arrayFav.getString(i));
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
+                            }
+
                         }
 
                         JSONArray arrayCart = object.getJSONArray("cartLists");
-                        if (arrayCart.length() > 0) {
-                            if (mContext instanceof MainActivity) {
-                                menu = ((MainActivity) mContext).getMenu();
+                        if(arrayCart != null) {
+                            if (arrayCart.length() > 0) {
+                                if (mContext instanceof MainActivity) {
+                                    menu = ((MainActivity) mContext).getMenu();
+                                }
+                                new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
+                            } else if (arrayCart.length() == 0) {
+                                if (mContext instanceof MainActivity) {
+                                    menu = ((MainActivity) mContext).getMenu();
+                                }
+                                new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_cart);
                             }
-                            new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
-                        }
+                            UserFavsAndCarts.listcart.clear();
 
-                       else if (arrayCart.length() == 0) {
-                            if (mContext instanceof MainActivity) {
-                                menu = ((MainActivity) mContext).getMenu();
+                            for (int i = 0; i < arrayCart.length(); i++) {
+                                try {
+                                    UserFavsAndCarts.listcart.add(arrayCart.getString(i));
+                                } catch (JSONException e1) {
+                                    e1.printStackTrace();
+                                }
                             }
-                            new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_cart);
-                        }
 
-                        Log.e("ARRAy", Integer.toString(arrayFav.length()) + "" + Integer.toString(arrayCart.length()));
-                        UserFavsAndCarts.listcart.clear();
-                        UserFavsAndCarts.listfav.clear();
-                        for (int i = 0; i < arrayFav.length(); i++) {
-                            try {
-                                UserFavsAndCarts.listfav.add(arrayFav.getString(i));
-                            } catch (JSONException e1) {
-                                e1.printStackTrace();
-                            }
                         }
-                        for (int i = 0; i < arrayCart.length(); i++) {
-                            try {
-                                UserFavsAndCarts.listcart.add(arrayCart.getString(i));
-                            } catch (JSONException e1) {
-                                e1.printStackTrace();
-                            }
-                        }
+                       // Log.e("ARRAy", Integer.toString(arrayFav.length()) + "" + Integer.toString(arrayCart.length()));
+
+
                     }
 
                 }
