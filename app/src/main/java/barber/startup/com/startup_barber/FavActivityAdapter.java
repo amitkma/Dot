@@ -75,7 +75,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
         } else holder.cart.setColorFilter(null);
 
         if (data.getUrl() != null) {
-            Glide.with(mContext).load(data.getUrl()).crossFade().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.back);
+            Glide.with(mContext).load(data.getUrl()).crossFade().centerCrop().diskCacheStrategy(DiskCacheStrategy.NONE).into(holder.back);
         }
     }
 

@@ -76,6 +76,8 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.content_main);
 
         appBarLayout = (AppBarLayout)findViewById(R.id.appbarlayout);
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading styles and barbers");
         final View v = findViewById(R.id.viewframe);
         if(NetworkCheck.checkConnection(MainActivity.this)) {
             ParseQuery<ParseUser> query = ParseUser.getQuery();

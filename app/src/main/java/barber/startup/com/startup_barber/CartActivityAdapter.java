@@ -58,7 +58,7 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
         if (data.getUrl() != null) {
 
 
-            Glide.with(mContext).load(data.getUrl()).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.img);
+            Glide.with(mContext).load(data.getUrl()).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.NONE).into(holder.img);
         }
 
     }
