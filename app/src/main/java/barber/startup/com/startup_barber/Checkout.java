@@ -126,7 +126,7 @@ public class Checkout extends AppCompatActivity {
     }
 
     private void finalcheckoutFAB(final int hourOfDay, final int minute) {
-            checkoutbutton.setVisibility(View.VISIBLE);
+        checkoutbutton.setVisibility(View.VISIBLE);
         checkoutbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -405,12 +405,17 @@ public class Checkout extends AppCompatActivity {
         String endmin;
 
         String timeSlot = null;
-        if (time > 60) {
+        Log.i("time", String.valueOf(time));
+
+        if(minutes+time>=60)
+        {
+            Log.i("reacheed", "here");
             endhour = Integer.toString(hours + 1);
             int min = time - minutes;
             endmin = Integer.toString(min);
 
         } else {
+            Log.i("reacheed", "here else");
             endhour = Integer.toString(hours);
             endmin = Integer.toString(minutes + time);
         }
@@ -438,14 +443,14 @@ public class Checkout extends AppCompatActivity {
                     Random r = new Random();
                     int pin = r.nextInt(99999 - 9999) + 9999;
                     i.putExtra("pin", pin);
-                    i.putExtra("price",price);
-                    i.putExtra("barberName",barberName);
+                    i.putExtra("price", price);
+                    i.putExtra("barberName", barberName);
                     i.putExtra("totalTime", time);
                     i.putExtra("appointmentDate", dateformatintent);
                     i.putExtra("timeslot", timeslotstart + " + " + time + "min");
 
 
-                 //Send Push to user and barber
+                    //Send Push to user and barber
                     ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
                     query.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());  //Send to this user only
                     String a[] = {"oEhBK7XN5Q", ParseUser.getCurrentUser().getObjectId()};
