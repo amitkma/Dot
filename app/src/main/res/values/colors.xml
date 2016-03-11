@@ -4,12 +4,13 @@
     <color name="primary">#424242</color>
     <color name="primary_dark">#212121</color>
     <color name="primary_light">#C5CAE9</color>
-    <color name="accent">#448AFF</color>
+    <color name="accent">#2979FF</color>
     <color name="primary_text">#212121</color>
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
     <color name="colorAccent_light">#448AFF</color>
+    <color name="colorAccentDark">#1976D2</color>
     <color name="colorAccent_light2">#172650</color>
     <color name="accent_edittext">#4DD0E1</color>
     <color name="secondary_text_background">#66727272</color>
@@ -24,5 +25,7 @@
     <color name="blue_semi_transparent">#805677fc</color>
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
 
+    <color name="login_button_back">#8a727272</color>
+    <color name="material_login_register_color">@color/colorAccentDark</color>
 
 </resources>

@@ -53,4 +53,8 @@ dependencies {
         transitive = true;
     }
 
+
+    compile 'com.github.ganfra:material-spinner:1.1.1'
+
+
 }

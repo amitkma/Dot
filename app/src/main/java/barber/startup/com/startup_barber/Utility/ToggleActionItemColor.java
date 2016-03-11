@@ -26,6 +26,14 @@ public class ToggleActionItemColor {
         MenuItem item = menu.findItem(id);
         Drawable newIcon = item.getIcon();
         newIcon.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
+        newIcon.setAlpha(255);
+        item.setIcon(newIcon);
+    }
+
+    public void makeIconDefault(int id){
+        MenuItem item = menu.findItem(id);
+        Drawable newIcon = item.getIcon();
+        newIcon.setColorFilter(null);
         item.setIcon(newIcon);
     }
 

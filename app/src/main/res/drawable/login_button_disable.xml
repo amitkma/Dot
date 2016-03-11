@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" >
+
+    <corners
+        android:bottomLeftRadius="24dp"
+        android:bottomRightRadius="24dp"
+        android:radius="48dp"
+        android:topLeftRadius="24dp"
+        android:topRightRadius="24dp" />
+
+    <solid android:color="@color/login_button_back" />
+
+    <padding
+        android:bottom="0dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp" />
+
+    <size
+        android:height="48dp"
+        android:width="240dp" />
+
+</shape>

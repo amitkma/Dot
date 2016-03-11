@@ -2,7 +2,6 @@ package barber.startup.com.startup_barber;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,27 +15,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
-import java.util.Arrays;
+import org.json.JSONArray;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import barber.startup.com.startup_barber.Utility.NetworkCheck;
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 
 public class CartDisplay extends AppCompatActivity {
     int totaltime = 0;
+    List<Data> listcart = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private CartActivityAdapter cartActivityAdapter;
     private Toolbar toolbar;
     private TextView retry;
     private TextView empty;
+    private Menu menu;
 
 
     @Override
@@ -51,7 +55,6 @@ public class CartDisplay extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
-
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -74,24 +77,39 @@ public class CartDisplay extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
-        cartActivityAdapter = new CartActivityAdapter(this, empty);
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
-        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
+        cartActivityAdapter = new CartActivityAdapter(this, listcart, empty);
+
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
+        parseQuery.fromPin("data");
+        parseQuery.whereContainedIn("objectId", UserFavsAndCarts.listcart);
+        Log.e("Fav", "passed");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
+                    Log.i("Fav", "passed" + objects.size());
                     if (objects.size() > 0) {
-                        String[] a = new String[objects.size()];
                         for (int i = 0; i < objects.size(); i++) {
                             ParseObject parseObject = objects.get(i);
-                            a[i] = parseObject.getString("cart");
+                            final Data td = new Data();
+                            td.title = parseObject.getString("title");
+                            td.price = parseObject.getString("price");
+                            td.id = parseObject.getObjectId();
+                            ParseFile parseFile = parseObject.getParseFile("image");
+                            td.url = parseFile.getUrl();
+                            if (UserFavsAndCarts.listcart.contains(td.getId()))
+                                td.cart = true;
+                            listcart.add(td);
                         }
+                        Log.d("fav", String.valueOf(listcart));
 
-
-                        getObjects(a);
+                        cartActivityAdapter = new CartActivityAdapter(CartDisplay.this, listcart, empty);
+                        mRecyclerView.setAdapter(cartActivityAdapter);
                     } else empty.setVisibility(View.VISIBLE);
-                } else e.printStackTrace();
+                } else {
+                    Log.i("Favourited", "passed,favcheeck");
+                    Log.i("Favourited", "passed,favcheeck" + e.getMessage());
+                }
             }
         });
 
@@ -113,6 +131,7 @@ public class CartDisplay extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_fav, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -134,55 +153,24 @@ public class CartDisplay extends AppCompatActivity {
     }
 
     private void deleteAll() {
-        ParseObject.unpinAllInBackground(Defaults.CartClass+ ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
+        UserFavsAndCarts.listcart.clear();
+        MainActivity.dataUpdated =true;
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < UserFavsAndCarts.listcart.size(); i++) {
+            jsonArray.put(UserFavsAndCarts.listcart.get(i));
+        }
+        final ParseUser parseUser = ParseUser.getCurrentUser();
+        parseUser.put("cartLists", jsonArray);
+        parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-
+                    parseUser.saveEventually();
                     cartActivityAdapter.removeAllviews(empty);
                 } else e.printStackTrace();
             }
         });
-    }
 
-
-
-
-
-    private void getObjects(String[] a) {
-
-        mRecyclerView.setAdapter(cartActivityAdapter);
-
-        final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
-        parseQuery.whereContainedIn("objectId", Arrays.asList(a));
-        parseQuery.fromPin("data");
-        parseQuery.orderByDescending("updatedAt");
-
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects1, ParseException e) {
-                if (e == null) {
-                    if (Application.DEBUG)
-                        Log.d("Cart", "fetched locally");
-
-                    for (int i = 0; i < objects1.size(); i++) {
-                        final ParseObject parseObject = objects1.get(i);
-                        final Data td = new Data();
-                        td.title = parseObject.getString("title");
-                        td.price = parseObject.getString("price");
-                        td.id = parseObject.getObjectId();
-                        td.time = parseObject.getInt("time");
-
-                        Log.d("td.time", String.valueOf(td.getTime()));
-                        Log.d("td.total", String.valueOf(totaltime));
-                        totaltime = parseObject.getInt("time") + totaltime;
-                        ParseFile parseFile = parseObject.getParseFile("image");
-                        td.url = parseFile.getUrl();
-                        cartActivityAdapter.addData(td);
-                    }
-                }
-            }
-        });
     }
 
 
@@ -198,55 +186,21 @@ public class CartDisplay extends AppCompatActivity {
 
     private void startCheckoutActivity() {
 
+        final String[] b = new String[UserFavsAndCarts.listcart.size()];
+        for (int i = 0; i < UserFavsAndCarts.listcart.size(); i++) {
+            b[i] = UserFavsAndCarts.listcart.get(i);
+        }
 
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.CartClass);
-        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    if (objects.size() > 0) {
-                        final String[] b = new String[objects.size()];
-                        for (int i = 0; i < objects.size(); i++) {
-                            ParseObject parseObject = objects.get(i);
-                            b[i] = parseObject.getString("cart");
-                        }
 
-                        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
-                        parseQuery.whereContainedIn("objectId", Arrays.asList(b));
-                        parseQuery.fromPin("data");
+        Intent i = new Intent(CartDisplay.this, BarberActivity.class);
 
-                        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-                            @Override
-                            public void done(List<ParseObject> objects1, ParseException e) {
-                                if (e == null) {
-                                    if (objects1.size() > 0) {
-                                        for (int i = 0; i < objects1.size(); i++) {
-                                            final ParseObject parseObject = objects1.get(i);
-                                            parseObject.getInt("time");
-                                            // totaltime = parseObject.getInt("time") + totaltime;
-                                        }
-                                        Intent i = new Intent(CartDisplay.this, Checkout.class);
+        Bundle bundle = new Bundle();
+        bundle.putStringArray("OBJECTID", b);
+        i.putExtra("totalTimeTaken", totaltime);
+        i.putExtra("objectIdList", bundle);
+        startActivity(i);
 
-                                        Bundle bundle = new Bundle();
-                                        bundle.putStringArray("OBJECTID", b);
-                                        i.putExtra("totalTimeTaken", totaltime);
-                                        i.putExtra("objectIdList", bundle);
-                                        startActivity(i);
-
-                                        overridePendingTransition(0, 0);
-
-                                    }
-                                }
-                            }
-                        });
-                    }
-
-                }
-            }
-
-        });
-
+        overridePendingTransition(0, 0);
 
     }
 
@@ -258,11 +212,4 @@ public class CartDisplay extends AppCompatActivity {
         overridePendingTransition(0, 0);
 
     }
-
-    public void updateTotalTime(int lesstime) {
-        Log.d("CartDisplay", Integer.toString(totaltime));
-        totaltime = totaltime - lesstime;
-        Log.d("CartDisplay", Integer.toString(totaltime));
-    }
-
 }

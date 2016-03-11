@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_styles_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp">
-
     </android.support.v7.widget.RecyclerView>
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/data_loading_spinner"
+        android:indeterminateBehavior="repeat"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        ></ProgressBar>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/checkconnection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Check network connection"
+        android:textSize="18dp"
+        android:visibility="invisible" />
+
+</FrameLayout>

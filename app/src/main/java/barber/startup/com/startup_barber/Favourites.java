@@ -1,6 +1,5 @@
 package barber.startup.com.startup_barber;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -13,21 +12,25 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
+
 public class Favourites extends AppCompatActivity {
 
-    List<String> listcart = new ArrayList<String>();
-    List<String> listfav = new ArrayList<String>();
+
+    List<Data> listfav = new ArrayList<>();
     private RecyclerView recyclerView_fav;
     private StaggeredGridLayoutManager gaggeredGridLayoutManager;
     private FavActivityAdapter favAdapter;
@@ -53,30 +56,40 @@ public class Favourites extends AppCompatActivity {
         gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
 
         recyclerView_fav.setLayoutManager(gaggeredGridLayoutManager);
-        favAdapter = new FavActivityAdapter(this, empty);
+        favAdapter = new FavActivityAdapter(this, listfav, empty);
 
 
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.FavouritesClass);
-        parseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
+        parseQuery.fromPin("data");
+        parseQuery.whereContainedIn("objectId", UserFavsAndCarts.listfav);
+        Log.e("Fav", "passed");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
-
-
+                    Log.i("Fav", "passed" + objects.size());
                     if (objects.size() > 0) {
-
-
-                        String[] a = new String[objects.size()];
                         for (int i = 0; i < objects.size(); i++) {
                             ParseObject parseObject = objects.get(i);
-                            listfav.add(parseObject.getString("favourites"));
+                            final Data td = new Data();
+                            td.title = parseObject.getString("title");
+                            td.price = parseObject.getString("price");
+                            td.id = parseObject.getObjectId();
+                            ParseFile parseFile = parseObject.getParseFile("image");
+                            td.url = parseFile.getUrl();
+                            if(UserFavsAndCarts.listcart.contains(td.getId()))
+                                td.cart=true;
+                            listfav.add(td);
                         }
                         Log.d("fav", String.valueOf(listfav));
 
-                        getObjects(a);
+                        favAdapter = new FavActivityAdapter(Favourites.this, listfav, empty);
+                        recyclerView_fav.setAdapter(favAdapter);
                     } else empty.setVisibility(View.VISIBLE);
-                } else e.printStackTrace();
+                } else {
+                    Log.i("Favourited", "passed,favcheeck");
+                    Log.i("Favourited", "passed,favcheeck" + e.getMessage());
+                }
             }
         });
 
@@ -96,13 +109,20 @@ public class Favourites extends AppCompatActivity {
     }
 
     private void deleteAll() {
-
-
-        ParseObject.unpinAllInBackground(ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
+        UserFavsAndCarts.listfav.clear();
+        MainActivity.dataUpdated =true;
+        JSONArray jsonArray = new JSONArray();
+        for(int i =0; i<UserFavsAndCarts.listfav.size(); i++){
+            jsonArray.put(UserFavsAndCarts.listfav.get(i));
+        }
+        final ParseUser parseUser = ParseUser.getCurrentUser();
+        parseUser.put("favLists", jsonArray);
+        parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
 
+                    parseUser.saveEventually();
                     favAdapter.removeAllviews(empty);
                 } else e.printStackTrace();
             }
@@ -136,9 +156,9 @@ public class Favourites extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void getObjects(String[] a) {
+  /*  private void getObjects(String[] a) {
 
-        recyclerView_fav.setAdapter(favAdapter);
+
 
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
         parseQuery.whereContainedIn("objectId", listfav);
@@ -178,7 +198,7 @@ public class Favourites extends AppCompatActivity {
                                         Log.d("Reached", "passed");
                                         td.cart = true;
                                     }
-                                    favAdapter.addData(td);
+
 
 
                                 }
@@ -206,20 +226,17 @@ public class Favourites extends AppCompatActivity {
 
 
                             }
-                        });     */
+                        });
 
                 }
             }
         });
-    }
+    }*/
 
     @Override
     public void onBackPressed() {
-
-
         finish();
         overridePendingTransition(0, 0);
-
     }
 
     public Menu getMenu() {

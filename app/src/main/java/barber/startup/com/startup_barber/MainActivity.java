@@ -6,26 +6,23 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Point;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.widget.ImageView;
@@ -47,30 +44,61 @@ import java.util.Date;
 import java.util.List;
 
 import barber.startup.com.startup_barber.Utility.NetworkCheck;
+import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
 
 public class MainActivity extends BaseActivity {
     protected static float width;
     protected static int height;
     protected static int a;
+    protected static boolean dataUpdated = false;
     ParseUser parseUser = ParseUser.getCurrentUser();
-    ProgressDialog progressDialog = null;
+
+    private final String TAG = "MainActivity";
+
     private Menu menu;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Dialog dialog;
-    private SharedPreferences prefs;
-    private boolean dataSaved = false;
+    public static SharedPreferences prefs;
+    public static boolean dataSaved = false;
     private TextView checknet;
     private String[] categoriesName;
+    private AppBarLayout appBarLayout;
+
+    public static Date lastUpdatedAt = new Date();
+    private ProgressDialog progressDialog;
+    private boolean dataChanged;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_layout);
+        setContentView(R.layout.content_main);
 
-
+        appBarLayout = (AppBarLayout)findViewById(R.id.appbarlayout);
         final View v = findViewById(R.id.viewframe);
+        if(NetworkCheck.checkConnection(MainActivity.this)) {
+            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query.whereEqualTo("objectId", parseUser.getObjectId());
+            query.getFirstInBackground(new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser object, ParseException e) {
+                    if (e == null) {
+                        Defaults.mNumberOfServicesLeft = object.getInt("rewardWallet");
+                        Log.e("REWARD", String.valueOf(Defaults.mNumberOfServicesLeft));
+                        if (Defaults.mNumberOfServicesLeft == 0) {
+                            Snackbar.make(v, "You dont have any free service left", Snackbar.LENGTH_LONG).show();
+                        } else if (Defaults.mNumberOfServicesLeft > 0) {
+                            Snackbar.make(v, "You have " + Defaults.mNumberOfServicesLeft + " free service/s left", Snackbar.LENGTH_LONG).show();
+                        }
+                    } else
+                        Snackbar.make(v, e.getMessage(), Snackbar.LENGTH_SHORT).show();
+
+                }
+            });
+        }
+        else
+            Snackbar.make(v, "Error in connection", Snackbar.LENGTH_SHORT).show();
 
         v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -78,7 +106,6 @@ public class MainActivity extends BaseActivity {
                 Log.d("heightv", String.valueOf(v.getHeight()));
 
                 float b = (v.getHeight() / Resources.getSystem().getDisplayMetrics().density);
-
                 a = Math.round(b);
                 Log.d("a", String.valueOf(a));
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
@@ -119,169 +146,72 @@ public class MainActivity extends BaseActivity {
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(1);
-        //   setupViewPager(viewPager);
-
         tabLayout = (TabLayout) findViewById(R.id.tabs);
-        //  tabLayout.setupWithViewPager(viewPager);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         dataSaved = prefs.getBoolean("dataSaved", false);
+        lastUpdatedAt.setTime(prefs.getLong(Defaults.DATE_IN_MILLS_KEY, System.currentTimeMillis()));
 
-        changeTabsFont();
+        setup_toolbar();
 
-        Toolbar toolbar = setup_toolbar();
         setup_nav_drawer();
         setup_nav_item_listener();
 
-
-        int genderCode = ParseUser.getCurrentUser().getInt("genderCode");
-        if (genderCode == 0)
+        Defaults.genderCode = ParseUser.getCurrentUser().getInt("genderCode");
+        if (Defaults.genderCode == 0)
             this.categoriesName = Defaults.categoriesNameGirls;
-        else if (genderCode == 1)
+        else if (Defaults.genderCode == 1)
             this.categoriesName = Defaults.categoriesNameBoys;
-
-
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Data");
-        parseObjectParseQuery.fromPin("data");
-        parseObjectParseQuery.orderByDescending("updatedAt");
-        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-
-            @Override
-            public void done(ParseObject object, ParseException e) {
-                if (e == null) {
-                    Log.d("of", "reached");
-                    if (object != null) {
-                        Log.d("of", "notnull");
-                        Date date = new Date();
-                        date = object.getUpdatedAt();
-
-                        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Data");
-                        parseObjectParseQuery.orderByDescending("updatedAt");
-                        final Date finalDate = date;
-                        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-
-
-                            @Override
-                            public void done(ParseObject object, ParseException e) {
-                                if (e == null) {
-                                    Date dateserver = object.getUpdatedAt();
-                                    if (dateserver.after(finalDate)) {
-                                        Log.i("Main", "Reached here");
-                                        startfetch();
-                                    } else
-                                        Log.i("Main", "Reached here else");
-                                } else Log.i("Main", e.getMessage());
-                            }
-                        });
-
-
-                    }
-                } else if (e.getCode() == 101)
-                    startfetch();
-
-            }
-        });
+        checkfordatachange();
 
 
     }
 
-    private void startfetch() {
-        if (NetworkCheck.checkConnection(getApplicationContext())) {
-            if (dataSaved == false) {
 
-                progressDialog = new ProgressDialog(this);
-                progressDialog.setMessage("Loading styles and barbers");
-                progressDialog.setCancelable(false);
-                Fetch_data();
 
-            } else if (dataSaved == true) {
-                onStart();
-            }
-
-        } else {
-            Snackbar.make(findViewById(R.id.colayout), "Error in connection", Snackbar.LENGTH_INDEFINITE).show();
-            checknet.setVisibility(View.VISIBLE);
+   @Override
+    protected void onStart() {
+        super.onStart();
+        if(dataUpdated){
+            setupViewPager(viewPager);
+            tabLayout.setupWithViewPager(viewPager);
+            dataUpdated = false;
         }
     }
 
-
     @Override
-    protected void onStart() {
-        super.onStart();
-
-
-        Log.i("main", "onstart called");
-        //setupViewPager(viewPager);
-        tabLayout.setupWithViewPager(viewPager);
-
+    protected void onResume(){
+        super.onResume();
 
     }
-
-
     @Override
     protected void onStop() {
         super.onStop();
-
-        Log.i("called", "passed");
-        List<Fragment> fragments = getSupportFragmentManager().getFragments();
-        if (fragments != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            for (Fragment f : fragments) {
-                //You can perform additional check to remove some (not all) fragments:
-                if (f instanceof Fragment_services_test) {
-                    ft.remove(f);
-                }
-            }
-            ft.commitAllowingStateLoss();
-        }
     }
 
     private void cartIcon_toolbar() {
-
         Intent intent = new Intent(MainActivity.this, CartDisplay.class);
         startActivity(intent);
         overridePendingTransition(0, 0);
-
-
     }
 
     private void favIcon_toolbar() {
-
         Intent intent = new Intent(MainActivity.this, Favourites.class);
         startActivity(intent);
         overridePendingTransition(0, 0);
-
-
     }
 
-  /*  private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-    /*    if (ParseUser.getCurrentUser().getInt("genderCode") == 1) {
-            adapter.addFragment(new Fragment_services_test(1), "hairStyle");
-            adapter.addFragment(new Fragment_services_test(2), "Beards");
-            adapter.addFragment(new Fragment_services_test(0), "HairRemoval");
-            adapter.addFragment(new Fragment_services_test(0), "Facial");
-            adapter.addFragment(new Fragment_services_test(0), "Massage");
-            adapter.addFragment(new Fragment_services_test(0), "HairWash");
-            adapter.addFragment(new Fragment_services_test(0), "hairColor");
-        } else {
-            adapter.addFragment(new Fragment_services_test(10), "Short");
-            adapter.addFragment(new Fragment_services_test(11), "Medium");
-            adapter.addFragment(new Fragment_services_test(12), "Long");
-        }*/
-
         viewPager.setAdapter(adapter);
 
     }
-*/
+
     public void setup_nav_item_listener() {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
-
-
                 switch (menuItem.getItemId()) {
-
                     case R.id.Favorites:
                         drawerLayout.closeDrawers();
                         new Handler().postDelayed(new Runnable() {
@@ -327,7 +257,7 @@ public class MainActivity extends BaseActivity {
 
                     case R.id.logout:
 
-                        if (NetworkCheck.checkConnection(getApplicationContext())) {
+                        if (NetworkCheck.checkConnection(MainActivity.this)) {
                             drawerLayout.closeDrawers();
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -383,29 +313,14 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void changeTabsFont() {
-
-        //Typeface tf=Typeface.createFromAsset(getAssets(),"fonts/C");
-        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
-        int tabsCount = vg.getChildCount();
-        for (int j = 0; j < tabsCount; j++) {
-            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
-            int tabChildsCount = vgTab.getChildCount();
-            for (int i = 0; i < tabChildsCount; i++) {
-                View tabViewChild = vgTab.getChildAt(i);
-                if (tabViewChild instanceof TextView) {
-                    ((TextView) tabViewChild).setTypeface(Typeface.SANS_SERIF, Typeface.BOLD);
-                    ((TextView) tabViewChild).setAllCaps(true);
-                }
-            }
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         this.menu = menu;
+        new ToggleActionItemColor(menu, this).makeIconDefault(R.id.action_fav);
+        new ToggleActionItemColor(menu, this).makeIconDefault(R.id.action_cart);
         return true;
     }
 
@@ -435,10 +350,40 @@ public class MainActivity extends BaseActivity {
     }
 
 
+
+    public Menu getMenu() {
+        return menu;
+    }
+
+    class ViewPagerAdapter extends FragmentStatePagerAdapter {
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Log.e("TAB POSITION", Integer.toString(position));
+            return new Fragment_services_test(position, appBarLayout);
+        }
+
+        @Override
+        public int getCount() {
+            return categoriesName.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return categoriesName[position];
+        }
+    }
+
+
+
+
     private void Fetch_data() {
 
         progressDialog.show();
-
         // Syncing all our data from server
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
         if (ParseUser.getCurrentUser().getInt("genderCode") == 0)
@@ -480,18 +425,19 @@ public class MainActivity extends BaseActivity {
             public void done(ParseException e) {
                 if (e == null) {
                     if (Application.DEBUG)
-                        Log.d("MainActivityPin", "unPinnedAll");
+                        Log.d(TAG, "unPinnedAll");
                     ParseObject.pinAllInBackground("data", objects, new SaveCallback() {
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
                                 if (Application.DEBUG)
-                                    Log.d("Login", "PinnedAll");
+                                    Log.d(TAG, "PinnedAll");
 
-                                prefs.edit().putBoolean("dataSaved", true).commit();
+                                prefs.edit().putBoolean("dataSaved", true).apply();
+                                prefs.edit().putLong(Defaults.DATE_IN_MILLS_KEY, lastUpdatedAt.getTime()).apply();
                                 progressDialog.dismiss();
                                 progressDialog = null;
-
+                                dataUpdated = true;
                                 onStart();
 
                             } else {
@@ -512,38 +458,25 @@ public class MainActivity extends BaseActivity {
         });
 
     }
+    private void checkfordatachange() {
 
-    public Menu getMenu() {
-        return menu;
-    }
-
-    class ViewPagerAdapter extends FragmentStatePagerAdapter {
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-
-            int genderposition;
-            if (ParseUser.getCurrentUser().getInt("genderCode") == 0)
-                genderposition = position + 10;
-            else
-                genderposition = position;
-
-            return new Fragment_services_test(genderposition);
-        }
-
-        @Override
-        public int getCount() {
-            return categoriesName.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return categoriesName[position];
-        }
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Data");
+        parseObjectParseQuery.orderByDescending("updatedAt");
+        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    Date updatedDate = object.getUpdatedAt();
+                    if (updatedDate.after(lastUpdatedAt) || !dataSaved ) {
+                        Fetch_data();
+                    }
+                  else  {
+                        dataUpdated = true;
+                        onStart();
+                    }
+                } else Log.i("Main", e.getMessage());
+            }
+        });
     }
 
 

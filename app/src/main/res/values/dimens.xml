@@ -3,4 +3,7 @@
     <dimen name="activity_horizontal_margin">2dp</dimen>
     <dimen name="activity_vertical_margin">4dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <dimen name="login_press_translation_z">2dp</dimen>
+    <dimen name="login_unpress_translation_z">2dp</dimen>
 </resources>

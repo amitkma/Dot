@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
+
 public class BarberActivity extends AppCompatActivity {
 
     private String[] b;
@@ -62,23 +64,12 @@ public class BarberActivity extends AppCompatActivity {
         tv = (TextView) findViewById(R.id.textView);
         tv.setText("Barber Details \n");
 
-
-        Intent i = getIntent();
-        if (i != null) {
-
-            Bundle bundle = i.getBundleExtra("objectIdList");
-            b = bundle.getStringArray("OBJECTID");
-            for (int k = 0; k < b.length; k++) {
-                Log.e("OBJECTIDS", b[k]);
-            }
-        }
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Data");
-        parseQuery.whereContainedIn("objectId", Arrays.asList(b));
+        parseQuery.whereContainedIn("objectId", UserFavsAndCarts.listcart);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null && objects != null) {
-                    Log.e("OBJECTIDS", Integer.toString(objects.size()));
                     ArrayList<Map<Integer, ArrayList<Integer>>> barberSelectionList = new ArrayList<>();
                     for (int i = 0; i < objects.size(); i++) {
 
@@ -200,7 +191,7 @@ public class BarberActivity extends AppCompatActivity {
 
                 j++;
             }
-            Adapter_Barber adapter_barber = new Adapter_Barber(this, barberslist);
+            Adapter_Barber adapter_barber = new Adapter_Barber(this, barberslist,recyclerView);
             recyclerView.setAdapter(adapter_barber);
 
         }

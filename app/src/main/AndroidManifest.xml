@@ -17,6 +17,7 @@
 
     <application
         android:name=".Application"
+        android:label="Dot"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -42,10 +43,10 @@
             android:name=".Login"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/LoginTheme"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -110,10 +111,12 @@
             android:name="io.fabric.ApiKey"
             android:value="00c4cad723628241c327916665366947c596d084" />
 
-        <activity android:name=".BarberActivity"
+        <activity
+            android:name=".BarberActivity"
             android:label="Choose Barber"
-            android:screenOrientation="portrait">
-
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".DetailsActivity"
+           >
         </activity>
     </application>
 

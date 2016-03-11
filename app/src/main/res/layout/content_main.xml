@@ -3,7 +3,7 @@
     android:id="@+id/drawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
 
     <android.support.design.widget.CoordinatorLayout
@@ -23,27 +23,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:title="Salo"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 app:layout_scrollFlags="scroll|enterAlways">
-
-
-
             </android.support.v7.widget.Toolbar>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider" />
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="#fff"
-                android:paddingBottom="2dp"
-                android:paddingLeft="4dp"
+                android:background="@color/primary"
+               android:paddingLeft="4dp"
                 app:tabMode="scrollable"
                 app:tabIndicatorHeight="4dp"
-                app:tabSelectedTextColor="@color/colorAccent_light"
+                app:tabSelectedTextColor="#FFF"
                 app:tabTextAppearance="@style/MineCustomTabText" />
         </android.support.design.widget.AppBarLayout>
 
@@ -52,16 +45,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-        <TextView
-            android:id="@+id/checkconnection"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#D5D5D5"
-            android:gravity="center"
-            android:text="Check network connection"
-            android:textSize="18dp"
-            android:visibility="invisible" />
 
 
         <View

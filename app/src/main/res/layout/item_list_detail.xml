@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:background="#FFF"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_spa_black_24dp"
+        android:tint="@color/accent"
+        android:id="@+id/spa_icon"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barberNameTextView"
+        android:layout_toRightOf="@+id/spa_icon"
+        android:layout_marginLeft="32dp"
+        android:text="Azad Bhawan"
+        android:layout_alignParentTop="true"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif-regular"
+        android:textColor="@color/primary_text"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barberTimeTextView"
+        android:layout_below="@+id/barberNameTextView"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="56dp"
+        android:text="Time: 40 mins"
+        android:textSize="14sp"
+        android:textColor="@color/secondary_text"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/barberPriceTextView"
+        android:gravity="center"
+        android:text="Rs. 20/-"
+        android:textSize="20sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/primary_text"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

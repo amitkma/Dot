@@ -1,76 +1,119 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/loginCoordinatorLayout"
+    >
+<barber.startup.com.startup_barber.Utility.CustomLinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/customLayout"
 
-    android:background="@drawable/login_background">
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
 
-
-    <TextView
-        android:id="@+id/textView2"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/barbershop"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
-        android:elevation="4dp"
-        android:textStyle="bold"
-        android:fontFamily="sans-serif-condensed"
-        android:text="Let's get Started"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/primary"
-        android:textSize="30sp" />
-<LinearLayout
-    android:layout_width="240dp"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_centerInParent="true">
+        android:layout_marginTop="72dp"
+        android:id="@+id/imageView" />
 
-
-
-    <EditText
-        android:id="@+id/rollno"
-        android:layout_width="match_parent"
-        android:hint="Enrollment No."
+    <TextView
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
-
-        />
-
+        android:text="Login to discover hairstyles and more "
+        android:fontFamily="sans-serif-regular"
+        android:textColor="@color/primary_text"
+        android:textSize="20sp"
+        android:lineSpacingExtra="4dp"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        android:id="@+id/login_view_fragment_text"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true" />
+        <EditText
+            android:id="@+id/rollno"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/login_view_fragment_text"
+            android:layout_centerInParent="true"
+            android:hint="@string/phone"
+            android:textColorHint="@color/secondary_text_background"
+            android:theme="@style/MaterialLoginTheme.TextAppearanceLogin"
+            android:gravity="center"
+            android:inputType="number"
+            android:textSize="16sp" />
     <EditText
-        android:id="@+id/name"
-        android:hint="Registered Name"
-        android:layout_width="match_parent"
+            android:id="@+id/name"
+        android:layout_width="240dp"
         android:layout_height="wrap_content"
-android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        />
+        android:layout_below="@+id/login_user"
+        android:layout_marginTop="16dp"
+        android:hint="@string/name"
+        android:layout_centerInParent="true"
+        android:theme="@style/MaterialLoginTheme.TextAppearanceLogin"
+        android:gravity="center"
+        android:textColorHint="@color/secondary_text_background"
+        android:textAllCaps="true"
+        android:inputType="textPersonName|textVisiblePassword"
+        android:textSize="16sp" />
+
+
+        <fr.ganfra.materialspinner.MaterialSpinner
+            android:id="@+id/spinner"
+            android:layout_width="240dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            app:ms_multiline="false"
+            android:layout_marginTop="16dp"
+            app:ms_hint="Choose Bhawan"
+            app:ms_enableFloatingLabel="false"
+            app:ms_enableErrorLabel="true"
+            app:ms_floatingLabelText="Choose Bhawan"
+            app:ms_baseColor="@color/secondary_text_background"
+            app:ms_highlightColor="@color/accent"
+            app:ms_errorColor="@color/accent"
+            app:ms_thickness="0.65dp"
+            app:ms_hintColor="@color/secondary_text_background"
+            app:ms_arrowColor="@color/secondary_text_background"
+            app:ms_arrowSize="8dp"
+            app:ms_alignLabels="true"
+            app:ms_floatingLabelColor="@color/accent"/>
 
     <Button
         android:id="@+id/button_fb_login"
         android:layout_width="240dp"
-        android:layout_height="40dp"
+        android:layout_height="48dp"
+        android:layout_below="@+id/login_password"
         android:layout_centerInParent="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:background="#3F51B5"
-        android:elevation="4dp"
-        android:text="Login with facebook"
-        android:textAllCaps="false"
-        android:textColor="#fff"
-        android:textSize="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="Log In"
+        android:textAllCaps="true"
+        android:textSize="14sp"
+        android:textColor="#FFF"
+        android:elevation="@dimen/login_unpress_translation_z"
+        android:enabled="false"
+        android:background="@drawable/login_button_disable"
+        android:stateListAnimator="@animator/login_button_anim"/>
 
-
-</LinearLayout>
-
-
-
-
-    <ImageView
-        android:id="@+id/dummy"
-        android:layout_width="1dp"
-        android:layout_height="1dp"
-        android:visibility="invisible" />
-
-
-</RelativeLayout>
+<TextView
+    android:layout_width="240dp"
+    android:layout_height="48dp"
+    android:text="Update details"
+    android:textSize="14dp"
+    android:id="@+id/update_details_textview"
+    android:clickable="false"
+    android:gravity="center"
+    android:textAllCaps="true"
+    android:textColor="@color/accent"
+    android:layout_marginTop="12dp"
+    />
+</barber.startup.com.startup_barber.Utility.CustomLinearLayout>
+</android.support.design.widget.CoordinatorLayout>

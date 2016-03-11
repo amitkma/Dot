@@ -1,8 +1,8 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +11,16 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.parse.DeleteCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 /**
  * Created by ayush on 5/2/16.
@@ -26,12 +28,13 @@ import java.util.ArrayList;
 public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapter.ViewHolder> {
 
     private final TextView empty;
-    ArrayList<Data> cartdata = new ArrayList<>();
+    List<Data> cartdata = new ArrayList<>();
     Data data;
     private Context mContext;
 
-    public CartActivityAdapter(Context c, TextView empty) {
+    public CartActivityAdapter(Context c, List<Data> listcart, TextView empty) {
         this.empty = empty;
+        this.cartdata = listcart;
         mContext = c;
     }
 
@@ -55,44 +58,39 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
         if (data.getUrl() != null) {
 
 
-            Glide.with(mContext).load(data.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.img);
+            Glide.with(mContext).load(data.getUrl()).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.img);
         }
 
     }
 
     private void remove(final int position) {
-
-
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Cart");
-        parseObjectParseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-        parseObjectParseQuery.whereEqualTo("cart", cartdata.get(position).getId());
-        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+        UserFavsAndCarts.listcart.remove(cartdata.get(position).getId());
+        MainActivity.dataUpdated =true;
+        final ParseUser parseUser = ParseUser.getCurrentUser();
+        JSONArray jsonArray = new JSONArray();
+        for(int i =0; i<UserFavsAndCarts.listcart.size(); i++){
+            jsonArray.put(UserFavsAndCarts.listcart.get(i));
+        }
+        parseUser.put("cartLists", jsonArray);
+        parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
             @Override
-            public void done(final ParseObject object, ParseException e) {
-                if (e == null) {
-                    if (object != null) {
-                        object.unpinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    cartdata.remove(position);
-                                    notifyItemRemoved(position);
-                                    if (getItemCount() == 0) {
-                                        empty.setVisibility(View.VISIBLE);
-                                        empty.setText("Empty");
-
-                                    }
-                                } else if (Application.DEBUG)
-                                    Log.e("CartActAdapterUnpin", e.getMessage());
-
-                            }
-                        });
+            public void done(ParseException e) {
+                if(e == null){
+                    cartdata.remove(position);
+                    notifyItemRemoved(position);
+                    if (getItemCount() == 0) {
+                        empty.setVisibility(View.VISIBLE);
+                        empty.setText("Empty");
                     }
-                } else if (Application.DEBUG) Log.e("CartActAdaptergetObject", e.getMessage());
+                    parseUser.saveEventually();
+
+                }
             }
         });
 
     }
+
+
 
     public void removeAllviews(TextView empty) {
 
@@ -130,11 +128,23 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
             remove = (TextView) itemView.findViewById(R.id.remove);
             img = (ImageView) itemView.findViewById(R.id.cart_image);
             remove.setOnClickListener(this);
+            img.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-            remove(getAdapterPosition());
+            switch (v.getId()){
+                case R.id.remove:
+                    remove(getAdapterPosition());
+                    break;
+                case R.id.cart_image:
+                    Data currentTrendData = cartdata.get(getAdapterPosition());
+                    Intent i = new Intent(mContext, DetailsActivity.class);
+                    i.putExtra("objectData", currentTrendData);
+                    (mContext).startActivity(i);
+                    break;
+            }
+
         }
     }
 

@@ -3,6 +3,7 @@ package barber.startup.com.startup_barber;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +22,12 @@ public class Adapter_Barber extends RecyclerView.Adapter<Adapter_Barber.ViewHold
     private final List<Format_Barber> barbersList;
     private final Context context;
     private Format_Barber tempData;
+    private RecyclerView view;
 
-    public Adapter_Barber(Context context, List<Format_Barber> barberslist) {
+    public Adapter_Barber(Context context, List<Format_Barber> barberslist, RecyclerView view) {
         this.barbersList = barberslist;
         this.context=context;
+        this.view = view;
     }
 
     @Override
@@ -72,13 +75,21 @@ public class Adapter_Barber extends RecyclerView.Adapter<Adapter_Barber.ViewHold
         public void onClick(View v) {
             if (v.getId() == R.id.go) {
                 Format_Barber data = barbersList.get(getAdapterPosition());
-                Intent i=new Intent(context,Checkout.class);
-                i.putExtra("barberId",data.getBarberId());
-                i.putExtra("totalPrice",data.getPrice());
-                i.putExtra("totalTime",data.getTime());
-                i.putExtra("barberName",data.getBarber());
+                if(data.getPrice()>70){
+                    Snackbar.make(view, "Price of selected services is more than 70.", Snackbar.LENGTH_LONG).show();
+                }
+                else if(Defaults.mNumberOfServicesLeft>0) {
+                    Intent i = new Intent(context, Checkout.class);
+                    i.putExtra("barberId", data.getBarberId());
+                    i.putExtra("totalPrice", data.getPrice());
+                    i.putExtra("totalTime", data.getTime());
+                    i.putExtra("barberName", data.getBarber());
 
-                context.startActivity(i);
+                    context.startActivity(i);
+                }
+                else if(Defaults.mNumberOfServicesLeft == 0){
+                    Snackbar.make(view, "You don't have any free service left.", Snackbar.LENGTH_LONG).show();
+                }
             }
 
         }

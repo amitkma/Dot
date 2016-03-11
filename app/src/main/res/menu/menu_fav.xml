@@ -6,6 +6,5 @@
         android:icon="?actionModeCutDrawable"
         android:orderInCategory="100"
         android:title="DeleteAll"
-
         app:showAsAction="always" />
 </menu>

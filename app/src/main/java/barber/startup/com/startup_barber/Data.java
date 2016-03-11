@@ -1,9 +1,11 @@
 package barber.startup.com.startup_barber;
 
+import java.io.Serializable;
+
 /**
  * Created by ayush on 29/1/16.
  */
-public class Data {
+public class Data  implements Serializable{
     String id = "default";
     String title = "title";
     String price = "0";

@@ -36,6 +36,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
+
 public class Checkout extends AppCompatActivity {
 
     private int time;
@@ -80,20 +82,6 @@ public class Checkout extends AppCompatActivity {
         //fab = (FloatingActionButton) findViewById(R.id.fab);
         checkoutbutton = (TextView) findViewById(R.id.checkout);
         checkoutbutton.setVisibility(View.INVISIBLE);
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Cart");
-        parseQuery.fromPin("Cart" + ParseUser.getCurrentUser().getUsername());
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null && objects.size() > 0) {
-                    objectsId = new String[objects.size()];
-                    for (int i = 0; i < objects.size(); i++) {
-                        ParseObject parseObject = objects.get(i);
-                        objectsId[i] = parseObject.getString("cart");
-                    }
-                }
-            }
-        });
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
 
@@ -432,7 +420,7 @@ public class Checkout extends AppCompatActivity {
         } else timeSlot = starthour + ":" + startmin + " - " + endhour + ":" + endmin;
 
         final ParseObject parseObject = new ParseObject("Appointments");
-        parseObject.put("servicesId", Arrays.asList(objectsId));
+        parseObject.put("servicesId", UserFavsAndCarts.listcart);
         parseObject.put("user", ParseUser.getCurrentUser().getUsername());
         parseObject.put("userId", ParseUser.getCurrentUser().getObjectId());
         parseObject.put("url", ParseUser.getCurrentUser().getString("picUri"));

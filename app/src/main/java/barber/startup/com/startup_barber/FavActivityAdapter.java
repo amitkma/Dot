@@ -2,6 +2,7 @@ package barber.startup.com.startup_barber;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -17,17 +18,18 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.parse.DeleteCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 /**
  * Created by ayush on 28/2/16.
@@ -35,15 +37,17 @@ import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
 public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.ViewHolder> {
     private final TextView empty;
 
-    ArrayList<Data> cartdata = new ArrayList<>();
+   List<Data> cartdata = new ArrayList<>();
     Data data;
     private Context mContext;
     private Menu menu;
 
-    public FavActivityAdapter(Context c, TextView empty) {
+    public FavActivityAdapter(Context c, List<Data> listFav, TextView empty) {
         this.empty = empty;
+        this.cartdata = listFav;
         mContext = c;
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -71,40 +75,33 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
         } else holder.cart.setColorFilter(null);
 
         if (data.getUrl() != null) {
-
-            Glide.with(mContext).load(data.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.back);
+            Glide.with(mContext).load(data.getUrl()).crossFade().centerCrop().diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.back);
         }
     }
 
     private void remove(final int position) {
-
-
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Fav");
-        parseObjectParseQuery.fromPin(ParseUser.getCurrentUser().getUsername());
-        parseObjectParseQuery.whereEqualTo("favourites", cartdata.get(position).getId());
-        parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+        UserFavsAndCarts.listfav.remove(cartdata.get(position).getId());
+        MainActivity.dataUpdated =true;
+        final ParseUser parseUser = ParseUser.getCurrentUser();
+        JSONArray jsonArray = new JSONArray();
+        for(int i =0; i<UserFavsAndCarts.listfav.size(); i++){
+            jsonArray.put(UserFavsAndCarts.listfav.get(i));
+        }
+        parseUser.put("favLists", jsonArray);
+        parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
             @Override
-            public void done(final ParseObject object, ParseException e) {
-                if (e == null) {
-                    if (object != null) {
-                        object.unpinInBackground(ParseUser.getCurrentUser().getUsername(), new DeleteCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    cartdata.remove(position);
-                                    notifyItemRemoved(position);
-                                    if (getItemCount() == 0) {
-                                        empty.setVisibility(View.VISIBLE);
-                                        empty.setText("Empty");
+            public void done(ParseException e) {
+                if(e == null){
 
-                                    }
-                                } else if (Application.DEBUG)
-                                    Log.e("FavActAdapterUnpin", e.getMessage());
-
-                            }
-                        });
+                    cartdata.remove(position);
+                    notifyItemRemoved(position);
+                    if (getItemCount() == 0) {
+                        empty.setVisibility(View.VISIBLE);
+                        empty.setText("Empty");
                     }
-                } else if (Application.DEBUG) Log.e("FavActAdaptergetObject", e.getMessage());
+                    parseUser.saveEventually();
+
+                }
             }
         });
 
@@ -116,12 +113,6 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
 
 
         return cartdata.size();
-    }
-
-    public void addData(Data data) {
-        cartdata.add(data);
-        notifyItemInserted(0);
-
     }
 
     public void removeAllviews(TextView empty) {
@@ -152,6 +143,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
             cart = (ImageView) itemView.findViewById(R.id.button_cart);
             remove.setOnClickListener(this);
             cart.setOnClickListener(this);
+            back.setOnClickListener(this);
 
         }
 
@@ -164,7 +156,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
                 Log.d("d", d.getId());
                 remove(getAdapterPosition());
             }
-            if (v.getId() == R.id.button_cart) {
+          else  if (v.getId() == R.id.button_cart) {
 
                 if (cart.getColorFilter() == null) {
                     updateCart();
@@ -173,6 +165,13 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
                     Toast.makeText(mContext, "Already in Cart", Toast.LENGTH_SHORT).show();
 
             }
+            else if(v.getId() == R.id.image){
+                Data currentTrendData = cartdata.get(getAdapterPosition());
+                Intent i = new Intent(mContext, DetailsActivity.class);
+                i.putExtra("objectData", currentTrendData);
+                (mContext).startActivity(i);
+            }
+
         }
 
         private void updateCart() {

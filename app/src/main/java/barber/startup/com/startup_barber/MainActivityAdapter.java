@@ -2,9 +2,13 @@ package barber.startup.com.startup_barber;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
+import android.os.Bundle;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,22 +29,31 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 /**
  * Created by ayush on 29/1/16.
  */
 public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapter.ViewHolder> {
-    static int height = 0;
-    static int width = 0;
+
     private Context context;
     private List<Data> data = new ArrayList<>();
     private Context mContext;
     private Data currentTrendData;
     private Menu menu;
+    private int heightpixels;
+    private int widthpixels;
+
+
+    public MainActivityAdapter() {
+
+    }
 
     public MainActivityAdapter(List<Data> listparseobject, Context context) {
         this.mContext = context;
@@ -51,25 +64,25 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         this.context = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
+
+
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
 
+
+
         final float scale = context.getResources().getDisplayMetrics().density;
-        int pixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
-
-
-        viewHolder.rl.getLayoutParams().height = (pixels) / 2;
+        heightpixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
+        viewHolder.rl.getLayoutParams().height = (heightpixels) / 2;
         return viewHolder;
     }
 
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
-
-
         currentTrendData = data.get(position);
 
-        holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
 
+        holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View v) {
@@ -81,10 +94,14 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             }
 
             private void updateFavourites() {
-
-                ParseObject parseObject = new ParseObject(Defaults.FavouritesClass);
-                parseObject.put("favourites", data.get(position).getId());
-                parseObject.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                final ParseUser parseUser = ParseUser.getCurrentUser();
+                UserFavsAndCarts.listfav.add(data.get(position).getId());
+                JSONArray jsonArray = new JSONArray();
+                for (int i = 0; i < UserFavsAndCarts.listfav.size(); i++) {
+                    jsonArray.put(UserFavsAndCarts.listfav.get(i));
+                }
+                parseUser.put("favLists", jsonArray);
+                parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
@@ -92,8 +109,9 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                                 menu = ((MainActivity) mContext).getMenu();
                             }
                             new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_fav);
+                            holder.mImageView_fav.setImageAlpha(255);
                             holder.mImageView_fav.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
-
+                            parseUser.saveInBackground();
                             if (Application.DEBUG)
                                 Log.d("MainActivityAdapter", "Saved" + data.get(position).getId());
                         } else e.printStackTrace();
@@ -119,10 +137,14 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             }
 
             private void updateCart() {
-
-                ParseObject parseObject = new ParseObject(Defaults.CartClass);
-                parseObject.put("cart", data.get(position).getId());
-                parseObject.pinInBackground("Cart" + ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                final ParseUser parseUser = ParseUser.getCurrentUser();
+                UserFavsAndCarts.listcart.add(data.get(position).getId());
+                JSONArray jsonArray = new JSONArray();
+                for (int i = 0; i < UserFavsAndCarts.listcart.size(); i++) {
+                    jsonArray.put(UserFavsAndCarts.listcart.get(i));
+                }
+                parseUser.put("cartLists", jsonArray);
+                parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
@@ -131,7 +153,9 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
                             }
 
                             new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
+                            holder.mImageView_addToCart.setImageAlpha(255);
                             holder.mImageView_addToCart.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
+                            parseUser.saveInBackground();
                             if (Application.DEBUG)
                                 Log.d("MainActivityAdapter", "Saved" + data.get(position).getId());
                         } else e.printStackTrace();
@@ -145,11 +169,19 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         if (currentTrendData.isFav()) {
             holder.mImageView_fav.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
-        } else holder.mImageView_fav.setColorFilter(null);
+            holder.mImageView_fav.setImageAlpha(255);
+        } else {
+            holder.mImageView_fav.setColorFilter(null);
+            holder.mImageView_fav.setImageAlpha(138);
+        }
 
         if (currentTrendData.isCart()) {
             holder.mImageView_addToCart.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
-        } else holder.mImageView_addToCart.setColorFilter(null);
+            holder.mImageView_addToCart.setImageAlpha(255);
+        } else {
+            holder.mImageView_addToCart.setColorFilter(null);
+            holder.mImageView_addToCart.setImageAlpha(138);
+        }
 
 
         if (currentTrendData.getTitle() != null)
@@ -157,7 +189,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         holder.mImageView.setImageResource(0);
         if (currentTrendData.getUrl() != null) {
-            Glide.with(mContext).load(currentTrendData.getUrl()).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.mImageView);
+            Glide.with(mContext).load(currentTrendData.getUrl()).centerCrop().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
         }
 
         if (currentTrendData.getPrice() != null) {
@@ -180,9 +212,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
-
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final Context mcontext;
         private final TextView title;
         private final TextView price;
@@ -201,13 +231,24 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             mImageView_addToCart = (ImageView) itemView.findViewById(R.id.addToCart_button);
             mImageView_fav = (ImageView) itemView.findViewById(R.id.fav_button);
             rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
+            mImageView.setOnClickListener(this);
         }
 
 
         @Override
         public void onClick(View v) {
+        if(v.getId() == R.id.card_image){
+            Data currentTrendData = data.get(getAdapterPosition());
+            Intent i = new Intent(mContext, DetailsActivity.class);
+            i.putExtra("objectData", currentTrendData);
+            (mContext).startActivity(i);
 
+        }
         }
     }
 
+    public void refreshData(Data newData) {
+        data.add(newData);
+        notifyItemInserted(data.size() - 1);
+    }
 }

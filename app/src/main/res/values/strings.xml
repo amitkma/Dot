@@ -39,4 +39,6 @@
     <string name="com.optimizely.api_key" translatable="false">AANNNgcBrNDsy-Xcm0kouiKfAgynEQQR~5222850419</string>
     <string name="drawer_open_content_desc">Open</string>
     <string name="drawer_close_content_desc">Close</string>
+    <string name="phone">Enrollment Number</string>
+    <string name="name">Name</string>
 </resources>
