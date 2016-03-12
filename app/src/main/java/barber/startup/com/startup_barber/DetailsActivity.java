@@ -52,6 +52,7 @@ public class DetailsActivity extends AppCompatActivity {
     private ArrayList<ServiceDescriptionFormat> barberList = new ArrayList<>();
     private Menu menu;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private int height;
 
 
     @Override
@@ -72,21 +73,30 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             currentData = (Data) intent.getSerializableExtra("objectData");
+            height=intent.getIntExtra("height",10);
         }
 
         Glide.with(DetailsActivity.this)
                 .load(currentData.getUrl())
+<<<<<<< Updated upstream
                 .crossFade()
                 .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .skipMemoryCache(true)
+=======
+                .override(height,height)
+               .centerCrop()
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+
+>>>>>>> Stashed changes
                 .into(imageView);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.transparentToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if (NetworkCheck.checkConnection(this)) {
+
             ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
             parseQuery.whereEqualTo("objectId", currentData.getId());
             parseQuery.fromPin("data");
@@ -120,9 +130,15 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             });
 
+<<<<<<< Updated upstream
         } else
             Snackbar.make(recyclerView, "Error in connection", Snackbar.LENGTH_SHORT).show();
     }
+=======
+        }
+
+
+>>>>>>> Stashed changes
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

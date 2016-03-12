@@ -51,6 +51,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     private Menu menu;
     private int heightpixels;
     private int widthpixels;
+    private int height;
 
 
     public MainActivityAdapter() {
@@ -82,7 +83,6 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         currentTrendData = data.get(position);
-
 
         holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -191,7 +191,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         holder.mImageView.setImageResource(0);
         if (currentTrendData.getUrl() != null) {
-            Glide.with(mContext).load(currentTrendData.getUrl()).centerCrop().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
+            Glide.with(mContext).load(currentTrendData.getUrl()).override((heightpixels) / 2,(heightpixels) / 2).centerCrop().diskCacheStrategy(DiskCacheStrategy.SOURCE).into(holder.mImageView);
         }
 
         if (currentTrendData.getPrice() != null) {
@@ -234,12 +234,15 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             mImageView_fav = (ImageView) itemView.findViewById(R.id.fav_button);
             rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
             mImageView.setOnClickListener(this);
+
+
         }
 
 
         @Override
         public void onClick(View v) {
         if(v.getId() == R.id.card_image){
+<<<<<<< Updated upstream
             if(NetworkCheck.checkConnection(mContext)) {
                 Data currentTrendData = data.get(getAdapterPosition());
                 Intent i = new Intent(mContext, DetailsActivity.class);
@@ -248,6 +251,13 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             }
             else
                 Snackbar.make(v, "Error in connection", Snackbar.LENGTH_LONG).show();
+=======
+            Data currentTrendData = data.get(getAdapterPosition());
+            Intent i = new Intent(mContext, DetailsActivity.class);
+            i.putExtra("objectData", currentTrendData);
+            i.putExtra("height",(heightpixels) / 2);
+            (mContext).startActivity(i);
+>>>>>>> Stashed changes
 
         }
         }
