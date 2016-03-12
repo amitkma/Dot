@@ -1,9 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-
-    <solid android:color="@color/secondary_text_background" />
-    <corners android:radius="2dp"/>
-
-
-</shape>
+<?xml version="1.0" encoding="UTF-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <item android:state_selected="false">
+        <ripple android:color="@color/secondary_text_background" tools:targetApi="lollipop">
+            <item>
+                <shape android:shape="rectangle">
+                    <solid android:color="#FFF" />
+                </shape>
+            </item>
+        </ripple>
+    </item>
+</selector>

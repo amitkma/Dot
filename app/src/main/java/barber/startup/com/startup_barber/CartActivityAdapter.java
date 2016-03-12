@@ -2,11 +2,13 @@ package barber.startup.com.startup_barber;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +22,7 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import barber.startup.com.startup_barber.Utility.NetworkCheck;
 import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 /**
@@ -31,6 +34,7 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
     List<Data> cartdata = new ArrayList<>();
     Data data;
     private Context mContext;
+    private int heightpixels;
 
     public CartActivityAdapter(Context c, List<Data> listcart, TextView empty) {
         this.empty = empty;
@@ -43,6 +47,10 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
         this.mContext = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_cart, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
+
+        final float scale = mContext.getResources().getDisplayMetrics().density;
+        heightpixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
+        viewHolder.rl.getLayoutParams().height = (heightpixels) / 2;
         return viewHolder;
     }
 
@@ -51,14 +59,13 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
 
 
         data = cartdata.get(position);
-        holder.title.setText(data.getTitle());
-        holder.price.setText("Rs " + data.getPrice());
+        holder.price.setText("Min. price: Rs. "+data.getPrice()+"/-");
 
         Glide.clear(holder.img);
         if (data.getUrl() != null) {
 
 
-            Glide.with(mContext).load(data.getUrl()).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.NONE).into(holder.img);
+            Glide.with(mContext).load(data.getUrl()).centerCrop().crossFade().diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.img);
         }
 
     }
@@ -118,14 +125,15 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title;
         TextView price;
-        TextView remove;
+        ImageView remove;
         ImageView img;
+        public RelativeLayout rl;
 
         public ViewHolder(View itemView, Context context) {
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.cart_title);
+            rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
             price = (TextView) itemView.findViewById(R.id.cart_price);
-            remove = (TextView) itemView.findViewById(R.id.remove);
+            remove = (ImageView) itemView.findViewById(R.id.removeFromCart);
             img = (ImageView) itemView.findViewById(R.id.cart_image);
             remove.setOnClickListener(this);
             img.setOnClickListener(this);
@@ -134,14 +142,18 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
         @Override
         public void onClick(View v) {
             switch (v.getId()){
-                case R.id.remove:
+                case R.id.removeFromCart:
                     remove(getAdapterPosition());
                     break;
                 case R.id.cart_image:
-                    Data currentTrendData = cartdata.get(getAdapterPosition());
-                    Intent i = new Intent(mContext, DetailsActivity.class);
-                    i.putExtra("objectData", currentTrendData);
-                    (mContext).startActivity(i);
+                    if(NetworkCheck.checkConnection(mContext)) {
+                        Data currentTrendData = cartdata.get(getAdapterPosition());
+                        Intent i = new Intent(mContext, DetailsActivity.class);
+                        i.putExtra("objectData", currentTrendData);
+                        (mContext).startActivity(i);
+                    }
+                    else
+                        Snackbar.make(v, "Error in connection", Snackbar.LENGTH_LONG).show();
                     break;
             }
 

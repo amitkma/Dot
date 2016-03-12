@@ -96,24 +96,7 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
         recyclerView.setHasFixedSize(true);
         StaggeredGridLayoutManager gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
         recyclerView.setLayoutManager(gaggeredGridLayoutManager);
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if(newState == RecyclerView.SCROLL_STATE_SETTLING){
-                    appBarLayout.setElevation(dpToPx(10));
-                }
-                if(newState == RecyclerView.SCROLL_STATE_IDLE){
-                    appBarLayout.setElevation(0);
-                }
-            }
 
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
         listparseobject.clear();
 
         currentUser = ParseUser.getCurrentUser();

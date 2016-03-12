@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,6 +35,7 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import barber.startup.com.startup_barber.Utility.NetworkCheck;
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
 import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
@@ -238,10 +240,14 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         @Override
         public void onClick(View v) {
         if(v.getId() == R.id.card_image){
-            Data currentTrendData = data.get(getAdapterPosition());
-            Intent i = new Intent(mContext, DetailsActivity.class);
-            i.putExtra("objectData", currentTrendData);
-            (mContext).startActivity(i);
+            if(NetworkCheck.checkConnection(mContext)) {
+                Data currentTrendData = data.get(getAdapterPosition());
+                Intent i = new Intent(mContext, DetailsActivity.class);
+                i.putExtra("objectData", currentTrendData);
+                (mContext).startActivity(i);
+            }
+            else
+                Snackbar.make(v, "Error in connection", Snackbar.LENGTH_LONG).show();
 
         }
         }

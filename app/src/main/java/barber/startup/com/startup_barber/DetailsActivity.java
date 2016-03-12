@@ -1,9 +1,11 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -25,6 +28,8 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +39,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import barber.startup.com.startup_barber.Utility.NetworkCheck;
+import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -44,7 +51,6 @@ public class DetailsActivity extends AppCompatActivity {
 
     private ArrayList<ServiceDescriptionFormat> barberList = new ArrayList<>();
     private Menu menu;
-    private ProgressBar progressBar;
     private CollapsingToolbarLayout collapsingToolbarLayout;
 
 
@@ -71,7 +77,7 @@ public class DetailsActivity extends AppCompatActivity {
         Glide.with(DetailsActivity.this)
                 .load(currentData.getUrl())
                 .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .diskCacheStrategy(DiskCacheStrategy.RESULT)
                 .skipMemoryCache(true)
                 .into(imageView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.transparentToolbar);
@@ -114,8 +120,7 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             });
 
-        }
-        else
+        } else
             Snackbar.make(recyclerView, "Error in connection", Snackbar.LENGTH_SHORT).show();
     }
 
@@ -133,11 +138,28 @@ public class DetailsActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.action_share:
+                Toast.makeText(this, "We will add some action to it soon", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.action_add_to_cart:
+
+                break;
+            case R.id.action_go_cart:
+                startActivity(new Intent(this, CartDisplay.class));
+                finish();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    
+
+    public Menu getMenu() {
+
+        return menu;
     }
 }

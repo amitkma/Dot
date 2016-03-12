@@ -4,9 +4,9 @@
     android:layout_height="72dp"
     android:paddingLeft="16dp"
     android:paddingTop="16dp"
-    android:background="#FFF"
-    android:paddingRight="16dp"
-    android:paddingBottom="16dp">
+    android:id="@+id/detail_list_item_id"
+    android:background="@drawable/button_back"
+    >
 
     <ImageView
         android:layout_width="24dp"
@@ -47,6 +47,7 @@
         android:id="@+id/barberPriceTextView"
         android:gravity="center"
         android:text="Rs. 20/-"
+        android:layout_marginRight="16dp"
         android:textSize="20sp"
         android:fontFamily="sans-serif-medium"
         android:textColor="@color/primary_text"
@@ -54,5 +55,11 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/secondary_text_background"
+        android:layout_marginLeft="56dp"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

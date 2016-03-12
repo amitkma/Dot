@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_deleteAll"
-        android:icon="?actionModeCutDrawable"
+        android:icon="@drawable/ic_clear_all_white_24dp"
         android:orderInCategory="100"
-        android:title="DeleteAll"
+        android:title="Clear all"
         app:showAsAction="always" />
 </menu>

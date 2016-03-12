@@ -44,10 +44,14 @@ public class Favourites extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favourites);
-        toolbar = (Toolbar) findViewById(R.id.toolbar_fav);
+
         empty = (TextView) findViewById(R.id.empty);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Favourites");
 
 
 //        setup_toolbar_actions();

@@ -75,6 +75,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
 
+        Defaults.context= this;
         appBarLayout = (AppBarLayout)findViewById(R.id.appbarlayout);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading styles and barbers");
@@ -152,10 +153,7 @@ public class MainActivity extends BaseActivity {
 
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         dataSaved = prefs.getBoolean("dataSaved", false);
-        lastUpdatedAt.setTime(prefs.getLong(Defaults.DATE_IN_MILLS_KEY, System.currentTimeMillis()));
-
         setup_toolbar();
-
         setup_nav_drawer();
         setup_nav_item_listener();
 
@@ -164,8 +162,11 @@ public class MainActivity extends BaseActivity {
             this.categoriesName = Defaults.categoriesNameGirls;
         else if (Defaults.genderCode == 1)
             this.categoriesName = Defaults.categoriesNameBoys;
-        checkfordatachange();
-
+        if(NetworkCheck.checkConnection(this)) {
+            checkfordatachange();
+        }
+            setupViewPager(viewPager);
+            tabLayout.setupWithViewPager(viewPager);
 
     }
 
@@ -468,14 +469,21 @@ public class MainActivity extends BaseActivity {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
-                    Date updatedDate = object.getUpdatedAt();
-                    if (updatedDate.after(lastUpdatedAt) || !dataSaved ) {
-                        Fetch_data();
-                    }
-                  else  {
-                        dataUpdated = true;
-                        onStart();
-                    }
+                    final Date updatedDate = object.getUpdatedAt();
+                    ParseQuery<ParseObject> parseObjectParseQuery1 = new ParseQuery<ParseObject>("Data");
+                    parseObjectParseQuery1.orderByDescending("updatedAt");
+                    parseObjectParseQuery1.fromPin("data");
+                    parseObjectParseQuery1.getFirstInBackground(new GetCallback<ParseObject>() {
+                        @Override
+                        public void done(ParseObject object, ParseException e) {
+                            if(e==null) {
+                                if (updatedDate.after(object.getUpdatedAt()) || !dataSaved) {
+                                    Fetch_data();
+                                }
+                            }
+                        }
+                    });
+
                 } else Log.i("Main", e.getMessage());
             }
         });

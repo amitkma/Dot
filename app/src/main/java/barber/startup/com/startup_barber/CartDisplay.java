@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -41,6 +43,8 @@ public class CartDisplay extends AppCompatActivity {
     private TextView retry;
     private TextView empty;
     private Menu menu;
+    private TextView checkoutTextView;
+    private TextView backTextView;
 
 
     @Override
@@ -51,14 +55,18 @@ public class CartDisplay extends AppCompatActivity {
 
         retry = (TextView) findViewById(R.id.retry);
         empty = (TextView) findViewById(R.id.empty);
+        checkoutTextView = (TextView) findViewById(R.id.checkoutTextViewId);
+        backTextView = (TextView)findViewById(R.id.backTextViewId);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_cart);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Cart");
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        checkoutTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (NetworkCheck.checkConnection(getApplicationContext())) {
@@ -72,10 +80,18 @@ public class CartDisplay extends AppCompatActivity {
             }
         });
 
+        backTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+                overridePendingTransition(0 ,0);
+            }
+        });
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_cart);
         mRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        StaggeredGridLayoutManager linearLayoutManager = new StaggeredGridLayoutManager(2, 1);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         cartActivityAdapter = new CartActivityAdapter(this, listcart, empty);
 
@@ -113,19 +129,10 @@ public class CartDisplay extends AppCompatActivity {
             }
         });
 
-        backArrow();
 
 
     }
 
-    private void backArrow() {
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -146,6 +153,12 @@ public class CartDisplay extends AppCompatActivity {
         if (id == R.id.action_deleteAll) {
 
             deleteAll();
+            return true;
+        }
+
+        if(id == android.R.id.home){
+            finish();
+            overridePendingTransition(0, 0);
             return true;
         }
 

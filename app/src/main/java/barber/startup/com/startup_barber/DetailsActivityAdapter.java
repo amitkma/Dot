@@ -73,7 +73,7 @@ public class DetailsActivityAdapter extends RecyclerView.Adapter<DetailsActivity
 
         @Override
         public void onClick(View v) {
-            if (v.getId() == R.id.go) {
+            if (v.getId() == R.id.detail_list_item_id) {
                 ServiceDescriptionFormat data = barbersList.get(getAdapterPosition());
                 if(data.getServicePrice()>70){
                     Snackbar.make(view, "Price of selected services is more than 70.", Snackbar.LENGTH_LONG).show();
