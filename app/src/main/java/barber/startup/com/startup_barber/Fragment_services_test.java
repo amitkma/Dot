@@ -220,7 +220,7 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
 
                     }
 
-                    adapter = new MainActivityAdapter(listparseobject, getContext());
+                    adapter = new MainActivityAdapter(listparseobject, getActivity());
                     recyclerView.setAdapter(adapter);
                     progressBar.setVisibility(View.GONE);
 
