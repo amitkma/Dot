@@ -66,6 +66,7 @@ public class Checkout extends AppCompatActivity {
     private JSONObject jsonObject;
     private String barberName;
     private TextView checkoutbutton;
+    private String timeSlot;
 
 
     @Override
@@ -401,7 +402,7 @@ public class Checkout extends AppCompatActivity {
 
     private void saveAppointment(int hours, int minutes) {
 
-        String timeSlot = null;
+         timeSlot = null;
 
         try {
             int startTimeHour = bookedTimeSlots.getInt(0)/ 100;
@@ -417,6 +418,7 @@ public class Checkout extends AppCompatActivity {
 
 
         final ParseObject parseObject = new ParseObject("Appointments");
+
         parseObject.put("servicesId", UserFavsAndCarts.listcart);
         parseObject.put("user", ParseUser.getCurrentUser().getUsername());
         parseObject.put("userId", ParseUser.getCurrentUser().getObjectId());
@@ -427,6 +429,7 @@ public class Checkout extends AppCompatActivity {
         parseObject.put("date", Integer.valueOf(dateFormat));
         parseObject.put("completed", false);
         parseObject.put("bookedSlot", bookedTimeSlots);
+
         parseObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -440,7 +443,7 @@ public class Checkout extends AppCompatActivity {
                     i.putExtra("barberName", barberName);
                     i.putExtra("totalTime", time);
                     i.putExtra("appointmentDate", dateformatintent);
-                    i.putExtra("timeslot", timeslotstart + " + " + time + "min");
+                    i.putExtra("timeslot", timeSlot);
 
 
                     //Send Push to user and barber

@@ -4,7 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -14,6 +17,8 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
+
 public class Confirmation extends AppCompatActivity {
 
 
@@ -22,23 +27,42 @@ public class Confirmation extends AppCompatActivity {
     private String txt_timeslot;
     private int txt_pin;
     private int txt_price=0;
+    private int txt_numberOfServices = 0;
     private String txt_barber;
 
     private RelativeLayout relativeLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_payment_reciept);
 
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        setContentView(R.layout.confirmation);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startMainActivity();
 
-        relativeLayout = (RelativeLayout) findViewById(R.id.confirm_layout);
+            }
+        });
+
+        relativeLayout = (RelativeLayout)findViewById(R.id.relative);
+        Button btn = (Button)findViewById(R.id.close_receipt);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startMainActivity();
+            }
+        });
         TextView username = (TextView) findViewById(R.id.confirm_username);
         TextView barber = (TextView) findViewById(R.id.confirm_barber);
-        TextView timeslot = (TextView) findViewById(R.id.confirm_appointment_time);
         TextView cost = (TextView) findViewById(R.id.confirm_price);
-        TextView time = (TextView) findViewById(R.id.confirm_time);
+        TextView duration = (TextView)findViewById(R.id.duration);
         TextView pin = (TextView) findViewById(R.id.confirm_pin);
+        TextView numberOfServices = (TextView) findViewById(R.id.number_services1);
         TextView date = (TextView) findViewById(R.id.confirm_appointment_date);
 
 
@@ -52,13 +76,13 @@ public class Confirmation extends AppCompatActivity {
             txt_barber=i.getStringExtra("barberName");
         }
 
+        numberOfServices.setText(Integer.toString(UserFavsAndCarts.listcart.size()));
         username.setText("Username:  " + ParseUser.getCurrentUser().getUsername());
         barber.setText("Barber:  " + txt_barber);
-        timeslot.setText("TimeSlot:  " + txt_timeslot);
-        cost.setText("Total Price:  Rs " + Integer.toString(txt_price));
-        time.setText("Total time:  " + time_taken + " min");
+        cost.setText("Rs " + Integer.toString(txt_price));
         pin.setText(Integer.toString(txt_pin));
-        date.setText("Date:  " + appointmentDate);
+        date.setText(appointmentDate+" at "+txt_timeslot);
+        duration.setText(Integer.toString(time_taken)+" mins");
 
         final ParseUser parseUser = ParseUser.getCurrentUser();
         ParseQuery<ParseUser> query = ParseUser.getQuery();
@@ -83,5 +107,19 @@ public class Confirmation extends AppCompatActivity {
         });
 
 
+    }
+
+    private void startMainActivity() {
+        Intent i = new Intent(Confirmation.this, MainActivity.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+        overridePendingTransition(0, 0);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        startMainActivity();
     }
 }

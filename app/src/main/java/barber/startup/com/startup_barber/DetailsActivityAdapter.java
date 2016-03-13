@@ -79,12 +79,8 @@ public class DetailsActivityAdapter extends RecyclerView.Adapter<DetailsActivity
                     Snackbar.make(view, "Price of selected services is more than 70.", Snackbar.LENGTH_LONG).show();
                 }
                 else if(Defaults.mNumberOfServicesLeft>0) {
-                    Intent i = new Intent(context, Checkout.class);
-                    i.putExtra("barberId", data.getBarberId());
-                    i.putExtra("totalPrice", data.getServicePrice());
-                    i.putExtra("totalTime", data.getServiceTime());
-                    i.putExtra("barberName", data.getBarberName());
-                    context.startActivity(i);
+                    CheckOutClass checkOut = new CheckOutClass(context,data.getServicePrice(), data.getBarberId(), data.getServiceTime(), data.getBarberName(), 1);
+                    checkOut.init();
                 }
                 else if(Defaults.mNumberOfServicesLeft == 0){
                     Snackbar.make(view, "You don't have any free service left.", Snackbar.LENGTH_LONG).show();

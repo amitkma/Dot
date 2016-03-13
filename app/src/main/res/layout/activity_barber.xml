@@ -15,22 +15,8 @@
         android:background="#E0E0E0"
         app:elevation="0dp">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@drawable/toolbar_shape"
-            android:title="Cart"
-            android:titleTextColor="#BDBDBD"
-            app:navigationIcon="?homeAsUpIndicator"
-            app:theme="@style/AppTheme.AppBarOverlay">
-
-        </android.support.v7.widget.Toolbar>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider" />
+        <include layout="@layout/toolbar"
+            android:id="@+id/toolbar"></include>
 
     </android.support.design.widget.AppBarLayout>
     <TextView

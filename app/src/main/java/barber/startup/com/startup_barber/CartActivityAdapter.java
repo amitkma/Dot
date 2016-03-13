@@ -59,7 +59,7 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
 
 
         data = cartdata.get(position);
-        holder.price.setText("Min. price: Rs. "+data.getPrice()+"/-");
+        holder.price.setText("Rs. "+data.getPrice()+"/-");
 
         Glide.clear(holder.img);
         if (data.getUrl() != null) {

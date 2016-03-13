@@ -70,7 +70,10 @@ public class CartDisplay extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (NetworkCheck.checkConnection(getApplicationContext())) {
-                    if (totaltime > 120)
+                    if(UserFavsAndCarts.listcart.size()<=0){
+                        Snackbar.make(findViewById(R.id.coordinatorlayout), "Cart is empty", Snackbar.LENGTH_LONG).show();
+                    }
+                   else if (totaltime > 120)
                         Snackbar.make(findViewById(R.id.coordinatorlayout), "Total time required exceeds 2 hrs", Snackbar.LENGTH_LONG).show();
                     else startCheckoutActivity();
                 } else
@@ -118,7 +121,6 @@ public class CartDisplay extends AppCompatActivity {
                             listcart.add(td);
                         }
                         Log.d("fav", String.valueOf(listcart));
-
                         cartActivityAdapter = new CartActivityAdapter(CartDisplay.this, listcart, empty);
                         mRecyclerView.setAdapter(cartActivityAdapter);
                     } else empty.setVisibility(View.VISIBLE);
@@ -185,17 +187,6 @@ public class CartDisplay extends AppCompatActivity {
         });
 
     }
-
-
-    private void toolbarTitle() {
-        TextView toolbar_title = (TextView) toolbar.findViewById(R.id.title_toolbar);
-        toolbar_title.setText("Cart");
-        Typeface tfe = Typeface.createFromAsset(getAssets(), "fonts/CaveatBrush-Regular.ttf");
-        toolbar_title.setTypeface(tfe);
-        toolbar_title.setSelected(true);
-        toolbar_title.setSingleLine(true);
-    }
-
 
     private void startCheckoutActivity() {
 

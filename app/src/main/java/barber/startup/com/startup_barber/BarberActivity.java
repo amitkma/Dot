@@ -22,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,9 @@ public class BarberActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("Cart");
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +66,7 @@ public class BarberActivity extends AppCompatActivity {
         tv.setText("Barber Details \n");
 
         ParseQuery<ParseObject> parseQuery = new ParseQuery<>("Data");
+        parseQuery.fromPin("data");
         parseQuery.whereContainedIn("objectId", UserFavsAndCarts.listcart);
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -160,13 +162,13 @@ public class BarberActivity extends AppCompatActivity {
             tv.append("No barber is providing cumulative services.");
         } else {
 
-            List<Format_Barber> barberslist = new ArrayList<>();
+            List<ServiceDescriptionFormat> barberslist = new ArrayList<>();
 
 
             int j = 0;
             while (j < arrayList.get(0).size()) {
 
-                Format_Barber data = new Format_Barber();
+                ServiceDescriptionFormat data = new ServiceDescriptionFormat();
                 int servicesPrice = 0;
                 int servicesTime = 0;
                 String barberName = null;
@@ -180,9 +182,9 @@ public class BarberActivity extends AppCompatActivity {
                     barberId = serviceDescriptionFormat.getBarberId();
                 }
 
-                data.setPrice(servicesPrice);
-                data.setTime(servicesTime);
-                data.setBarber(barberName);
+                data.setServicePrice(servicesPrice);
+                data.setServiceTime(servicesTime);
+                data.setBarberName(barberName);
                 data.setBarberId(barberId);
                 barberslist.add(data);
 
@@ -191,7 +193,7 @@ public class BarberActivity extends AppCompatActivity {
 
                 j++;
             }
-            Adapter_Barber adapter_barber = new Adapter_Barber(this, barberslist,recyclerView);
+            Adapter_Barber adapter_barber = new Adapter_Barber(BarberActivity.this, barberslist,recyclerView);
             recyclerView.setAdapter(adapter_barber);
 
         }

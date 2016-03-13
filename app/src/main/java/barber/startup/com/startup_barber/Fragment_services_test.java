@@ -64,6 +64,9 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
     private boolean dataChanged;
 
 
+    public Fragment_services_test(){
+
+    }
     public Fragment_services_test(int position, AppBarLayout appBarLayout) {
         this.category = position;
         this.appBarLayout = appBarLayout;
@@ -169,9 +172,6 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
                             }
 
                         }
-                       // Log.e("ARRAy", Integer.toString(arrayFav.length()) + "" + Integer.toString(arrayCart.length()));
-
-
                     }
 
                 }
@@ -184,6 +184,7 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
     }
 
     public void setUpRecyclerView() {
+        Log.e("This", "method is called");
         final ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
         parseQuery.whereEqualTo("Category", category);
         parseQuery.fromPin("data");
@@ -217,17 +218,13 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
 
                         listparseobject.add(td);
 
-
-
                     }
 
                     adapter = new MainActivityAdapter(listparseobject, getContext());
                     recyclerView.setAdapter(adapter);
                     progressBar.setVisibility(View.GONE);
 
-                } else if (e != null)
-                    if (Application.DEBUG)
-                        Log.e("Fragment_services", "setuprecyclerview " + e.getMessage());
+                }
 
 
             }

@@ -336,7 +336,7 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
                             user.put("picUri", pictureUrl);
                             user.put("gender", gender);
                             user.put("genderCode", gendercode);
-
+                            user.put("rewardWallet", Defaults.FIRST_TIME_REWARD);
                             user.put("bhawanCode", bhawanCode);
                             user.put("bhawanName", bhawanName);
                             user.saveInBackground(new SaveCallback() {

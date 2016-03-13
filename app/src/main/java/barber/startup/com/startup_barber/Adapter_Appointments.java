@@ -30,10 +30,10 @@ public class Adapter_Appointments extends RecyclerView.Adapter<Adapter_Appointme
     public void onBindViewHolder(Adapter_Appointments.ViewHolder holder, int position) {
 
         data = appointmentdata.get(position);
-        holder.position.setText("#Appointment: " + position);
-        holder.date.setText("Date: " + data.getDate());
-        holder.timeslot.setText("Timeslot: " + data.getTimeslot());
-        holder.barber.setText("Barber: " + data.getBarber() + " Bhawan");
+        holder.position.setText("#"+position+" Appointment");
+        holder.timeslot.setText(data.getDate()+" "+data.getTimeslot());
+        holder.barber.setText(data.getBarber());
+        holder.numberServices.setText(Integer.toString(data.getNumberOfServices()));
     }
 
     @Override
@@ -47,7 +47,7 @@ public class Adapter_Appointments extends RecyclerView.Adapter<Adapter_Appointme
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView date;
+        TextView numberServices;
         TextView timeslot;
         TextView barber;
         TextView position;
@@ -55,9 +55,9 @@ public class Adapter_Appointments extends RecyclerView.Adapter<Adapter_Appointme
 
         public ViewHolder(View itemView, Context context) {
             super(itemView);
-            date = (TextView) itemView.findViewById(R.id.date);
+            numberServices = (TextView)itemView.findViewById(R.id.number_services_appointment);
             timeslot = (TextView) itemView.findViewById(R.id.timeslot);
-            barber = (TextView) itemView.findViewById(R.id.barber);
+            barber = (TextView) itemView.findViewById(R.id.barberName);
             position = (TextView) itemView.findViewById(R.id.position);
 
 

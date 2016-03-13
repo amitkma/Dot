@@ -12,6 +12,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -191,11 +192,8 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         holder.mImageView.setImageResource(0);
         if (currentTrendData.getUrl() != null) {
-            Glide.with(mContext).load(currentTrendData.getUrl()).centerCrop().skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.mImageView);
-        }
-
-        if (currentTrendData.getPrice() != null) {
-            holder.price.setText("Rs " + currentTrendData.getPrice());
+            int newHeight = (heightpixels/2)+dpToPx(72);
+            Glide.with(mContext).load(currentTrendData.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).override((heightpixels/2), newHeight).centerCrop().into(holder.mImageView);
         }
 
 
@@ -217,7 +215,6 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final Context mcontext;
         private final TextView title;
-        private final TextView price;
         private ImageView mImageView;
         private ImageView mImageView_addToCart;
         private ImageView mImageView_fav;
@@ -228,7 +225,6 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
             mcontext = context;
 
             title = (TextView) itemView.findViewById(R.id.card_title);
-            price = (TextView) itemView.findViewById(R.id.card_price);
             mImageView = (ImageView) itemView.findViewById(R.id.card_image);
             mImageView_addToCart = (ImageView) itemView.findViewById(R.id.addToCart_button);
             mImageView_fav = (ImageView) itemView.findViewById(R.id.fav_button);
@@ -240,14 +236,12 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         @Override
         public void onClick(View v) {
         if(v.getId() == R.id.card_image){
-            if(NetworkCheck.checkConnection(mContext)) {
+
                 Data currentTrendData = data.get(getAdapterPosition());
                 Intent i = new Intent(mContext, DetailsActivity.class);
                 i.putExtra("objectData", currentTrendData);
+                i.putExtra("height", heightpixels/2);
                 (mContext).startActivity(i);
-            }
-            else
-                Snackbar.make(v, "Error in connection", Snackbar.LENGTH_LONG).show();
 
         }
         }
@@ -256,5 +250,11 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     public void refreshData(Data newData) {
         data.add(newData);
         notifyItemInserted(data.size() - 1);
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
     }
 }

@@ -51,8 +51,9 @@
             </intent-filter>
         </activity>
         <activity
+
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="Dot"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
@@ -100,6 +101,7 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Confirmation"
+            android:label="Confirmation Receipt"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Appointments"
@@ -116,6 +118,7 @@
             android:label="Choose Barber"
             android:screenOrientation="portrait"></activity>
         <activity android:name=".DetailsActivity"
+            android:screenOrientation="portrait"
            >
         </activity>
     </application>

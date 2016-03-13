@@ -3,9 +3,7 @@
 
     <group
         android:id="@+id/group_user"
-
         android:checkableBehavior="single">
-
         <item
             android:id="@+id/Favorites"
             android:checked="false"
@@ -28,28 +26,38 @@
 
     <item
         android:id="@+id/second"
-        android:title="Extra">
+        android:title="Others">
         <menu
             android:id="@+id/group_extra"
 
             android:checkableBehavior="single">
-        <item
-            android:id="@+id/About"
-            android:icon="@drawable/ic_help_black_24dp"
-            android:title="Developers" />
-        <item
-            android:id="@+id/Contact"
-            android:icon="@drawable/ic_contact_mail_black_24dp"
-            android:title="Contact us" />
-        <item
-            android:id="@+id/Feedback"
-            android:icon="@drawable/ic_stars_black_24dp"
-            android:title="Feedback" />
-        <item
-            android:id="@+id/logout"
-            android:icon="@drawable/ic_power_settings_new_black_24dp"
-            android:title="Logout" />
+            <item
+                android:id="@+id/Feedback"
+                android:icon="@drawable/ic_stars_black_24dp"
+                android:title="Feedback" />
+
+            <item
+                android:id="@+id/help"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="Help" />
+            <item
+                android:id="@+id/privacy"
+                android:icon="@drawable/ic_contact_mail_black_24dp"
+                android:title="Privacy policy" />
+
+            <item
+                android:id="@+id/termsOfUse"
+                android:icon="@drawable/ic_contact_mail_black_24dp"
+                android:title="Terms of use" />
+            <item
+                android:id="@+id/About"
+                android:icon="@drawable/ic_help_black_24dp"
+                android:title="About us" />
 
         </menu>
     </item>
+    <item
+        android:id="@+id/logout"
+        android:icon="@drawable/ic_power_settings_new_black_24dp"
+        android:title="Logout" />
 </menu>

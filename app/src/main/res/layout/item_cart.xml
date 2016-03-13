@@ -59,6 +59,8 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="8dp"
                 android:text="Min. price: Rs.20/-"
+                android:layout_toLeftOf="@+id/removeFromCart"
+                android:maxLines="2"
                 android:textColor="@color/primary_text"
                 android:fontFamily="sans-serif-medium"
                 android:textSize="14dp"

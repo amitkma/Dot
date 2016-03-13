@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +53,7 @@ public class DetailsActivity extends AppCompatActivity {
     private ArrayList<ServiceDescriptionFormat> barberList = new ArrayList<>();
     private Menu menu;
     private CollapsingToolbarLayout collapsingToolbarLayout;
+    private int height;
 
 
     @Override
@@ -72,13 +74,26 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             currentData = (Data) intent.getSerializableExtra("objectData");
+            height = intent.getIntExtra("height", 10);
         }
 
+        int newHeight = height+dpToPx(72);
         Glide.with(DetailsActivity.this)
                 .load(currentData.getUrl())
-                .crossFade()
-                .diskCacheStrategy(DiskCacheStrategy.RESULT)
-                .skipMemoryCache(true)
+                .override(height, newHeight)
+                .listener(new RequestListener<String, GlideDrawable>() {
+                    @Override
+                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        Glide.with(DetailsActivity.this).load(currentData.getUrl()).diskCacheStrategy(DiskCacheStrategy.NONE).placeholder(resource).dontAnimate()
+                               .into(imageView);
+                        return false;
+                    }
+                })
                 .into(imageView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.transparentToolbar);
         setSupportActionBar(toolbar);
@@ -86,7 +101,8 @@ public class DetailsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        if (NetworkCheck.checkConnection(this)) {
+
+        Defaults.defaultObjectId = currentData.getId();
             ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
             parseQuery.whereEqualTo("objectId", currentData.getId());
             parseQuery.fromPin("data");
@@ -120,9 +136,7 @@ public class DetailsActivity extends AppCompatActivity {
                 }
             });
 
-        } else
-            Snackbar.make(recyclerView, "Error in connection", Snackbar.LENGTH_SHORT).show();
-    }
+        }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -156,10 +170,16 @@ public class DetailsActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    
+
 
     public Menu getMenu() {
 
         return menu;
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
     }
 }

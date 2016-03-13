@@ -1,14 +1,9 @@
 package barber.startup.com.startup_barber;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.TimePickerDialog;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.Toast;
@@ -79,11 +74,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
                     datePickerDialog.updateDate(year, monthOfYear, dayOfMonth);
                     flag = true;
                 }
-
             }
         };
-
-        DatePicker datePicker = datePickerDialog.getDatePicker();
         return datePickerDialog;
 
 
@@ -105,7 +97,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        ((Checkout) getActivity()).setDate(year, monthOfYear, dayOfMonth);
+        new CheckOutClass(getActivity()).setDate(year, monthOfYear, dayOfMonth);
     }
 
 

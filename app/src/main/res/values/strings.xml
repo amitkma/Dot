@@ -41,4 +41,9 @@
     <string name="drawer_close_content_desc">Close</string>
     <string name="phone">Enrollment Number</string>
     <string name="name">Name</string>
+    <string name="pick_slot">Available slots</string>
+    <string name="set_time">Set time</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm booking?</string>
+    <string name="ok">OK</string>
 </resources>

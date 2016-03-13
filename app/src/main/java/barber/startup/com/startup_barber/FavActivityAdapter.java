@@ -74,7 +74,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
 
 
         data = cartdata.get(position);
-        holder.price.setText("Min. price: \n Rs. "+data.getPrice()+"/-");
+        holder.price.setText("Rs. "+data.getPrice()+"/-");
 
         if (data.isCart()) {
             holder.cart.setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent_light),  PorterDuff.Mode.SRC_IN);

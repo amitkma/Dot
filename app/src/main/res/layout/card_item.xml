@@ -14,10 +14,7 @@
         android:id="@+id/rlll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:background="#fff">
-
-
         <ImageView
 
             android:id="@+id/card_image"
@@ -45,7 +42,8 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:id="@+id/linearLayout">
 
                 <ImageView
                     android:id="@+id/fav_button"
@@ -75,23 +73,16 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingTop="8dp"
+                android:paddingLeft="8dp"
                 android:text="Title"
+                android:maxLines="2"
+                android:layout_toLeftOf="@+id/linearLayout"
                 android:textColor="@color/primary_text"
-                android:textSize="14dp" />
+                android:textSize="14dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
-            <TextView
-                android:id="@+id/card_price"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/card_title"
-                android:gravity="center_vertical"
-                android:paddingBottom="8dp"
-                android:paddingLeft="16dp"
-                android:text="Price"
-                android:textColor="@color/secondary_text"
-                android:textSize="12dp" />
 
         </RelativeLayout>
     </RelativeLayout>

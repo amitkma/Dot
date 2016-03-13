@@ -4,13 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+  android:layout_marginLeft="4dp"
+  android:layout_marginRight="4dp"
     android:layout_marginBottom="4dp"
-    android:layout_marginLeft="4dp"
-    android:layout_marginRight="4dp"
-    android:layout_marginTop="4dp"
-
     app:cardCornerRadius="2dp"
-    app:cardElevation="4dp">
+    >
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -23,56 +21,83 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif"
             android:gravity="center_vertical"
-            android:paddingLeft="8dp"
-            android:paddingTop="16dp"
-            android:text="Title"
-            android:textColor="#000"
-            android:textSize="20sp"
-            android:textStyle="italic" />
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:text="#1 Appointment"
+            android:textColor="@color/secondary_text"
+            android:textSize="16sp"
+            />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/position"
             android:orientation="vertical"
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/barberName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
                 android:gravity="center_vertical"
                 android:paddingBottom="4dp"
-                android:text="Date"
+                android:text="Azad Bhawan"
                 android:textColor="#000"
-                android:textSize="18sp" />
+                android:textSize="24sp" />
 
 
             <TextView
                 android:id="@+id/timeslot"
+                android:layout_below="@+id/barberName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
-
                 android:gravity="center_vertical"
                 android:paddingBottom="4dp"
-                android:text="Timeslot"
-                android:textColor="#000"
-                android:textSize="18sp" />
+                android:text="18-03-2016 at 09:45"
+                android:textColor="@color/secondary_text"
+                android:textSize="16sp" />
+            <TextView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="2"
+                android:gravity="center"
+                android:textColor="#FFF"
+                android:textSize="20sp"
+                android:background="@drawable/circle_back"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/number_services_appointment" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/spacer_3"
+                android:layout_below="@+id/timeslot"
+                android:layout_marginTop="16dp"
+                android:background="@color/secondary_text_background"
+                />
 
             <TextView
-                android:id="@+id/barber"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/spacer_3"
+                android:text="Total spend"
+                android:textColor="@color/primary_text"
+                android:layout_marginTop="16dp"
+                android:textSize="20dp"
+                android:layout_alignParentLeft="true"/>
+            <TextView
+                android:id="@+id/confirm_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/spacer_3"
+                android:text="Rs. 20/-"
+                android:textColor="@color/primary_text"
                 android:fontFamily="sans-serif-medium"
-                android:gravity="center_vertical"
-                android:text="Barber"
-                android:textColor="#000"
-                android:textSize="18sp" />
-
-
-        </LinearLayout>
+                android:layout_marginTop="16dp"
+                android:textSize="20dp"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
 
 
     </RelativeLayout>

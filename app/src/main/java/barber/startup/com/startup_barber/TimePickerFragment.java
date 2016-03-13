@@ -17,7 +17,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        ((Checkout) getActivity()).settextTime(hourOfDay, minute);
+        new CheckOutClass(getActivity()).settextTime(hourOfDay, minute);
 
         //  ((Checkout) getActivity()).updateSlots(hourOfDay, minute); // Call main activity method when user set a particular time
     }
