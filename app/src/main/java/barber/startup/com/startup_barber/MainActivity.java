@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -34,7 +35,6 @@ import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -47,25 +47,22 @@ import barber.startup.com.startup_barber.Utility.NetworkCheck;
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
 
 public class MainActivity extends BaseActivity {
+    public static SharedPreferences prefs;
+    public static boolean dataSaved = false;
+    public static Date lastUpdatedAt = new Date();
     protected static float width;
     protected static int height;
     protected static int a;
     protected static boolean dataUpdated = false;
-    ParseUser parseUser = ParseUser.getCurrentUser();
-
     private final String TAG = "MainActivity";
-
+    ParseUser parseUser = ParseUser.getCurrentUser();
     private Menu menu;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private Dialog dialog;
-    public static SharedPreferences prefs;
-    public static boolean dataSaved = false;
     private TextView checknet;
     private String[] categoriesName;
     private AppBarLayout appBarLayout;
-
-    public static Date lastUpdatedAt = new Date();
     private ProgressDialog progressDialog;
     private boolean dataChanged;
 
@@ -75,12 +72,12 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
 
-        Defaults.context= this;
-        appBarLayout = (AppBarLayout)findViewById(R.id.appbarlayout);
+        Defaults.context = this;
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading styles and barbers");
         final View v = findViewById(R.id.viewframe);
-        if(NetworkCheck.checkConnection(MainActivity.this)) {
+        if (NetworkCheck.checkConnection(MainActivity.this)) {
             ParseQuery<ParseUser> query = ParseUser.getQuery();
             query.whereEqualTo("objectId", parseUser.getObjectId());
             query.getFirstInBackground(new GetCallback<ParseUser>() {
@@ -92,15 +89,26 @@ public class MainActivity extends BaseActivity {
                         if (Defaults.mNumberOfServicesLeft == 0) {
                             Snackbar.make(v, "You dont have any free service left", Snackbar.LENGTH_LONG).show();
                         } else if (Defaults.mNumberOfServicesLeft > 0) {
-                            Snackbar.make(v, "You have " + Defaults.mNumberOfServicesLeft + " free service/s left", Snackbar.LENGTH_LONG).show();
+                            Snackbar.make(v, "You have " + Defaults.mNumberOfServicesLeft + " free service(s) left", Snackbar.LENGTH_LONG).show();
                         }
-                    } else
+                    } else {
                         Snackbar.make(v, e.getMessage(), Snackbar.LENGTH_SHORT).show();
+
+                        if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
+                            ParseUser.logOutInBackground(new LogOutCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    startActivity(new Intent(MainActivity.this, Login.class));
+                                    finish();
+                                }
+                            });
+
+                        }
+                    }
 
                 }
             });
-        }
-        else
+        } else
             Snackbar.make(v, "Error in connection", Snackbar.LENGTH_SHORT).show();
 
         v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -126,10 +134,29 @@ public class MainActivity extends BaseActivity {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.developer);
 
+        ImageView fbayush = (ImageView) dialog.findViewById(R.id.fbAyush);
+        ImageView fbamit = (ImageView) dialog.findViewById(R.id.fbAmit);
+
+        fbayush.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFbPage(0);
+            }
+        });
+        fbamit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFbPage(1);
+            }
+
+
+        });
         ImageView ayush = (ImageView) dialog.findViewById(R.id.ayush);
         ImageView amit = (ImageView) dialog.findViewById(R.id.amit);
 
         checknet = (TextView) findViewById(R.id.checkconnection);
+
+
         Glide.with(getApplicationContext()).load((R.drawable.ayush)).into(ayush);
         Glide.with(getApplicationContext()).load((R.drawable.amit)).into(amit);
 
@@ -162,34 +189,56 @@ public class MainActivity extends BaseActivity {
             this.categoriesName = Defaults.categoriesNameGirls;
         else if (Defaults.genderCode == 1)
             this.categoriesName = Defaults.categoriesNameBoys;
-        if(NetworkCheck.checkConnection(this)) {
+        if (NetworkCheck.checkConnection(this)) {
             checkfordatachange();
-        }
-        else {
+        } else {
             setupViewPager(viewPager);
             tabLayout.setupWithViewPager(viewPager);
         }
 
+
+        setupViewPager(viewPager);
+        tabLayout.setupWithViewPager(viewPager);
+    }
+
+    private void showFbPage(int i) {
+
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        if (i == 0) {
+
+            intent.setData(Uri.parse("https://www.facebook.com/ayush.p.gupta"));
+
+        } else if (i == 1) {
+            intent.setData(Uri.parse("https://www.facebook.com/TechGuruAmit"));
+
+        }
+
+        startActivity(intent);
     }
 
 
-
-   @Override
-   protected void onStart() {
-       super.onStart();
-
-
-       Log.i(TAG, "onstart called");
-       setupViewPager(viewPager);
-       tabLayout.setupWithViewPager(viewPager);
-
-
-   }
     @Override
-    protected void onResume(){
+    protected void onStart() {
+        super.onStart();
+        if (dataUpdated) {
+            setupViewPager(viewPager);
+            tabLayout.setupWithViewPager(viewPager);
+            dataUpdated = false;
+        }
+
+        Log.i(TAG, "onstart called");
+
+
+    }
+
+    @Override
+    protected void onResume() {
         super.onResume();
 
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -268,6 +317,8 @@ public class MainActivity extends BaseActivity {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+
+
                                     logout();
                                 }
                             }, 280);
@@ -296,12 +347,15 @@ public class MainActivity extends BaseActivity {
     }
 
     private void logout() {
+
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
             ParseUser.logOutInBackground(new LogOutCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
+                        progressDialog.dismiss();
+                        progressDialog = null;
                         parseUser = null;
                         Intent i = new Intent(getApplicationContext(), Login.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -356,36 +410,9 @@ public class MainActivity extends BaseActivity {
     }
 
 
-
     public Menu getMenu() {
         return menu;
     }
-
-    class ViewPagerAdapter extends FragmentStatePagerAdapter {
-
-        public ViewPagerAdapter(FragmentManager manager) {
-            super(manager);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            Log.e("TAB POSITION", Integer.toString(position));
-            return new Fragment_services_test(position, appBarLayout);
-        }
-
-        @Override
-        public int getCount() {
-            return categoriesName.length;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return categoriesName[position];
-        }
-    }
-
-
-
 
     private void Fetch_data() {
 
@@ -406,8 +433,7 @@ public class MainActivity extends BaseActivity {
                             Log.d("Objectsize", String.valueOf(objects.size()));
                         for (int i = 0; i < objects.size(); i++) {
                             ParseObject parseObject = objects.get(i);
-                            ParseFile parseFile = parseObject.getParseFile("image");
-                            Glide.with(getApplicationContext()).load(parseFile.getUrl());
+
                         }
                         unpinAndRepinData(objects);
                     }
@@ -443,7 +469,7 @@ public class MainActivity extends BaseActivity {
                                 prefs.edit().putBoolean("dataSaved", true).apply();
                                 progressDialog.dismiss();
                                 progressDialog = null;
-                               setupViewPager(viewPager);
+                                setupViewPager(viewPager);
                                 tabLayout.setupWithViewPager(viewPager);
 
                             } else {
@@ -464,6 +490,7 @@ public class MainActivity extends BaseActivity {
         });
 
     }
+
     private void checkfordatachange() {
 
         //Getting the latest object from local
@@ -529,6 +556,29 @@ public class MainActivity extends BaseActivity {
         } else {
             Snackbar.make(findViewById(R.id.colayout), "Error in connection", Snackbar.LENGTH_INDEFINITE).show();
             checknet.setVisibility(View.VISIBLE);
+        }
+    }
+
+    class ViewPagerAdapter extends FragmentStatePagerAdapter {
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            Log.e("TAB POSITION", Integer.toString(position));
+            return new Fragment_services_test(position, appBarLayout);
+        }
+
+        @Override
+        public int getCount() {
+            return categoriesName.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return categoriesName[position];
         }
     }
 

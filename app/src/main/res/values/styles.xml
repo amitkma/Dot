@@ -26,6 +26,10 @@
     </style>
 
 
+    <style name="DialogTheme" parent="@android:style/Widget.Material.DatePicker" tools:targetApi="lollipop">
+        <item name="android:headerBackground">@color/primary</item>
+    </style>
+
     <style name="AppTheme.NoActionBar.Login" parent="AppTheme.NoActionBar">
         <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/black</item>
         <item name="android:windowBackground">@color/colorAccent_light2</item>

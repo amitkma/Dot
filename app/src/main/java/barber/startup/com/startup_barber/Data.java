@@ -9,7 +9,7 @@ public class Data  implements Serializable{
     String id = "default";
     String title = "title";
     String price = "0";
-    String url = "url";
+    String url = null;
     boolean fav = false;
     boolean cart = false;
 

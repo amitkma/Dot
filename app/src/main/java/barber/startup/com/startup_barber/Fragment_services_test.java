@@ -1,15 +1,10 @@
 package barber.startup.com.startup_barber;
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.hardware.usb.UsbRequest;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.DisplayMetrics;
@@ -18,12 +13,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -31,31 +23,25 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-import barber.startup.com.startup_barber.Utility.NetworkCheck;
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
 import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 public class Fragment_services_test extends android.support.v4.app.Fragment {
 
-    private AppBarLayout appBarLayout;
     List<Data> listparseobject = new ArrayList<>();
+    ProgressDialog progressDialog = null;
+    private AppBarLayout appBarLayout;
     private RecyclerView recyclerView;
     private MainActivityAdapter adapter;
     private int category;
-    private String[] uri;
     private Menu menu;
-
-    ProgressDialog progressDialog = null;
     private ParseUser currentUser;
     private ProgressBar progressBar;
     private Context mContext;
@@ -195,7 +181,6 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
 
                 if (e == null && objects.size() > 0) {
 
-                    uri = new String[objects.size()];
                     for (int i = 0; i < objects.size(); i++) {
 
                         final ParseObject parseObject = objects.get(i);
@@ -205,9 +190,9 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
                         td.id = parseObject.getObjectId();
 
                         ParseFile parseFile = parseObject.getParseFile("image");
+                        if (parseFile != null)
                         td.url = parseFile.getUrl();
 
-                        uri[i] = td.getUrl();
 
                         if (UserFavsAndCarts.listfav.contains(parseObject.getObjectId()))
                             td.fav = true;

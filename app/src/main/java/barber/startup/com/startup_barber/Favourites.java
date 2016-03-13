@@ -80,6 +80,7 @@ public class Favourites extends AppCompatActivity {
                             td.price = parseObject.getString("price");
                             td.id = parseObject.getObjectId();
                             ParseFile parseFile = parseObject.getParseFile("image");
+                            if (parseFile != null)
                             td.url = parseFile.getUrl();
                             if(UserFavsAndCarts.listcart.contains(td.getId()))
                                 td.cart=true;

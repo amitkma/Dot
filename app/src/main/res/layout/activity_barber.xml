@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
 
     tools:context="barber.startup.com.startup_barber.BarberActivity">
 
@@ -15,8 +15,9 @@
         android:background="#E0E0E0"
         app:elevation="0dp">
 
-        <include layout="@layout/toolbar"
-            android:id="@+id/toolbar"></include>
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar"></include>
 
     </android.support.design.widget.AppBarLayout>
     <TextView
@@ -26,16 +27,16 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="Medium Text"
-        android:visibility="invisible"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="invisible" />
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_below="@+id/ap"
         android:layout_width="match_parent"
-        android:padding="4dp"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@+id/ap"
+        android:padding="4dp">
 
 
     </android.support.v7.widget.RecyclerView>

@@ -3,13 +3,8 @@ package barber.startup.com.startup_barber;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -19,7 +14,6 @@ import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +21,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -36,7 +29,6 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import barber.startup.com.startup_barber.Utility.NetworkCheck;
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
 import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
@@ -190,7 +182,7 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         if (currentTrendData.getTitle() != null)
             holder.title.setText(currentTrendData.getTitle());
 
-        holder.mImageView.setImageResource(0);
+        holder.mImageView.setImageResource(R.drawable.placeholder);
         if (currentTrendData.getUrl() != null) {
             int newHeight = (heightpixels/2)+dpToPx(72);
             Glide.with(mContext).load(currentTrendData.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).override((heightpixels/2), newHeight).centerCrop().into(holder.mImageView);
@@ -211,6 +203,16 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         notifyItemInserted(data.size() - 1);
     }
 
+    public void refreshData(Data newData) {
+        data.add(newData);
+        notifyItemInserted(data.size() - 1);
+    }
+
+    public int dpToPx(int dp) {
+        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
+        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+        return px;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         final Context mcontext;
@@ -245,16 +247,5 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
 
         }
         }
-    }
-
-    public void refreshData(Data newData) {
-        data.add(newData);
-        notifyItemInserted(data.size() - 1);
-    }
-
-    public int dpToPx(int dp) {
-        DisplayMetrics displayMetrics = mContext.getResources().getDisplayMetrics();
-        int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-        return px;
     }
 }

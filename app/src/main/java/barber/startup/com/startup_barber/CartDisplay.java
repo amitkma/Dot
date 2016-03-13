@@ -1,13 +1,9 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -114,7 +110,9 @@ public class CartDisplay extends AppCompatActivity {
                             td.title = parseObject.getString("title");
                             td.price = parseObject.getString("price");
                             td.id = parseObject.getObjectId();
+
                             ParseFile parseFile = parseObject.getParseFile("image");
+                            if (parseFile != null)
                             td.url = parseFile.getUrl();
                             if (UserFavsAndCarts.listcart.contains(td.getId()))
                                 td.cart = true;
@@ -125,7 +123,7 @@ public class CartDisplay extends AppCompatActivity {
                         mRecyclerView.setAdapter(cartActivityAdapter);
                     } else empty.setVisibility(View.VISIBLE);
                 } else {
-                    Log.i("Favourited", "passed,favcheeck");
+
                     Log.i("Favourited", "passed,favcheeck" + e.getMessage());
                 }
             }

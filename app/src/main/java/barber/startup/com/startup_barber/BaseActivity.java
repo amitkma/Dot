@@ -1,7 +1,6 @@
 package barber.startup.com.startup_barber;
 
 import android.graphics.Typeface;
-import android.net.ConnectivityManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -12,8 +11,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.parse.ParseUser;
-import com.squareup.picasso.Picasso;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -111,7 +110,7 @@ public class BaseActivity extends AppCompatActivity {
 
         if (uri != null) {
             ImageView img = (ImageView) view.findViewById(R.id.profile_image);
-            Picasso.with(this)
+            Glide.with(this)
                     .load(uri)
                     .into(img);
         }

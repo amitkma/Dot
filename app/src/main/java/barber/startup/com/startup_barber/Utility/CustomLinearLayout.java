@@ -6,7 +6,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 /**
  * Created by Arish on 03-02-2016.

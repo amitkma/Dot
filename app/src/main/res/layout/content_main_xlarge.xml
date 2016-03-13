@@ -41,11 +41,11 @@
                 android:background="#fff"
                 android:paddingBottom="2dp"
                 android:paddingLeft="4dp"
-                app:tabPaddingStart="16dp"
-                app:tabMode="scrollable"
-                app:tabIndicatorHeight="4dp"
-                app:tabSelectedTextColor="@color/colorAccent_light"
                 app:tabIndicatorColor="@color/colorAccent_light"
+                app:tabIndicatorHeight="4dp"
+                app:tabMode="scrollable"
+                app:tabPaddingStart="16dp"
+                app:tabSelectedTextColor="@color/colorAccent_light"
                 app:tabTextAppearance="@style/MineCustomTabText" />
         </android.support.design.widget.AppBarLayout>
 

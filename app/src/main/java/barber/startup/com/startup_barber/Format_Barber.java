@@ -14,31 +14,31 @@ public class Format_Barber {
         return time;
     }
 
-    public int getPrice() {
-        return price;
-    }
-
-    public int getBarberId() {
-        return barberId;
-    }
-
-    public String getBarber() {
-        return barber;
-    }
-
     public void setTime(int time) {
         this.time = time;
+    }
+
+    public int getPrice() {
+        return price;
     }
 
     public void setPrice(int price) {
         this.price = price;
     }
 
-    public void setBarber(String barber) {
-        this.barber = barber;
+    public int getBarberId() {
+        return barberId;
     }
 
     public void setBarberId(int barberId) {
         this.barberId = barberId;
+    }
+
+    public String getBarber() {
+        return barber;
+    }
+
+    public void setBarber(String barber) {
+        this.barber = barber;
     }
 }

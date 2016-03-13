@@ -2,6 +2,7 @@ package barber.startup.com.startup_barber;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import barber.startup.com.startup_barber.Utility.NetworkCheck;
 import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 public class BarberActivity extends AppCompatActivity {
@@ -61,6 +64,7 @@ public class BarberActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        getServicesLeft();
 
         tv = (TextView) findViewById(R.id.textView);
         tv.setText("Barber Details \n");
@@ -154,6 +158,13 @@ public class BarberActivity extends AppCompatActivity {
         updateTextView(completeBarberList);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        overridePendingTransition(0, 0);
+
+    }
 
     private void updateTextView(ArrayList<ArrayList<ServiceDescriptionFormat>> arrayList) {
 
@@ -201,6 +212,29 @@ public class BarberActivity extends AppCompatActivity {
     }
 
 
+    public void getServicesLeft() {
+
+        if (NetworkCheck.checkConnection(BarberActivity.this)) {
+            ParseQuery<ParseUser> query = ParseUser.getQuery();
+            query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+            query.getFirstInBackground(new GetCallback<ParseUser>() {
+                @Override
+                public void done(ParseUser object, ParseException e) {
+                    if (e == null) {
+                        Defaults.mNumberOfServicesLeft = object.getInt("rewardWallet");
+                        Log.e("REWARD", String.valueOf(Defaults.mNumberOfServicesLeft));
+                        if (Defaults.mNumberOfServicesLeft == 0) {
+                            Snackbar.make(recyclerView, "You dont have any free service left", Snackbar.LENGTH_LONG).show();
+                        } else if (Defaults.mNumberOfServicesLeft > 0) {
+                            Snackbar.make(recyclerView, "You have " + Defaults.mNumberOfServicesLeft + " free service(s) left", Snackbar.LENGTH_LONG).show();
+                        }
+                    } else
+                        Snackbar.make(recyclerView, e.getMessage(), Snackbar.LENGTH_SHORT).show();
+
+                }
+            });
+        }
+    }
 }
 
 

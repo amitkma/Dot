@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Startup</string>
+    <string name="app_name">DOT</string>
     <string name="action_settings">Settings</string>
     <string name="network_state_false">poor connectivity or no network</string>
     <string name="error_unclassified">Something went wrong</string>
@@ -46,4 +46,5 @@
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm booking?</string>
     <string name="ok">OK</string>
+    <string name="date_no_available">Date not available</string>
 </resources>

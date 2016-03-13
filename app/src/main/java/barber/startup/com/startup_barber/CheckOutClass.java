@@ -3,14 +3,7 @@ package barber.startup.com.startup_barber;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.GetCallback;
@@ -133,7 +126,7 @@ public class CheckOutClass{
                     int endTimeHour = currentTimeData.getEndTimeData() / 100;
                     int endTimeMinute = (currentTimeData.getEndTimeData() % 100);
 
-                    String s = String.format("%02d:%02d - %02d:%02d \n", startTimeHour, startTimeMinute, endTimeHour, endTimeMinute);
+                    String s = String.format("%02d:%02d - %02d:%02d", startTimeHour, startTimeMinute, endTimeHour, endTimeMinute);
                     Defaults.availableTimeSlotsString.add(s);
                 } else {
                     Defaults.availableTimeSlots.remove(i);
@@ -412,7 +405,7 @@ public class CheckOutClass{
                         ((DetailsActivity) mContext).finish();
                         ((DetailsActivity) mContext).overridePendingTransition(0, 0);
                     }
-                } else if ((Application.DEBUG)) Log.d("e", e.getMessage());
+                } else Log.d("e", e.getMessage());
             }
         });
     }

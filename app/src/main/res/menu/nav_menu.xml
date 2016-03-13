@@ -29,7 +29,6 @@
         android:title="Others">
         <menu
             android:id="@+id/group_extra"
-
             android:checkableBehavior="single">
             <item
                 android:id="@+id/Feedback"
@@ -52,7 +51,7 @@
             <item
                 android:id="@+id/About"
                 android:icon="@drawable/ic_help_black_24dp"
-                android:title="About us" />
+                android:title="Developers" />
 
         </menu>
     </item>

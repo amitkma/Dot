@@ -1,13 +1,9 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,9 +11,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -29,19 +23,12 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-
-import barber.startup.com.startup_barber.Utility.NetworkCheck;
-import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
-import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -76,25 +63,27 @@ public class DetailsActivity extends AppCompatActivity {
             currentData = (Data) intent.getSerializableExtra("objectData");
             height = intent.getIntExtra("height", 10);
         }
+        if (currentData.getUrl() != null) {
+            int newHeight = height + dpToPx(72);
+            Glide.with(DetailsActivity.this)
+                    .load(currentData.getUrl())
+                    .override(height, newHeight)
 
-        int newHeight = height+dpToPx(72);
-        Glide.with(DetailsActivity.this)
-                .load(currentData.getUrl())
-                .override(height, newHeight)
-                .listener(new RequestListener<String, GlideDrawable>() {
-                    @Override
-                    public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                        return false;
-                    }
+                    .listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                        Glide.with(DetailsActivity.this).load(currentData.getUrl()).diskCacheStrategy(DiskCacheStrategy.NONE).placeholder(resource).dontAnimate()
-                               .into(imageView);
-                        return false;
-                    }
-                })
-                .into(imageView);
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            Glide.with(DetailsActivity.this).load(currentData.getUrl()).diskCacheStrategy(DiskCacheStrategy.NONE).placeholder(resource).dontAnimate()
+                                    .into(imageView);
+                            return false;
+                        }
+                    })
+                    .into(imageView);
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.transparentToolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -103,40 +92,40 @@ public class DetailsActivity extends AppCompatActivity {
 
 
         Defaults.defaultObjectId = currentData.getId();
-            ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
-            parseQuery.whereEqualTo("objectId", currentData.getId());
-            parseQuery.fromPin("data");
-            parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject object, ParseException e) {
-                    if (e == null) {
-                        JSONArray array = object.getJSONArray("serviceDescription");
-                        Log.e("arrya", Integer.toString(array.length()));
-                        for (int j = 0; j < array.length(); j++) {
-                            try {
-                                JSONObject jsonObject = array.getJSONObject(j);
-                                ServiceDescriptionFormat serviceDescriptionFormat = new ServiceDescriptionFormat();
-                                serviceDescriptionFormat.setBarberObjectId(jsonObject.getString("barberObjectId"));
-                                serviceDescriptionFormat.setBarberName(jsonObject.getString("barberName"));
-                                serviceDescriptionFormat.setBarberId(jsonObject.getInt("barberId"));
-                                serviceDescriptionFormat.setServicePrice(jsonObject.getInt("servicePrice"));
-                                serviceDescriptionFormat.setServiceTime(jsonObject.getInt("serviceTime"));
-                                barberList.add(serviceDescriptionFormat);
-                            } catch (JSONException e1) {
-                                e1.printStackTrace();
-                            }
-
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
+        parseQuery.whereEqualTo("objectId", currentData.getId());
+        parseQuery.fromPin("data");
+        parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    JSONArray array = object.getJSONArray("serviceDescription");
+                    Log.e("arrya", Integer.toString(array.length()));
+                    for (int j = 0; j < array.length(); j++) {
+                        try {
+                            JSONObject jsonObject = array.getJSONObject(j);
+                            ServiceDescriptionFormat serviceDescriptionFormat = new ServiceDescriptionFormat();
+                            serviceDescriptionFormat.setBarberObjectId(jsonObject.getString("barberObjectId"));
+                            serviceDescriptionFormat.setBarberName(jsonObject.getString("barberName"));
+                            serviceDescriptionFormat.setBarberId(jsonObject.getInt("barberId"));
+                            serviceDescriptionFormat.setServicePrice(jsonObject.getInt("servicePrice"));
+                            serviceDescriptionFormat.setServiceTime(jsonObject.getInt("serviceTime"));
+                            barberList.add(serviceDescriptionFormat);
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
                         }
-                    } else
-                        Log.e("DetailsActivity", e.getMessage());
 
-                    DetailsActivityAdapter detailsActivityAdapter = new DetailsActivityAdapter(DetailsActivity.this, barberList, recyclerView);
-                    recyclerView.setAdapter(detailsActivityAdapter);
+                    }
+                } else
+                    Log.e("DetailsActivity", e.getMessage());
 
-                }
-            });
+                DetailsActivityAdapter detailsActivityAdapter = new DetailsActivityAdapter(DetailsActivity.this, barberList, recyclerView);
+                recyclerView.setAdapter(detailsActivityAdapter);
 
-        }
+            }
+        });
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

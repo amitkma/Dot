@@ -17,10 +17,10 @@
 
     <application
         android:name=".Application"
-        android:label="Dot"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
+        android:label="DOT"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
@@ -41,7 +41,6 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name=".Login"
-            android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/LoginTheme"
             android:windowSoftInputMode="adjustResize">
@@ -53,7 +52,7 @@
         <activity
 
             android:name=".MainActivity"
-            android:label="Dot"
+            android:label="DOT"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity

@@ -1,23 +1,10 @@
 package barber.startup.com.startup_barber;
 
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.util.Base64;
-import android.util.Log;
-
-
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
-import com.squareup.picasso.LruCache;
-import com.squareup.picasso.OkHttpDownloader;
-import com.squareup.picasso.Picasso;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -25,7 +12,7 @@ import io.fabric.sdk.android.Fabric;
  * Created by Arish on 08-01-2016.
  */
 public class Application extends android.app.Application {
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     @Override
     public void onCreate() {

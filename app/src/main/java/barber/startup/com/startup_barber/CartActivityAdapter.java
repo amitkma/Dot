@@ -123,11 +123,11 @@ public class CartActivityAdapter extends RecyclerView.Adapter<CartActivityAdapte
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public RelativeLayout rl;
         TextView title;
         TextView price;
         ImageView remove;
         ImageView img;
-        public RelativeLayout rl;
 
         public ViewHolder(View itemView, Context context) {
             super(itemView);

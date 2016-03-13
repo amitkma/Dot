@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -77,7 +76,7 @@ public class Confirmation extends AppCompatActivity {
         }
 
         numberOfServices.setText(Integer.toString(UserFavsAndCarts.listcart.size()));
-        username.setText("Username:  " + ParseUser.getCurrentUser().getUsername());
+        username.setText(ParseUser.getCurrentUser().getUsername());
         barber.setText("Barber:  " + txt_barber);
         cost.setText("Rs " + Integer.toString(txt_price));
         pin.setText(Integer.toString(txt_pin));
@@ -97,7 +96,7 @@ public class Confirmation extends AppCompatActivity {
                         @Override
                         public void done(ParseException e) {
                             if(e == null){
-                                Snackbar.make(relativeLayout, "You have "+(Defaults.mNumberOfServicesLeft-1)+" service/s left in your free wallet.", Snackbar.LENGTH_LONG).show();
+                                Snackbar.make(relativeLayout, "You have " + (Defaults.mNumberOfServicesLeft - 1) + " service(s) left in your free wallet.", Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });

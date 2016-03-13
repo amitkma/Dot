@@ -1,8 +1,6 @@
 package barber.startup.com.startup_barber;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -52,8 +50,9 @@ public class Appointments extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        adapter_appointments = new Adapter_Appointments();
-        recyclerView.setAdapter(adapter_appointments);
+        adapter_appointments = new Adapter_Appointments(this);
+
+
         ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>(Defaults.AppointmentClass);
         parseObjectParseQuery.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());
         parseObjectParseQuery.orderByDescending("createdAt");
@@ -61,8 +60,12 @@ public class Appointments extends AppCompatActivity {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
+
+                    Log.e("yo", "passed");
                     if(objects!=null) {
                         if (objects.size() > 0) {
+
+                            Log.e("yo", String.valueOf(objects.size()));
                             tv.setVisibility(View.GONE);
                             for (int i = 0; i < objects.size(); i++) {
                                 ParseObject parseObject = objects.get(i);
@@ -83,6 +86,8 @@ public class Appointments extends AppCompatActivity {
                                 data.setTimeslot(parseObject.getString("timeSlot"));
                                 adapter_appointments.addData(data);
                             }
+                            recyclerView.setAdapter(adapter_appointments);
+
                         } else
                             tv.setVisibility(View.VISIBLE);
                     }

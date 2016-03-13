@@ -9,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.KeyListener;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,20 +17,23 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRole;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -64,45 +66,6 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
     private TextView textview;
 
     private CoordinatorLayout coordinatorLayout;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-        if (ParseUser.getCurrentUser() != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-
-        setContentView(R.layout.activity_choose_login);
-
-        customRelativeLayout = (CustomLinearLayout) findViewById(R.id.customLayout);
-        customRelativeLayout.setOnSoftKeyboardListener(this);
-        dummy = (ImageView) findViewById(R.id.imageView);
-
-        textview = (TextView)findViewById(R.id.update_details_textview);
-        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.loginCoordinatorLayout);
-        rollno = (EditText) findViewById(R.id.rollno);
-        name = (EditText) findViewById(R.id.name);
-        button_fb_login = (Button) findViewById(R.id.button_fb_login);
-        // Spinner element
-        spinner = (MaterialSpinner) findViewById(R.id.spinner);
-
-        rollno.addTextChangedListener(textWatcher);
-        name.addTextChangedListener(textWatcher);
-
-        rollno.setTag(rollno.getKeyListener());
-        name.setTag(name.getKeyListener());
-
-        setup_spinner();
-        updateUI();
-
-        pd = new ProgressDialog(Login.this);
-        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        pd.setMessage("Verifying");
-        pd.setIndeterminate(true);
-    }
-
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -118,6 +81,54 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
         public void afterTextChanged(Editable editable) {
         }
     };
+    private LinearLayout linearLayout;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+
+        super.onCreate(savedInstanceState);
+        if (ParseUser.getCurrentUser() != null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
+
+        setContentView(R.layout.activity_choose_login);
+        linearLayout = (LinearLayout) findViewById(R.id.hideLinear);
+        customRelativeLayout = (CustomLinearLayout) findViewById(R.id.customLayout);
+        customRelativeLayout.setOnSoftKeyboardListener(this);
+        // getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+
+        dummy = (ImageView) findViewById(R.id.imageview);
+
+        Glide.with(Login.this).load((R.drawable.logo)).centerCrop().into(dummy);
+
+        coordinatorLayout = (CoordinatorLayout)findViewById(R.id.loginCoordinatorLayout);
+        rollno = (EditText) findViewById(R.id.rollno);
+        name = (EditText) findViewById(R.id.name);
+        button_fb_login = (Button) findViewById(R.id.button_fb_login);
+        button_fb_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                link_with_parse();
+            }
+        });
+        // Spinner element
+        spinner = (MaterialSpinner) findViewById(R.id.spinner);
+
+        rollno.addTextChangedListener(textWatcher);
+        name.addTextChangedListener(textWatcher);
+
+        rollno.setTag(rollno.getKeyListener());
+        name.setTag(name.getKeyListener());
+
+        setup_spinner();
+
+        pd = new ProgressDialog(Login.this);
+        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pd.setMessage("Verifying");
+        pd.setIndeterminate(true);
+    }
 
     private void checkFieldsForEmptyValues() {
         String userString = rollno.getText().toString();
@@ -142,6 +153,7 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
             }
         }
     }
+
 
     private void setup_spinner() {
 
@@ -185,12 +197,7 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
         spinner.setAdapter(dataAdapter);
     }
 
-
     private void setup_login_button() {
-
-        button_fb_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
                 pd.show();
                 rollnumber = Integer.parseInt(rollno.getText().toString().trim());
@@ -207,10 +214,9 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
 
                                 if (username.equalsIgnoreCase(nametemp)) {
                                     mVerified = true;
-                                    if(pd != null){
-                                        pd.dismiss();
-                                    }
-                                    updateUI();
+
+                                    startDataLoadActivity();
+
                                 } else {
                                     Snackbar.make(coordinatorLayout, "Wrong credentials", Snackbar.LENGTH_LONG).show();
                                     if (pd != null) {
@@ -233,44 +239,10 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
                 });
 
 
-            }
-        });
-    }
-
-    private void updateUI() {
-
-        if (mVerified) {
-
-            spinner.setEnabled(false);
-            textview.setVisibility(View.VISIBLE);
-            textview.setClickable(true);
-            textview.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mVerified = false;
-                    updateUI();
-                }
-            });
-            rollno.setKeyListener(null);
-            name.setKeyListener(null);
-            button_fb_login.setText("Login with facebok");
-            button_fb_login.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    link_with_parse();
-                }
-            });
-        } else {
-            spinner.setEnabled(true);
-            textview.setVisibility(View.GONE);
-            rollno.setKeyListener((KeyListener) rollno.getTag());
-            name.setKeyListener((KeyListener) name.getTag());
-            button_fb_login.setText("Verify");
-            setup_login_button();
-        }
-
 
     }
+
+
 
     private void link_with_parse() {
 
@@ -279,8 +251,34 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
             public void done(ParseUser user, ParseException e) {
                 if (user == null) {
                     Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
+
                 } else if (user.isNew()) {
-                    getfb_details(user);
+                    if (pd != null) {
+                        pd.show();
+                        pd.setMessage("Please Wait");
+                    }
+
+                    ParseACL parseACL = new ParseACL();
+                    parseACL.setPublicReadAccess(true);
+                    parseACL.setPublicWriteAccess(true);
+                    ParseQuery<ParseRole> role = ParseRole.getQuery();
+                    role.whereEqualTo("name", "users");
+                    role.getFirstInBackground(new GetCallback<ParseRole>() {
+                        @Override
+                        public void done(ParseRole object, ParseException e) {
+                            object.getUsers().add(ParseUser.getCurrentUser());
+                            object.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        getfb_details(ParseUser.getCurrentUser());
+                                    } else Log.e("Acl", e.getMessage());
+                                }
+                            });
+                        }
+                    });
+
+
 
                     Log.d("MyApp", "User signed up and logged in through Facebook!");
                 } else {
@@ -291,7 +289,6 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
-
                                 startDataLoadActivity();
 
                             } else Log.d("LoginInstallation", "useris not new" + e.getMessage());
@@ -349,9 +346,10 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
                                             @Override
                                             public void done(ParseException e) {
                                                 if (e == null) {
+
+                                                    if (pd != null)
+                                                        pd.dismiss();
                                                     startDataLoadActivity();
-
-
                                                 } else Log.d("LoginInstallation", e.getMessage());
                                             }
                                         });

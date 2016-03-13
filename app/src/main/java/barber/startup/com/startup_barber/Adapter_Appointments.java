@@ -1,7 +1,6 @@
 package barber.startup.com.startup_barber;
 
 import android.content.Context;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,13 +13,18 @@ import java.util.ArrayList;
  * Created by ayush on 5/3/16.
  */
 public class Adapter_Appointments extends RecyclerView.Adapter<Adapter_Appointments.ViewHolder> {
+    private final Context c;
     ArrayList<FormatAppointments> appointmentdata = new ArrayList<>();
-    private Context mContext;
     private FormatAppointments data;
+
+    public Adapter_Appointments(Context c) {
+
+        this.c = c;
+    }
+
 
     @Override
     public Adapter_Appointments.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        this.mContext = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_appointments, parent, false);
         ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
         return viewHolder;
@@ -30,10 +34,11 @@ public class Adapter_Appointments extends RecyclerView.Adapter<Adapter_Appointme
     public void onBindViewHolder(Adapter_Appointments.ViewHolder holder, int position) {
 
         data = appointmentdata.get(position);
-        holder.position.setText("#"+position+" Appointment");
-        holder.timeslot.setText(data.getDate()+" "+data.getTimeslot());
+        holder.numberServices.setText(Integer.toString(data.getNumberOfServices()) + " services included");
+        holder.timeslot.setText(data.getDate() + " " + data.getTimeslot());
         holder.barber.setText(data.getBarber());
-        holder.numberServices.setText(Integer.toString(data.getNumberOfServices()));
+        holder.position.setText(Integer.toString(position + 1));
+        holder.textPrice.setText("Rs. " + data.getTotalPrice() + "/-");
     }
 
     @Override
@@ -51,14 +56,16 @@ public class Adapter_Appointments extends RecyclerView.Adapter<Adapter_Appointme
         TextView timeslot;
         TextView barber;
         TextView position;
+        TextView textPrice;
 
 
         public ViewHolder(View itemView, Context context) {
             super(itemView);
-            numberServices = (TextView)itemView.findViewById(R.id.number_services_appointment);
+            position = (TextView) itemView.findViewById(R.id.number_services_appointment);
             timeslot = (TextView) itemView.findViewById(R.id.timeslot);
             barber = (TextView) itemView.findViewById(R.id.barberName);
-            position = (TextView) itemView.findViewById(R.id.position);
+            numberServices = (TextView) itemView.findViewById(R.id.position);
+            textPrice = (TextView) itemView.findViewById(R.id.confirm_price);
 
 
         }

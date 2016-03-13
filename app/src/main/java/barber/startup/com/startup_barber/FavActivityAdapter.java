@@ -3,7 +3,6 @@ package barber.startup.com.startup_barber;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.support.design.widget.Snackbar;
@@ -25,7 +24,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -149,11 +147,11 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
 
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public RelativeLayout rl;
         TextView price;
         ImageView remove;
         ImageView cart;
         ImageView back;
-        public RelativeLayout rl;
 
         public ViewHolder(View itemView, Context context) {
             super(itemView);
