@@ -34,7 +34,6 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center_vertical"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ayush"
                 app:civ_border_color="@color/accent"
                 app:civ_border_width="2dp"
 
@@ -104,7 +103,6 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center_vertical"
                 android:scaleType="centerCrop"
-                android:src="@drawable/amit"
                 app:civ_border_color="@color/accent"
                 app:civ_border_width="2dp"
 

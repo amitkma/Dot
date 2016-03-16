@@ -40,16 +40,20 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.Date;
 import java.util.List;
 
 import barber.startup.com.startup_barber.Utility.NetworkCheck;
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
+@SuppressWarnings("deprecation")
 public class MainActivity extends BaseActivity {
     public static SharedPreferences prefs;
     public static boolean dataSaved = false;
-    public static Date lastUpdatedAt = new Date();
     protected static float width;
     protected static int height;
     protected static int a;
@@ -64,7 +68,6 @@ public class MainActivity extends BaseActivity {
     private String[] categoriesName;
     private AppBarLayout appBarLayout;
     private ProgressDialog progressDialog;
-    private boolean dataChanged;
 
 
     @Override
@@ -87,11 +90,14 @@ public class MainActivity extends BaseActivity {
                         Defaults.mNumberOfServicesLeft = object.getInt("rewardWallet");
                         Log.e("REWARD", String.valueOf(Defaults.mNumberOfServicesLeft));
                         if (Defaults.mNumberOfServicesLeft == 0) {
+                            assert v != null;
                             Snackbar.make(v, "You dont have any free service left", Snackbar.LENGTH_LONG).show();
                         } else if (Defaults.mNumberOfServicesLeft > 0) {
+                            assert v != null;
                             Snackbar.make(v, "You have " + Defaults.mNumberOfServicesLeft + " free service(s) left", Snackbar.LENGTH_LONG).show();
                         }
                     } else {
+                        assert v != null;
                         Snackbar.make(v, e.getMessage(), Snackbar.LENGTH_SHORT).show();
 
                         if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
@@ -108,9 +114,12 @@ public class MainActivity extends BaseActivity {
 
                 }
             });
-        } else
+        } else {
+            assert v != null;
             Snackbar.make(v, "Error in connection", Snackbar.LENGTH_SHORT).show();
+        }
 
+        assert v != null;
         v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -175,6 +184,7 @@ public class MainActivity extends BaseActivity {
         width = outMetrics.widthPixels / density;
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        assert viewPager != null;
         viewPager.setOffscreenPageLimit(1);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
@@ -348,13 +358,16 @@ public class MainActivity extends BaseActivity {
 
     private void logout() {
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Logging out");
         currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
             ParseUser.logOutInBackground(new LogOutCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        progressDialog.dismiss();
+                        if (progressDialog != null)
+                            progressDialog.dismiss();
                         progressDialog = null;
                         parseUser = null;
                         Intent i = new Intent(getApplicationContext(), Login.class);
@@ -419,7 +432,7 @@ public class MainActivity extends BaseActivity {
         progressDialog.show();
         Log.e("This", "Method started");
         // Syncing all our data from server
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
+        ParseQuery<ParseObject> query = new ParseQuery<>(Defaults.INFO_CLASS);
         if (ParseUser.getCurrentUser().getInt("genderCode") == 0)
             query.whereEqualTo("gender", 0);
         else
@@ -431,10 +444,6 @@ public class MainActivity extends BaseActivity {
                     if (objects.size() > 0) {
                         if (Application.DEBUG)
                             Log.d("Objectsize", String.valueOf(objects.size()));
-                        for (int i = 0; i < objects.size(); i++) {
-                            ParseObject parseObject = objects.get(i);
-
-                        }
                         unpinAndRepinData(objects);
                     }
                 } else {
@@ -448,6 +457,34 @@ public class MainActivity extends BaseActivity {
                 }
             }
         });
+
+        final ParseQuery<ParseUser> parseQuery = ParseUser.getQuery();
+        parseQuery.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+        parseQuery.getFirstInBackground(new GetCallback<ParseUser>() {
+            @Override
+            public void done(ParseUser object, ParseException e) {
+                JSONArray arrayCart = object.getJSONArray("favLists");
+                JSONArray arrayFav = object.getJSONArray("cartLists");
+                for (int i = 0; i < arrayCart.length(); i++) {
+                    try {
+                        UserFavsAndCarts.listcart.add(arrayCart.getString(i));
+                    } catch (JSONException e1) {
+                        Log.e("UserFavs", e1.getMessage());
+                    }
+                }
+                for (int j = 0; j < arrayFav.length(); j++) {
+                    try {
+                        UserFavsAndCarts.listcart.add(arrayFav.getString(j));
+                    } catch (JSONException e1) {
+                        Log.e("UserFavs", e1.getMessage());
+                    }
+
+                }
+                object.pinInBackground(ParseUser.getCurrentUser().getUsername());
+            }
+        } );
+
+
 
 
     }
@@ -494,7 +531,7 @@ public class MainActivity extends BaseActivity {
     private void checkfordatachange() {
 
         //Getting the latest object from local
-        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Data");
+        ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<>("Data");
         parseObjectParseQuery.fromPin("data");
         parseObjectParseQuery.orderByDescending("updatedAt");
         parseObjectParseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
@@ -505,7 +542,7 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG + "of", "reached");
                     if (object != null) {
                         Log.d(TAG + "of", "Objectisnotnull");           //Data has loaded previously
-                        Date date = new Date();
+                        Date date;
                         date = object.getUpdatedAt();           //Getting updatedat time of local object
 
                         ParseQuery<ParseObject> parseObjectParseQuery = new ParseQuery<ParseObject>("Data");       //Getting latest obeject from server

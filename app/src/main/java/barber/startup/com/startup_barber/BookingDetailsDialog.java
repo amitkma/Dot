@@ -19,7 +19,7 @@ public class BookingDetailsDialog extends DialogFragment {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        new CheckOutClass(getActivity()).updateParseSlot(Defaults.availableTimeSlots);
+                        new CheckOutClass(getActivity()).saveAppointment();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

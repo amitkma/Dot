@@ -33,6 +33,7 @@ public class ToggleActionItemColor {
     public void makeIconDefault(int id){
         MenuItem item = menu.findItem(id);
         Drawable newIcon = item.getIcon();
+
         newIcon.setColorFilter(null);
         item.setIcon(newIcon);
     }

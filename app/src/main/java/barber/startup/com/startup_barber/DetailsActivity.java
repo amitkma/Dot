@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -23,12 +24,17 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
+import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -41,6 +47,7 @@ public class DetailsActivity extends AppCompatActivity {
     private Menu menu;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private int height;
+    private boolean alreadyInCart;
 
 
     @Override
@@ -61,6 +68,7 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent != null) {
             currentData = (Data) intent.getSerializableExtra("objectData");
+
             height = intent.getIntExtra("height", 10);
         }
         if (currentData.getUrl() != null) {
@@ -132,6 +140,11 @@ public class DetailsActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_detail_activity, menu);
         this.menu = menu;
+        if(currentData.isCart()){
+            alreadyInCart = true;
+            new ToggleActionItemColor(menu, DetailsActivity.this).makeIconRed(R.id.action_add_to_cart);
+        }
+        new ToggleActionItemColor(menu, DetailsActivity.this).makeIconRed(R.id.action_go_cart);
         return true;
     }
 
@@ -149,7 +162,12 @@ public class DetailsActivity extends AppCompatActivity {
                 Toast.makeText(this, "We will add some action to it soon", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.action_add_to_cart:
-
+                if(alreadyInCart)
+                    Toast.makeText(DetailsActivity.this, "Already in cart", Toast.LENGTH_LONG).show();
+                else if(!alreadyInCart) {
+                    updateCart();
+                    new ToggleActionItemColor(menu, DetailsActivity.this).makeIconRed(R.id.action_add_to_cart);
+                }
                 break;
             case R.id.action_go_cart:
                 startActivity(new Intent(this, CartDisplay.class));
@@ -158,6 +176,27 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateCart() {
+        UserFavsAndCarts.listcart.add(currentData.getId());
+        MainActivity.dataUpdated =true;
+        final ParseUser parseUser = ParseUser.getCurrentUser();
+        JSONArray jsonArray = new JSONArray();
+        for(int i =0; i<UserFavsAndCarts.listcart.size(); i++){
+            jsonArray.put(UserFavsAndCarts.listcart.get(i));
+        }
+        parseUser.put("cartLists", jsonArray);
+        parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null){
+
+                    parseUser.saveEventually();
+
+                }
+            }
+        });
     }
 
 

@@ -3,7 +3,7 @@
     android:id="@+id/detail_list_item_id"
     android:layout_width="match_parent"
     android:layout_height="72dp"
-    android:background="@drawable/button_back"
+    android:background="#FFF"
     android:orientation="vertical"
     android:paddingLeft="16dp"
     android:paddingTop="16dp"

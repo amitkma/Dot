@@ -14,10 +14,7 @@ public class AvailableSlotsDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.pick_slot)
-                .setItems(Defaults.availableTimeSlotsChars, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
+                .setMessage(Defaults.availableTimeSlotsString.toString())
                 .setPositiveButton(R.string.set_time, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {

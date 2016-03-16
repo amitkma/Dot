@@ -3,9 +3,13 @@ package barber.startup.com.startup_barber;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.codetroopers.betterpickers.calendardatepicker.CalendarDatePickerDialogFragment;
+import com.codetroopers.betterpickers.calendardatepicker.MonthAdapter;
+import com.codetroopers.betterpickers.radialtimepicker.RadialTimePickerDialogFragment;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -16,6 +20,7 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.parse.SendCallback;
 
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,12 +36,16 @@ import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 /**
  * Created by Amit on 12-03-2016.
  */
-public class CheckOutClass{
+public class CheckOutClass implements CalendarDatePickerDialogFragment.OnDateSetListener, RadialTimePickerDialogFragment.OnTimeSetListener{
 
+    private static final String FRAG_TAG_TIME_PICKER = "timePickerDialogFragment";
     private Context mContext;
 
     private Date updateTime;
     private String objectId;
+
+    private static final String FRAG_TAG_DATE_PICKER = "fragment_date_picker_name";
+    private int pin;
 
     public CheckOutClass(Context mContext){
         this.mContext = mContext;
@@ -60,11 +69,19 @@ public class CheckOutClass{
 
     public void init() {
         if (Defaults.time >= 0) {
-            DialogFragment dialogFragment = new DatePickerFragment();
+            DateTime now = DateTime.now();
+            MonthAdapter.CalendarDay minDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear()-1, now.getDayOfMonth());
+            MonthAdapter.CalendarDay maxDate = new MonthAdapter.CalendarDay(now.getYear(), now.getMonthOfYear()+1, now.getDayOfMonth());
+
+            CalendarDatePickerDialogFragment cdp = new CalendarDatePickerDialogFragment()
+                    .setDateRange(minDate, maxDate)
+                    .setThemeDark()
+                    .setOnDateSetListener(this);
+
             if(mContext instanceof BarberActivity)
-                dialogFragment.show(((BarberActivity)mContext).getFragmentManager(), "DatePicker");
+               cdp.show(((BarberActivity) mContext).getSupportFragmentManager(), FRAG_TAG_DATE_PICKER);
             else if(mContext instanceof DetailsActivity)
-                dialogFragment.show(((DetailsActivity)mContext).getFragmentManager(), "DatePicker");
+               cdp.show(((DetailsActivity) mContext).getSupportFragmentManager(), FRAG_TAG_DATE_PICKER);
         }
     }
 
@@ -76,7 +93,7 @@ public class CheckOutClass{
 
     public void getSlotData(final String dateFormat) {
         Defaults.availableTimeSlots.clear();
-        Defaults.availableTimeSlotsString.clear();
+        Defaults.availableTimeSlotsString = new StringBuilder();
         Defaults.bookedTimeSlots = new JSONArray();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Barber");
         parseQuery.whereEqualTo("barberId", Defaults.barberId);
@@ -94,7 +111,9 @@ public class CheckOutClass{
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject timeSlotObject = jsonArray.getJSONObject(i);
                                 TimeSlotFormat timeSlotFormat = new TimeSlotFormat(timeSlotObject.getInt("mStartTime"), timeSlotObject.getInt("mEndTime"));
-                                Defaults.availableTimeSlots.add(timeSlotFormat);
+
+                                    Defaults.availableTimeSlots.add(timeSlotFormat);
+
                             }
                         } catch (JSONException e1) {
                             if (Application.DEBUG)
@@ -119,24 +138,21 @@ public class CheckOutClass{
             for (int i = 0; i < Defaults.availableTimeSlots.size(); i++) {
                 TimeSlotFormat currentTimeData = Defaults.availableTimeSlots.get(i);
 
-                if (currentTimeData.getStartTimeData() != currentTimeData.getEndTimeData()) {
+                if ((currentTimeData.getEndTimeData() - currentTimeData.getStartTimeData())>10) {
 
                     int startTimeHour = currentTimeData.getStartTimeData() / 100;
                     int startTimeMinute = currentTimeData.getStartTimeData() % 100;
                     int endTimeHour = currentTimeData.getEndTimeData() / 100;
                     int endTimeMinute = (currentTimeData.getEndTimeData() % 100);
 
-                    String s = String.format("%02d:%02d - %02d:%02d", startTimeHour, startTimeMinute, endTimeHour, endTimeMinute);
-                    Defaults.availableTimeSlotsString.add(s);
+                    String s = String.format("%02d:%02d - %02d:%02d\n", startTimeHour, startTimeMinute, endTimeHour, endTimeMinute);
+                    Defaults.availableTimeSlotsString.append(s);
                 } else {
                     Defaults.availableTimeSlots.remove(i);
                     i--;
                 }
 
             }
-
-        Defaults.availableTimeSlotsChars = new CharSequence[Defaults.availableTimeSlotsString.size()];
-       Defaults.availableTimeSlotsChars =Defaults.availableTimeSlotsString.toArray(Defaults.availableTimeSlotsChars);
         DialogFragment newFragment = new AvailableSlotsDialog();
         Log.e("DIALOG", "DIALOG IS SHOWN");
         if(mContext instanceof BarberActivity)
@@ -146,11 +162,16 @@ public class CheckOutClass{
     }
 
     public void showTimePicker(){
-        TimePickerFragment timePickerFragment = new TimePickerFragment();
+        RadialTimePickerDialogFragment rtpd = new RadialTimePickerDialogFragment()
+                .setOnTimeSetListener(this)
+                .setThemeDark()
+                .setForced24hFormat()
+                .setStartTime(9, 00);
+
         if(mContext instanceof BarberActivity)
-            timePickerFragment.show(((BarberActivity) mContext).getFragmentManager(), "TimePicker");
-        else if(mContext instanceof DetailsActivity)
-            timePickerFragment.show(((DetailsActivity) mContext).getFragmentManager(), "TimePicker");
+            rtpd.show(((BarberActivity) mContext).getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
+        if(mContext instanceof DetailsActivity)
+            rtpd.show(((DetailsActivity) mContext).getSupportFragmentManager(), FRAG_TAG_TIME_PICKER);
     }
 
     public void settextTime(int hourOfDay, int minute) {
@@ -279,7 +300,8 @@ public class CheckOutClass{
     public void updateParseSlot(final ArrayList<TimeSlotFormat> availableTimeSlots) {
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Barber");
         parseQuery.whereEqualTo("barberId", Defaults.barberId);
-        parseQuery.getFirstInBackground(new GetCallback<ParseObject>() {
+        parseQuery.getFirstInBackground(
+                new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
                 if (e == null && object != null) {
@@ -308,11 +330,26 @@ public class CheckOutClass{
                         @Override
                         public void done(ParseException e) {
                             if (e == null) {
-                                if (Application.DEBUG)
-                                    Log.e("SAVED", "HO GYA BHAI");
-                                saveAppointment();
+
+                                Intent i = new Intent(mContext, Confirmation.class);
+                                i.putExtra("pin", pin);
+                                i.putExtra("price", Defaults.price);
+                                i.putExtra("barberName", Defaults.barberName);
+                                i.putExtra("totalTime", Defaults.time);
+                                i.putExtra("appointmentDate", Defaults.dateformatintent);
+                                i.putExtra("timeslot", Defaults.timeSlot);
+                                mContext.startActivity(i);
+                                 if(mContext instanceof BarberActivity) {
+                                     updateCart();
+                                 ((BarberActivity) mContext).finish();
+                                 ((BarberActivity) mContext).overridePendingTransition(0, 0);
+                                 }
+                                 else if(mContext instanceof DetailsActivity){
+                                 ((DetailsActivity) mContext).finish();
+                                 ((DetailsActivity) mContext).overridePendingTransition(0, 0);
+                                 }
                             } else {
-                                if (Application.DEBUG)
+
                                     Log.e("SAVED", e.getMessage());
 
                             }
@@ -327,7 +364,26 @@ public class CheckOutClass{
         });
     }
 
-    private void saveAppointment() {
+    private void updateCart() {
+        UserFavsAndCarts.listcart.clear();
+        MainActivity.dataUpdated =true;
+        JSONArray jsonArray = new JSONArray();
+        for (int i = 0; i < UserFavsAndCarts.listcart.size(); i++) {
+            jsonArray.put(UserFavsAndCarts.listcart.get(i));
+        }
+        final ParseUser parseUser = ParseUser.getCurrentUser();
+        parseUser.put("cartLists", jsonArray);
+        parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    parseUser.saveEventually();
+                } else e.printStackTrace();
+            }
+        });
+    }
+
+    public void saveAppointment() {
 
         final ParseObject parseObject = new ParseObject("Appointments");
         if(mContext instanceof BarberActivity)
@@ -337,12 +393,14 @@ public class CheckOutClass{
             detailsActivityCart.add(Defaults.defaultObjectId);
             parseObject.put("servicesId", detailsActivityCart);
         }
-
+        Random r = new Random();
+        pin = r.nextInt(99999 - 9999) + 9999;
         parseObject.put("user", ParseUser.getCurrentUser().getUsername());
         parseObject.put("userId", ParseUser.getCurrentUser().getObjectId());
         parseObject.put("url", ParseUser.getCurrentUser().getString("picUri"));
         parseObject.put("barberId", Defaults.barberId);
         parseObject.put("barberName", Defaults.barberName);
+        parseObject.put("pin", pin);
         parseObject.put("timeSlot", Defaults.timeSlot);
         parseObject.put("date", Integer.valueOf(Defaults.dateFormat));
         parseObject.put("completed", false);
@@ -353,18 +411,6 @@ public class CheckOutClass{
             @Override
             public void done(ParseException e) {
                 if (e == null) {
-
-                    Intent i = new Intent(mContext, Confirmation.class);
-                    Random r = new Random();
-                    int pin = r.nextInt(99999 - 9999) + 9999;
-                    i.putExtra("pin", pin);
-                    i.putExtra("price", Defaults.price);
-                    i.putExtra("barberName", Defaults.barberName);
-                    i.putExtra("totalTime", Defaults.time);
-                    i.putExtra("appointmentDate", Defaults.dateformatintent);
-                    i.putExtra("timeslot", Defaults.timeSlot);
-
-
                     //Send Push to user and barber
                     ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
                     query.whereEqualTo("userId", ParseUser.getCurrentUser().getObjectId());  //Send to this user only
@@ -395,22 +441,29 @@ public class CheckOutClass{
                             Log.d("push", e3.getMessage());
                     }
 
+                updateParseSlot(Defaults.availableTimeSlots);
+                } else if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    Toast.makeText(mContext, "Error in connection", Toast.LENGTH_LONG).show();
+                }
+                else
+                    Toast.makeText(mContext, e.getMessage(), Toast.LENGTH_LONG).show();
 
-                    mContext.startActivity(i);
-                    if(mContext instanceof BarberActivity) {
-                        ((BarberActivity) mContext).finish();
-                        ((BarberActivity) mContext).overridePendingTransition(0, 0);
-                    }
-                    else if(mContext instanceof DetailsActivity){
-                        ((DetailsActivity) mContext).finish();
-                        ((DetailsActivity) mContext).overridePendingTransition(0, 0);
-                    }
-                } else Log.d("e", e.getMessage());
             }
         });
     }
 
 
+    @Override
+    public void onDateSet(CalendarDatePickerDialogFragment dialog, int year, int monthOfYear, int dayOfMonth) {
+        Log.e("DatePicker", "onDateSet called");
+        setDate(year, monthOfYear, dayOfMonth);
+    }
+
+    @Override
+    public void onTimeSet(RadialTimePickerDialogFragment dialog, int hourOfDay, int minute) {
+        Log.e("TimePicker", "onTimeSet");
+        settextTime(hourOfDay, minute);
+    }
 }
 
 
