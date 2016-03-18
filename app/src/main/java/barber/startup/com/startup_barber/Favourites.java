@@ -60,44 +60,6 @@ public class Favourites extends AppCompatActivity {
         gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
 
         recyclerView_fav.setLayoutManager(gaggeredGridLayoutManager);
-        favAdapter = new FavActivityAdapter(this, listfav, empty);
-
-
-        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
-        parseQuery.fromPin("data");
-        parseQuery.whereContainedIn("objectId", UserFavsAndCarts.listfav);
-        Log.e("Fav", "passed");
-        parseQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    Log.i("Fav", "passed" + objects.size());
-                    if (objects.size() > 0) {
-                        for (int i = 0; i < objects.size(); i++) {
-                            ParseObject parseObject = objects.get(i);
-                            final Data td = new Data();
-                            td.title = parseObject.getString("title");
-                            td.price = parseObject.getString("price");
-                            td.id = parseObject.getObjectId();
-                            ParseFile parseFile = parseObject.getParseFile("image");
-                            if (parseFile != null)
-                            td.url = parseFile.getUrl();
-                            if(UserFavsAndCarts.listcart.contains(td.getId()))
-                                td.cart=true;
-                            listfav.add(td);
-                        }
-                        Log.d("fav", String.valueOf(listfav));
-
-                        favAdapter = new FavActivityAdapter(Favourites.this, listfav, empty);
-                        recyclerView_fav.setAdapter(favAdapter);
-                    } else empty.setVisibility(View.VISIBLE);
-                } else {
-                    Log.i("Favourited", "passed,favcheeck");
-                    Log.i("Favourited", "passed,favcheeck" + e.getMessage());
-                }
-            }
-        });
-
         backArrow();
     }
 
@@ -237,6 +199,54 @@ public class Favourites extends AppCompatActivity {
             }
         });
     }*/
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setUpView();
+    }
+
+    private void setUpView() {
+
+        listfav.clear();
+        ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
+        parseQuery.fromPin("data");
+        parseQuery.whereContainedIn("objectId", UserFavsAndCarts.listfav);
+        parseQuery.orderByAscending("Category");
+        Log.e("Fav", "passed");
+        parseQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    Log.i("Fav", "passed" + objects.size());
+                    if (objects.size() > 0) {
+                        for (int i = 0; i < objects.size(); i++) {
+                            ParseObject parseObject = objects.get(i);
+                            final Data td = new Data();
+                            td.title = parseObject.getString("title");
+                            td.price = parseObject.getString("price");
+                            td.id = parseObject.getObjectId();
+                            td.subCategoryString = parseObject.getString("subCategoryName");
+                            ParseFile parseFile = parseObject.getParseFile("image");
+                            if (parseFile != null)
+                                td.url = parseFile.getUrl();
+                            if (UserFavsAndCarts.listcart.contains(td.getId()))
+                                td.cart = true;
+                            listfav.add(td);
+                        }
+                        Log.d("fav", String.valueOf(listfav));
+
+                        favAdapter = new FavActivityAdapter(Favourites.this, listfav, empty);
+                        recyclerView_fav.setAdapter(favAdapter);
+                    } else empty.setVisibility(View.VISIBLE);
+                } else {
+                    Log.i("Favourited", "passed,favcheeck");
+                    Log.i("Favourited", "passed,favcheeck" + e.getMessage());
+                }
+            }
+        });
+
+    }
 
     @Override
     public void onBackPressed() {

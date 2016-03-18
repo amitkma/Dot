@@ -44,30 +44,29 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     private Menu menu;
     private int heightpixels;
     private int widthpixels;
+    private int layoutID;
+    private int positionDivider = 0;
 
 
     public MainActivityAdapter() {
 
     }
 
-    public MainActivityAdapter(List<Data> listparseobject, Context context) {
+    public MainActivityAdapter(List<Data> listparseobject, Context context, int id) {
         this.mContext = context;
         this.data = listparseobject;
+        this.layoutID = id;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         this.context = parent.getContext();
-        View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_item, parent, false);
-
-
-        ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
-
-
-
+        View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(layoutID, parent, false);
+        ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext(), layoutID);
         final float scale = context.getResources().getDisplayMetrics().density;
         heightpixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
-        viewHolder.rl.getLayoutParams().height = (heightpixels) / 2;
+        if (layoutID == R.layout.card_item)
+            viewHolder.rl.getLayoutParams().height = (heightpixels) / 2;
         return viewHolder;
     }
 
@@ -75,7 +74,6 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         currentTrendData = data.get(position);
-
 
         holder.mImageView_fav.setOnClickListener(new View.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -182,12 +180,13 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         if (currentTrendData.getTitle() != null)
             holder.title.setText(currentTrendData.getTitle());
 
-        holder.mImageView.setImageResource(R.drawable.placeholder);
-        if (currentTrendData.getUrl() != null) {
-            int newHeight = (heightpixels/2)+dpToPx(72);
-            Glide.with(mContext).load(currentTrendData.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).override((heightpixels/2), newHeight).centerCrop().into(holder.mImageView);
+        if (holder.mImageView != null) {
+            holder.mImageView.setImageResource(R.drawable.placeholder);
+            if (currentTrendData.getUrl() != null) {
+                int newHeight = (heightpixels / 2) + dpToPx(72);
+                Glide.with(mContext).load(currentTrendData.getUrl()).diskCacheStrategy(DiskCacheStrategy.RESULT).override((heightpixels / 2), newHeight).centerCrop().into(holder.mImageView);
+            }
         }
-
 
     }
 
@@ -214,38 +213,54 @@ public class MainActivityAdapter extends RecyclerView.Adapter<MainActivityAdapte
         return px;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private void openActivity(int position) {
+        if (layoutID == R.layout.card_item) {
+            Data currentTrendData = data.get(position);
+            Intent i = new Intent(mContext, DetailsActivity.class);
+            i.putExtra("objectData", currentTrendData);
+            i.putExtra("height", heightpixels / 2);
+
+            (mContext).startActivity(i);
+        } else {
+            Data currentTrendData = data.get(position);
+            Intent i = new Intent(mContext, DetailsActivityExtras.class);
+            i.putExtra("objectData", currentTrendData);
+            i.putExtra("height", heightpixels / 2);
+            (mContext).startActivity(i);
+        }
+
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
         final Context mcontext;
         private final TextView title;
         private ImageView mImageView;
         private ImageView mImageView_addToCart;
         private ImageView mImageView_fav;
         private RelativeLayout rl;
+        private View spacerView;
 
-        public ViewHolder(View itemView, Context context) {
+        public ViewHolder(View itemView, Context context, int layoutID) {
             super(itemView);
             mcontext = context;
 
             title = (TextView) itemView.findViewById(R.id.card_title);
-            mImageView = (ImageView) itemView.findViewById(R.id.card_image);
             mImageView_addToCart = (ImageView) itemView.findViewById(R.id.addToCart_button);
             mImageView_fav = (ImageView) itemView.findViewById(R.id.fav_button);
-            rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
-            mImageView.setOnClickListener(this);
-        }
-
-
-        @Override
-        public void onClick(View v) {
-        if(v.getId() == R.id.card_image){
-
-                Data currentTrendData = data.get(getAdapterPosition());
-                Intent i = new Intent(mContext, DetailsActivity.class);
-                i.putExtra("objectData", currentTrendData);
-                i.putExtra("height", heightpixels/2);
-                (mContext).startActivity(i);
+            if (layoutID == R.layout.card_item) {
+                mImageView = (ImageView) itemView.findViewById(R.id.card_image);
+                rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
+            } else
+                spacerView = itemView.findViewById(R.id.space_divider);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    openActivity(getAdapterPosition());
+                }
+            });
 
         }
-        }
+
+
     }
 }

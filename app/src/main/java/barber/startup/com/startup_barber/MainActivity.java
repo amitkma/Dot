@@ -74,50 +74,17 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_main);
-
+        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         Defaults.context = this;
         appBarLayout = (AppBarLayout) findViewById(R.id.appbarlayout);
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading styles and barbers");
         final View v = findViewById(R.id.viewframe);
-        if (NetworkCheck.checkConnection(MainActivity.this)) {
-            ParseQuery<ParseUser> query = ParseUser.getQuery();
-            query.whereEqualTo("objectId", parseUser.getObjectId());
-            query.getFirstInBackground(new GetCallback<ParseUser>() {
-                @Override
-                public void done(ParseUser object, ParseException e) {
-                    if (e == null) {
-                        Defaults.mNumberOfServicesLeft = object.getInt("rewardWallet");
-                        Log.e("REWARD", String.valueOf(Defaults.mNumberOfServicesLeft));
-                        if (Defaults.mNumberOfServicesLeft == 0) {
-                            assert v != null;
-                            Snackbar.make(v, "You dont have any free service left", Snackbar.LENGTH_LONG).show();
-                        } else if (Defaults.mNumberOfServicesLeft > 0) {
-                            assert v != null;
-                            Snackbar.make(v, "You have " + Defaults.mNumberOfServicesLeft + " free service(s) left", Snackbar.LENGTH_LONG).show();
-                        }
-                    } else {
-                        assert v != null;
-                        Snackbar.make(v, e.getMessage(), Snackbar.LENGTH_SHORT).show();
-
-                        if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
-                            ParseUser.logOutInBackground(new LogOutCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    startActivity(new Intent(MainActivity.this, Login.class));
-                                    finish();
-                                }
-                            });
-
-                        }
-                    }
-
-                }
-            });
-        } else {
+        if (!NetworkCheck.checkConnection(MainActivity.this)) {
             assert v != null;
             Snackbar.make(v, "Error in connection", Snackbar.LENGTH_SHORT).show();
         }
+        Snackbar.make(v, "You have " + Defaults.mNumberOfServicesLeft + " service(s) left.", Snackbar.LENGTH_LONG).show();
 
         assert v != null;
         v.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -188,7 +155,7 @@ public class MainActivity extends BaseActivity {
         viewPager.setOffscreenPageLimit(1);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         dataSaved = prefs.getBoolean("dataSaved", false);
         setup_toolbar();
         setup_nav_drawer();
@@ -342,7 +309,8 @@ public class MainActivity extends BaseActivity {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-
+                                startActivity(new Intent(MainActivity.this, FeedbackActivity.class));
+                                overridePendingTransition(0, 0);
                             }
                         }, 500);
                         return true;
@@ -463,28 +431,39 @@ public class MainActivity extends BaseActivity {
         parseQuery.getFirstInBackground(new GetCallback<ParseUser>() {
             @Override
             public void done(ParseUser object, ParseException e) {
-                JSONArray arrayCart = object.getJSONArray("favLists");
-                JSONArray arrayFav = object.getJSONArray("cartLists");
-                for (int i = 0; i < arrayCart.length(); i++) {
-                    try {
-                        UserFavsAndCarts.listcart.add(arrayCart.getString(i));
-                    } catch (JSONException e1) {
-                        Log.e("UserFavs", e1.getMessage());
-                    }
-                }
-                for (int j = 0; j < arrayFav.length(); j++) {
-                    try {
-                        UserFavsAndCarts.listcart.add(arrayFav.getString(j));
-                    } catch (JSONException e1) {
-                        Log.e("UserFavs", e1.getMessage());
-                    }
+                if (e == null) {
+                    if (object != null) {
+                        JSONArray arrayFav = object.getJSONArray("favLists");
+                        JSONArray arrayCart = object.getJSONArray("cartLists");
 
+                        if (arrayCart != null) {
+                            if (arrayCart.length() > 0) {
+                                for (int i = 0; i < arrayCart.length(); i++) {
+                                    try {
+                                        UserFavsAndCarts.listcart.add(arrayCart.getString(i));
+                                    } catch (JSONException e1) {
+                                        Log.e("UserFavs", e1.getMessage());
+                                    }
+                                }
+                            }
+                        }
+                        if (arrayFav != null) {
+                            if (arrayFav.length() > 0) {
+                                for (int j = 0; j < arrayFav.length(); j++) {
+                                    try {
+                                        UserFavsAndCarts.listfav.add(arrayFav.getString(j));
+                                    } catch (JSONException e1) {
+                                        Log.e("UserFavs", e1.getMessage());
+                                    }
+
+                                }
+                            }
+                        }
+                        object.pinInBackground(ParseUser.getCurrentUser().getUsername());
+                    }
                 }
-                object.pinInBackground(ParseUser.getCurrentUser().getUsername());
             }
-        } );
-
-
+        });
 
 
     }
@@ -604,8 +583,20 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Log.e("TAB POSITION", Integer.toString(position));
-            return new Fragment_services_test(position, appBarLayout);
+            if (position < 2) {
+                Fragment_services_test fragment_services_test = new Fragment_services_test();
+                Bundle b = new Bundle();
+                b.putInt("position", position);
+                fragment_services_test.setArguments(b);
+                return fragment_services_test;
+            } else {
+                FragmentExtras fragmentExtras = new FragmentExtras();
+                Bundle bundle = new Bundle();
+                bundle.putInt("position", position);
+                fragmentExtras.setArguments(bundle);
+                return fragmentExtras;
+            }
+
         }
 
         @Override

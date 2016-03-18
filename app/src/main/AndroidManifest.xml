@@ -46,11 +46,11 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-
             android:name=".MainActivity"
             android:label="DOT"
             android:screenOrientation="portrait"
@@ -115,11 +115,12 @@
         <activity
             android:name=".BarberActivity"
             android:label="Choose Barber"
-            android:screenOrientation="portrait"></activity>
-        <activity android:name=".DetailsActivity"
-            android:screenOrientation="portrait"
-           >
-        </activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".FeedbackActivity" />
+        <activity android:name=".DetailsActivityExtras"></activity>
     </application>
 
 </manifest>

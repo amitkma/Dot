@@ -8,7 +8,7 @@
     android:layout_marginLeft="4dp"
     android:layout_marginRight="4dp"
     android:layout_marginTop="2dp"
-    app:cardElevation="0dp">
+    app:cardElevation="1dp">
 
     <RelativeLayout
         android:id="@+id/rlll"
@@ -60,7 +60,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/removeFromCart"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="sans-serif-light"
                 android:gravity="center_vertical"
                 android:maxLines="2"
                 android:paddingLeft="8dp"

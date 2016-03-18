@@ -2,9 +2,6 @@ package barber.startup.com.startup_barber;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,14 +10,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -37,74 +28,39 @@ import java.util.ArrayList;
 import barber.startup.com.startup_barber.Utility.ToggleActionItemColor;
 import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivityExtras extends AppCompatActivity {
 
-    private String id;
-    private RecyclerView recyclerView;
     private Data currentData;
-    private ImageView imageView;
-
+    private int category;
+    private RecyclerView recyclerView;
     private ArrayList<ServiceDescriptionFormat> barberList = new ArrayList<>();
     private Menu menu;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
-    private int height;
     private boolean alreadyInCart;
-    private int category;
-    private AppBarLayout appbar;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_details_activity_extras);
+
         Intent intent = getIntent();
         if (intent != null) {
             category = intent.getIntExtra("category", 0);
             currentData = (Data) intent.getSerializableExtra("objectData");
-            height = intent.getIntExtra("height", 10);
         }
-        setContentView(R.layout.activity_details);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detailsExtrasToolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Select Barber");
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         recyclerView = (RecyclerView) findViewById(R.id.detailsRecyclerView);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        appbar = (AppBarLayout) findViewById(R.id.app_bar_layout);
-        imageView = (ImageView) findViewById(R.id.detailView);
-
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setExpandedTitleColor(ContextCompat.getColor(this, android.R.color.transparent));
-        collapsingToolbarLayout.setCollapsedTitleTextColor(ContextCompat.getColor(this, android.R.color.white));
-        collapsingToolbarLayout.setContentScrimResource(R.color.primary);
-        collapsingToolbarLayout.setTitle("Select Barber");
-
-
-        if (currentData.getUrl() != null) {
-            int newHeight = height + dpToPx(72);
-            Glide.with(DetailsActivity.this)
-                    .load(currentData.getUrl())
-                    .override(height, newHeight)
-
-                    .listener(new RequestListener<String, GlideDrawable>() {
-                        @Override
-                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                            Glide.with(DetailsActivity.this).load(currentData.getUrl()).diskCacheStrategy(DiskCacheStrategy.NONE).placeholder(resource).dontAnimate()
-                                    .into(imageView);
-                            return false;
-                        }
-                    })
-                    .into(imageView);
-        }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.transparentToolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-
 
         Defaults.defaultObjectId = currentData.getId();
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>("Data");
@@ -134,12 +90,11 @@ public class DetailsActivity extends AppCompatActivity {
                 } else
                     Log.e("DetailsActivity", e.getMessage());
 
-                DetailsActivityAdapter detailsActivityAdapter = new DetailsActivityAdapter(DetailsActivity.this, barberList, recyclerView);
+                DetailsActivityAdapter detailsActivityAdapter = new DetailsActivityAdapter(DetailsActivityExtras.this, barberList, recyclerView);
                 recyclerView.setAdapter(detailsActivityAdapter);
 
             }
         });
-
     }
 
     @Override
@@ -149,9 +104,9 @@ public class DetailsActivity extends AppCompatActivity {
         this.menu = menu;
         if (currentData.isCart()) {
             alreadyInCart = true;
-            new ToggleActionItemColor(menu, DetailsActivity.this).makeIconRed(R.id.action_add_to_cart);
+            new ToggleActionItemColor(menu, DetailsActivityExtras.this).makeIconRed(R.id.action_add_to_cart);
         }
-        new ToggleActionItemColor(menu, DetailsActivity.this).makeIconRed(R.id.action_go_cart);
+        new ToggleActionItemColor(menu, DetailsActivityExtras.this).makeIconRed(R.id.action_go_cart);
         return true;
     }
 
@@ -170,10 +125,10 @@ public class DetailsActivity extends AppCompatActivity {
                 break;
             case R.id.action_add_to_cart:
                 if (alreadyInCart)
-                    Toast.makeText(DetailsActivity.this, "Already in cart", Toast.LENGTH_LONG).show();
+                    Toast.makeText(DetailsActivityExtras.this, "Already in cart", Toast.LENGTH_LONG).show();
                 else if (!alreadyInCart) {
                     updateCart();
-                    new ToggleActionItemColor(menu, DetailsActivity.this).makeIconRed(R.id.action_add_to_cart);
+                    new ToggleActionItemColor(menu, DetailsActivityExtras.this).makeIconRed(R.id.action_add_to_cart);
                 }
                 break;
             case R.id.action_go_cart:

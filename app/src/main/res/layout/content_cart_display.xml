@@ -11,11 +11,15 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerview_cart"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout"
+            android:layout_alignParentTop="true"
+            android:background="#FFF">
 
         </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -42,7 +46,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_weight="3.5"
-            android:background="@color/accent"
+            android:background="@color/colorAccent_light"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:text="CHECKOUT"

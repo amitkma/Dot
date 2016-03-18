@@ -92,11 +92,32 @@ public class CartDisplay extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         StaggeredGridLayoutManager linearLayoutManager = new StaggeredGridLayoutManager(2, 1);
         mRecyclerView.setLayoutManager(linearLayoutManager);
-        cartActivityAdapter = new CartActivityAdapter(this, listcart, empty);
 
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_fav, menu);
+        this.menu = menu;
+        return true;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setUpView();
+    }
+
+    private void setUpView() {
+        listcart.clear();
+        cartActivityAdapter = new CartActivityAdapter(CartDisplay.this, listcart, empty);
         ParseQuery<ParseObject> parseQuery = new ParseQuery<ParseObject>(Defaults.INFO_CLASS);
         parseQuery.fromPin("data");
         parseQuery.whereContainedIn("objectId", UserFavsAndCarts.listcart);
+        parseQuery.orderByDescending("Category");
         Log.e("Fav", "passed");
         parseQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -110,10 +131,10 @@ public class CartDisplay extends AppCompatActivity {
                             td.title = parseObject.getString("title");
                             td.price = parseObject.getString("price");
                             td.id = parseObject.getObjectId();
-
+                            td.subCategoryString = parseObject.getString("subCategoryName");
                             ParseFile parseFile = parseObject.getParseFile("image");
                             if (parseFile != null)
-                            td.url = parseFile.getUrl();
+                                td.url = parseFile.getUrl();
                             if (UserFavsAndCarts.listcart.contains(td.getId()))
                                 td.cart = true;
                             listcart.add(td);
@@ -129,17 +150,6 @@ public class CartDisplay extends AppCompatActivity {
             }
         });
 
-
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_fav, menu);
-        this.menu = menu;
-        return true;
     }
 
     @Override

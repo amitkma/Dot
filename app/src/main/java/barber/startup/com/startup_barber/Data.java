@@ -12,6 +12,8 @@ public class Data  implements Serializable{
     String url = null;
     boolean fav = false;
     boolean cart = false;
+    int subCategory = 0;
+    String subCategoryString;
 
     int cost = 0;
     int time = 0;
@@ -34,6 +36,14 @@ public class Data  implements Serializable{
 
     public String getId() {
         return id;
+    }
+
+    public int getSubCategory() {
+        return subCategory;
+    }
+
+    public String getSubCategoryString() {
+        return subCategoryString;
     }
 
     public String getPrice() {

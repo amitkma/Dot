@@ -4,21 +4,21 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="#FFF">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_styles_fragment"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
     </android.support.v7.widget.RecyclerView>
     <ProgressBar
+        android:id="@+id/data_loading_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/data_loading_spinner"
-        android:indeterminateBehavior="repeat"
         android:layout_gravity="center"
         android:indeterminate="true"
+        android:indeterminateBehavior="repeat"
         ></ProgressBar>
 
     <TextView

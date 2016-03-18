@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/after_feedback_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="16dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp">
+
+        <ImageView
+            android:id="@+id/Feedback_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/circle_back"
+            android:padding="12dp"
+            android:src="@drawable/ic_feedback_black_24dp"
+            android:tint="#FFF" />
+
+        <TextView
+            android:id="@+id/me_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="16dp"
+            android:layout_toEndOf="@+id/Feedback_icon"
+            android:layout_toRightOf="@+id/Feedback_icon"
+            android:fontFamily="sans-serif-medium"
+            android:text="My Idea"
+            android:textColor="@color/secondary_text"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/submitted_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/me_text"
+            android:layout_marginLeft="16dp"
+            android:layout_toEndOf="@+id/Feedback_icon"
+            android:layout_toRightOf="@+id/Feedback_icon"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/primary_text"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/editFeedback"
+            android:layout_width="48dp"
+            android:layout_height="36dp"
+            android:layout_below="@+id/submitted_text_view"
+            android:layout_marginLeft="8dp"
+            android:layout_toRightOf="@+id/Feedback_icon"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="EDIT"
+            android:textColor="@color/accent"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

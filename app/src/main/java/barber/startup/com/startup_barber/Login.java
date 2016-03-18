@@ -3,7 +3,9 @@ package barber.startup.com.startup_barber;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -27,11 +29,10 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.parse.FunctionCallback;
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
+import com.parse.LogOutCallback;
 import com.parse.ParseACL;
-import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
@@ -46,9 +47,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import barber.startup.com.startup_barber.Utility.CustomLinearLayout;
 import barber.startup.com.startup_barber.Utility.NetworkCheck;
@@ -92,13 +91,44 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
     };
 
     private LinearLayout linearLayout;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         if (ParseUser.getCurrentUser() != null) {
-            startActivity(new Intent(this, MainActivity.class));
+            if (NetworkCheck.checkConnection(Login.this)) {
+                ParseQuery<ParseUser> query = ParseUser.getQuery();
+                query.whereEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+                query.getFirstInBackground(new GetCallback<ParseUser>() {
+                    @Override
+                    public void done(ParseUser object, ParseException e) {
+                        if (e == null) {
+                            prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                            Defaults.mNumberOfServicesLeft = object.getInt("rewardWallet");
+                            Defaults.isFeedbackSubmitted = object.getBoolean("isFeedbackSubmitted");
+
+                        } else {
+                            if (e.getCode() == ParseException.INVALID_SESSION_TOKEN) {
+                                ParseUser.logOutInBackground(new LogOutCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        startActivity(new Intent(Login.this, Login.class));
+                                        overridePendingTransition(0, 0);
+                                        finish();
+                                    }
+                                });
+
+                            }
+                        }
+
+                    }
+                });
+            }
+            startActivity(new Intent(Login.this, MainActivity.class));
+            overridePendingTransition(0, 0);
             finish();
         }
 
@@ -155,22 +185,9 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
         pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pd.setMessage("Verifying");
         pd.setIndeterminate(true);
-        callParseCloud();
+
     }
 
-    private void callParseCloud() {
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("userid", "amit");
-        ParseCloud.callFunctionInBackground("hello", map, new FunctionCallback<String>() {
-            @Override
-            public void done(String object, ParseException e) {
-                if (e == null)
-                    Log.e("CLOUD", object);
-                else
-                    Log.e("CLOUD", e.getMessage() + " " + e.getCode());
-            }
-        });
-    }
 
     private void updateUI(int i) {
         if (i == 0) {
@@ -193,25 +210,6 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
 
         String userString = rollno.getText().toString();
         String passwordString = name.getText().toString();
-
-        /**  if (userString.equals("") && passwordString.equals("")) {
-         button_fb_login.setEnabled(false);
-         button_fb_login.setBackgroundResource(R.drawable.login_button_disable);
-         } else if (!userString.equals("") && passwordString.equals("")) {
-         button_fb_login.setEnabled(false);
-         button_fb_login.setBackgroundResource(R.drawable.login_button_disable);
-         } else if (userString.equals("") && !passwordString.equals("")) {
-         button_fb_login.setEnabled(false);
-         button_fb_login.setBackgroundResource(R.drawable.login_button_disable);
-         } else {
-         if (bhawanCode == -1) {
-         button_fb_login.setEnabled(false);
-         button_fb_login.setBackgroundResource(R.drawable.login_button_disable);
-         } else {
-         button_fb_login.setEnabled(true);
-         button_fb_login.setBackgroundResource(R.drawable.login_button_ripple);
-         }
-         }**/
         if (userString.trim().length() == 8 && passwordString.length() > 0) {
             if (bhawanCode == -1) {
                 button_fb_login.setEnabled(false);
@@ -262,9 +260,10 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
         categories.add("Govind Bhawan");
         categories.add("Jawahar Bhawan");
         categories.add("Kasturba Bhawan");
+        categories.add("Rajeev Bhawan");
         categories.add("Rajendra Bhawan");
         categories.add("Ravindra Bhawan");
-        categories.add("RKB Bhawan");
+        categories.add("RKB");
         categories.add("Sarojini Bhawan");
 
         // Creating adapter for spinner
@@ -366,6 +365,7 @@ public class Login extends AppCompatActivity implements CustomLinearLayout.OnSof
                             user.put("rewardWallet", Defaults.FIRST_TIME_REWARD);
                             user.put("bhawanCode", bhawanCode);
                             user.put("bhawanName", bhawanName);
+                            user.put("isFeedbackSubmitted", false);
                             user.put("verified", verifyDetails());
 
                             user.saveInBackground(new SaveCallback() {

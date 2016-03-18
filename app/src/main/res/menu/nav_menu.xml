@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group
-        android:id="@+id/group_user"
+    <item
+        android:id="@+id/first"
+        android:title="Home">
+        <menu
+            android:id="@+id/group_primary"
         android:checkableBehavior="single">
         <item
             android:id="@+id/Favorites"
@@ -22,7 +25,8 @@
             android:title="Cart" />
 
 
-    </group>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/second"

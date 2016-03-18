@@ -39,10 +39,12 @@ import barber.startup.com.startup_barber.Utility.UserFavsAndCarts;
 /**
  * Created by ayush on 28/2/16.
  */
-public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.ViewHolder> {
+public class FavActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_GROUP = 0;
+    private static final int TYPE_EXTRA = 1;
     private final TextView empty;
 
-   List<Data> cartdata = new ArrayList<>();
+    List<Data> cartdata = new ArrayList<>();
     Data data;
     private Context mContext;
     private Menu menu;
@@ -56,61 +58,93 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
 
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         this.mContext = parent.getContext();
         View itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fav, parent, false);
-        ViewHolder viewHolder = new ViewHolder(itemviewLayout, parent.getContext());
-
-        final float scale = mContext.getResources().getDisplayMetrics().density;
-        heightpixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
-        viewHolder.rl.getLayoutParams().height = (heightpixels) / 2;
-        return viewHolder;
+        if (viewType == TYPE_GROUP) {
+            itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_fav, parent, false);
+            GroupHolder groupHolder = new GroupHolder(itemviewLayout, parent.getContext());
+            final float scale = mContext.getResources().getDisplayMetrics().density;
+            heightpixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
+            groupHolder.rl.getLayoutParams().height = (heightpixels) / 2;
+            return groupHolder;
+        } else if (viewType == TYPE_EXTRA) {
+            itemviewLayout = LayoutInflater.from(parent.getContext()).inflate(R.layout.extras_fav_card, parent, false);
+            ExtraHolder extraHolder = new ExtraHolder(itemviewLayout, parent.getContext());
+            final float scale = mContext.getResources().getDisplayMetrics().density;
+            heightpixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
+            extraHolder.rl.getLayoutParams().height = (heightpixels) / 2;
+            return extraHolder;
+        } else {
+            GroupHolder groupHolder = new GroupHolder(itemviewLayout, parent.getContext());
+            final float scale = mContext.getResources().getDisplayMetrics().density;
+            heightpixels = (int) (((MainActivity.a) - 16) * scale + 0.5f);
+            groupHolder.rl.getLayoutParams().height = (heightpixels) / 2;
+            return groupHolder;
+        }
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-
-
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         data = cartdata.get(position);
-        holder.price.setText("Rs. "+data.getPrice()+"/-");
+        switch (holder.getItemViewType()) {
+            case TYPE_GROUP:
+                GroupHolder groupHolder = (GroupHolder) holder;
+                groupHolder.price.setText(data.getTitle());
 
-        if (data.isCart()) {
-            holder.cart.setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent_light),  PorterDuff.Mode.SRC_IN);
-            holder.cart.setImageAlpha(255);
-        } else {
-            holder.cart.setColorFilter(null);
-        holder.cart.setImageAlpha(138);}
-
-
-        if (data.getUrl() != null) {
-            Glide.with(mContext).load(data.getUrl()).crossFade().centerCrop().listener(new RequestListener<String, GlideDrawable>() {
-                @Override
-                public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                    Toast.makeText(mContext, "Error in connection", Toast.LENGTH_LONG).show();
-                    return true;
+                if (data.isCart()) {
+                    groupHolder.cart.setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
+                    groupHolder.cart.setImageAlpha(255);
+                } else {
+                    groupHolder.cart.setColorFilter(null);
+                    groupHolder.cart.setImageAlpha(138);
                 }
 
-                @Override
-                public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                    return false;
+
+                if (data.getUrl() != null) {
+                    groupHolder.back.setVisibility(View.VISIBLE);
+                    Glide.with(mContext).load(data.getUrl()).crossFade().centerCrop().listener(new RequestListener<String, GlideDrawable>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                            Toast.makeText(mContext, "Error in connection", Toast.LENGTH_LONG).show();
+                            return true;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            return false;
+                        }
+                    }).diskCacheStrategy(DiskCacheStrategy.RESULT).into(groupHolder.back);
                 }
-            }).diskCacheStrategy(DiskCacheStrategy.RESULT).into(holder.back);
+                break;
+            case TYPE_EXTRA:
+                ExtraHolder extraHolder = (ExtraHolder) holder;
+                if (data.isCart()) {
+                    extraHolder.cart.setColorFilter(ContextCompat.getColor(mContext, R.color.colorAccent_light), PorterDuff.Mode.SRC_IN);
+                    extraHolder.cart.setImageAlpha(255);
+                } else {
+                    extraHolder.cart.setColorFilter(null);
+                    extraHolder.cart.setImageAlpha(138);
+                }
+
+                extraHolder.subCategoryTitle.setText(data.getSubCategoryString());
+                extraHolder.title.setText(data.getTitle());
         }
     }
 
     private void remove(final int position) {
         UserFavsAndCarts.listfav.remove(cartdata.get(position).getId());
-        MainActivity.dataUpdated =true;
+        MainActivity.dataUpdated = true;
         final ParseUser parseUser = ParseUser.getCurrentUser();
         JSONArray jsonArray = new JSONArray();
-        for(int i =0; i<UserFavsAndCarts.listfav.size(); i++){
+        for (int i = 0; i < UserFavsAndCarts.listfav.size(); i++) {
             jsonArray.put(UserFavsAndCarts.listfav.get(i));
         }
         parseUser.put("favLists", jsonArray);
         parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if(e == null){
+                if (e == null) {
 
                     cartdata.remove(position);
                     notifyItemRemoved(position);
@@ -145,17 +179,25 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
         empty.setText("Empty");
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        Data checkData = cartdata.get(position);
+        if (checkData.getUrl() == null) {
+            return TYPE_EXTRA;
+        } else
+            return TYPE_GROUP;
+    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class GroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public RelativeLayout rl;
         TextView price;
         ImageView remove;
         ImageView cart;
         ImageView back;
 
-        public ViewHolder(View itemView, Context context) {
+        public GroupHolder(View itemView, Context context) {
             super(itemView);
-            rl = (RelativeLayout)itemView.findViewById(R.id.rlll);
+            rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
             price = (TextView) itemView.findViewById(R.id.cart_price);
             remove = (ImageView) itemView.findViewById(R.id.removeFromFav);
             back = (ImageView) itemView.findViewById(R.id.cart_image);
@@ -174,8 +216,7 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
                 Data d = cartdata.get(getAdapterPosition());
                 Log.d("d", d.getId());
                 remove(getAdapterPosition());
-            }
-          else  if (v.getId() == R.id.addToCart) {
+            } else if (v.getId() == R.id.addToCart) {
 
                 if (cart.getColorFilter() == null) {
                     updateCart();
@@ -183,15 +224,13 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
                 } else if (cart.getColorFilter() != null)
                     Toast.makeText(mContext, "Already in Cart", Toast.LENGTH_SHORT).show();
 
-            }
-            else if(v.getId() == R.id.cart_image){
-                if(NetworkCheck.checkConnection(mContext)) {
+            } else if (v.getId() == R.id.cart_image) {
+                if (NetworkCheck.checkConnection(mContext)) {
                     Data currentTrendData = cartdata.get(getAdapterPosition());
                     Intent i = new Intent(mContext, DetailsActivity.class);
                     i.putExtra("objectData", currentTrendData);
                     (mContext).startActivity(i);
-                }
-                else
+                } else
                     Snackbar.make(v, "Error in connection", Snackbar.LENGTH_LONG).show();
             }
 
@@ -221,6 +260,79 @@ public class FavActivityAdapter extends RecyclerView.Adapter<FavActivityAdapter.
             });
 
 
+        }
+    }
+
+    public class ExtraHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public TextView title;
+        TextView subCategoryTitle;
+        ImageView remove;
+        ImageView cart;
+        private RelativeLayout rl;
+
+        public ExtraHolder(View itemView, Context context) {
+            super(itemView);
+            rl = (RelativeLayout) itemView.findViewById(R.id.rlll);
+            title = (TextView) itemView.findViewById(R.id.card_title);
+            remove = (ImageView) itemView.findViewById(R.id.removeFromFav);
+            subCategoryTitle = (TextView) itemView.findViewById(R.id.subCategoryTitle);
+            cart = (ImageView) itemView.findViewById(R.id.addToCart);
+            rl.setOnClickListener(this);
+            remove.setOnClickListener(this);
+            cart.setOnClickListener(this);
+
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.removeFromFav) {
+                Data d = cartdata.get(getAdapterPosition());
+                Log.d("d", d.getId());
+                remove(getAdapterPosition());
+            } else if (v.getId() == R.id.addToCart) {
+
+                if (cart.getColorFilter() == null) {
+                    updateCart();
+
+                } else if (cart.getColorFilter() != null)
+                    Toast.makeText(mContext, "Already in Cart", Toast.LENGTH_SHORT).show();
+
+            } else if (v.getId() == R.id.rlll) {
+                if (NetworkCheck.checkConnection(mContext)) {
+                    Data currentTrendData = cartdata.get(getAdapterPosition());
+                    Intent i = new Intent(mContext, DetailsActivityExtras.class);
+                    i.putExtra("objectData", currentTrendData);
+                    (mContext).startActivity(i);
+                } else
+                    Snackbar.make(v, "Error in connection", Snackbar.LENGTH_LONG).show();
+            }
+
+        }
+
+        private void updateCart() {
+            final ParseUser parseUser = ParseUser.getCurrentUser();
+            UserFavsAndCarts.listcart.add(cartdata.get(getAdapterPosition()).getId());
+            MainActivity.dataUpdated = true;
+            JSONArray jsonArray = new JSONArray();
+            for (int i = 0; i < UserFavsAndCarts.listcart.size(); i++) {
+                jsonArray.put(UserFavsAndCarts.listcart.get(i));
+            }
+            parseUser.put("cartLists", jsonArray);
+            parseUser.pinInBackground(ParseUser.getCurrentUser().getUsername(), new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        if (mContext instanceof Favourites) {
+                            menu = ((MainActivity) Defaults.context).getMenu();
+                        }
+
+                        new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
+                        cart.setColorFilter(ContextCompat.getColor(mContext, R.color.accent), PorterDuff.Mode.SRC_IN);
+                        parseUser.saveInBackground();
+                    } else e.printStackTrace();
+                }
+            });
         }
     }
 

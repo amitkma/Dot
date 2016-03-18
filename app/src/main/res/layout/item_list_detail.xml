@@ -5,7 +5,6 @@
     android:layout_height="72dp"
     android:background="#FFF"
     android:orientation="vertical"
-    android:paddingLeft="16dp"
     android:paddingTop="16dp"
     >
 
@@ -16,6 +15,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
         android:alpha="0.54"
         android:src="@drawable/ic_spa_black_24dp" />
     <TextView
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/barberNameTextView"
-        android:layout_marginLeft="56dp"
+        android:layout_marginLeft="72dp"
         android:gravity="center"
         android:text="Time: 40 mins"
         android:textColor="@color/secondary_text"
@@ -60,7 +60,6 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginLeft="56dp"
         android:background="@color/secondary_text_background" />
 
 </RelativeLayout>

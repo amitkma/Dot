@@ -5,6 +5,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import java.net.InetAddress;
+
 import barber.startup.com.startup_barber.R;
 
 /**
@@ -34,5 +36,21 @@ public class NetworkCheck {
             return false;
         }
         return false;
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("www.google.com"); //You can replace it with your name
+
+            if (ipAddr.equals("")) {
+                return false;
+            } else {
+                return true;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+
     }
 }

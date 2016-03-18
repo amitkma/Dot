@@ -50,14 +50,9 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
     private boolean dataChanged;
 
 
-    public Fragment_services_test(){
+    public Fragment_services_test() {
 
     }
-    public Fragment_services_test(int position, AppBarLayout appBarLayout) {
-        this.category = position;
-        this.appBarLayout = appBarLayout;
-    }
-
 
 
     @Override
@@ -74,14 +69,16 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Bundle bundle = getArguments();
+        this.category = bundle.getInt("position");
         return inflater.inflate(R.layout.item_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview_styles_fragment);
-        progressBar = (ProgressBar)view.findViewById(R.id.data_loading_spinner);
-        checknet = (TextView)view.findViewById(R.id.checkconnection);
+        progressBar = (ProgressBar) view.findViewById(R.id.data_loading_spinner);
+        checknet = (TextView) view.findViewById(R.id.checkconnection);
         recyclerView.setHasFixedSize(true);
         StaggeredGridLayoutManager gaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, 1);
         recyclerView.setLayoutManager(gaggeredGridLayoutManager);
@@ -89,7 +86,8 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
         listparseobject.clear();
 
         currentUser = ParseUser.getCurrentUser();
-        getFavCartIds();;
+        getFavCartIds();
+        ;
 
     }
 
@@ -99,7 +97,8 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
         int px = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
         return px;
     }
-    private void getFavCartIds(){
+
+    private void getFavCartIds() {
         Log.e("FRagment_services", "getFavCartIds called");
         ParseQuery<ParseUser> query = ParseUser.getQuery();
         query.whereEqualTo("objectId", currentUser.getObjectId());
@@ -107,21 +106,23 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
         query.getFirstInBackground(new GetCallback<ParseUser>() {
             @Override
             public void done(ParseUser object, ParseException e) {
-                if(e == null){
-                    if(object != null) {
+                if (e == null) {
+                    if (object != null) {
                         JSONArray arrayFav = object.getJSONArray("favLists");
 
-                        if(arrayFav != null) {
+                        if (arrayFav != null) {
                             if (arrayFav.length() > 0) {
                                 if (mContext instanceof MainActivity) {
                                     menu = ((MainActivity) mContext).getMenu();
                                 }
-                                new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_fav);
+                                if (menu != null)
+                                    new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_fav);
                             } else if (arrayFav.length() == 0) {
                                 if (mContext instanceof MainActivity) {
                                     menu = ((MainActivity) mContext).getMenu();
                                 }
-                                new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_fav);
+                                if (menu != null)
+                                    new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_fav);
                             }
                             UserFavsAndCarts.listfav.clear();
                             for (int i = 0; i < arrayFav.length(); i++) {
@@ -135,17 +136,19 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
                         }
 
                         JSONArray arrayCart = object.getJSONArray("cartLists");
-                        if(arrayCart != null) {
+                        if (arrayCart != null) {
                             if (arrayCart.length() > 0) {
                                 if (mContext instanceof MainActivity) {
                                     menu = ((MainActivity) mContext).getMenu();
                                 }
-                                new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
+                                if (menu != null)
+                                    new ToggleActionItemColor(menu, mContext).makeIconRed(R.id.action_cart);
                             } else if (arrayCart.length() == 0) {
                                 if (mContext instanceof MainActivity) {
                                     menu = ((MainActivity) mContext).getMenu();
                                 }
-                                new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_cart);
+                                if (menu != null)
+                                    new ToggleActionItemColor(menu, mContext).makeIconDefault(R.id.action_cart);
                             }
                             UserFavsAndCarts.listcart.clear();
 
@@ -160,9 +163,8 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
                         }
                     }
 
-                }
-                else
-                    Log.e("ERROR", e.getMessage()+" "+e.getCode());
+                } else
+                    Log.e("ERROR", e.getMessage() + " " + e.getCode());
                 setUpRecyclerView();
             }
         });
@@ -191,7 +193,7 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
 
                         ParseFile parseFile = parseObject.getParseFile("image");
                         if (parseFile != null)
-                        td.url = parseFile.getUrl();
+                            td.url = parseFile.getUrl();
 
 
                         if (UserFavsAndCarts.listfav.contains(parseObject.getObjectId()))
@@ -200,12 +202,11 @@ public class Fragment_services_test extends android.support.v4.app.Fragment {
 
                         if (UserFavsAndCarts.listcart.contains(parseObject.getObjectId()))
                             td.cart = true;
-
                         listparseobject.add(td);
 
                     }
 
-                    adapter = new MainActivityAdapter(listparseobject, getActivity());
+                    adapter = new MainActivityAdapter(listparseobject, getActivity(), R.layout.card_item);
                     recyclerView.setAdapter(adapter);
                     progressBar.setVisibility(View.GONE);
 
